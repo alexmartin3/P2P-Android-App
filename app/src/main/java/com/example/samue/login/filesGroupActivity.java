@@ -1,5 +1,6 @@
 package com.example.samue.login;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 public class filesGroupActivity extends AppCompatActivity {
 	private Dialog mdialog;
 	private ArrayList listnamefiles;
+	private ArrayList newFiles;
 	private String listnamefilesstring;
 	private ArrayList<Friends> listownersfiles;
 	private String listownersfilesstring;
@@ -182,8 +184,11 @@ public class filesGroupActivity extends AppCompatActivity {
 		if (listnamefiles != null){listnamefiles.clear();}
 		else {listnamefiles = new ArrayList();}
 
-			listnamefiles = stringtoArrayList(listnamefilesstring);
-			listownersfiles = stringtoArrayListFriend(listownersfilesstring);
+		listnamefiles = stringtoArrayList(listnamefilesstring);
+		listownersfiles = stringtoArrayListFriend(listownersfilesstring);
+
+		adaptador = new AEArrayAdapter(this, android.R.layout.simple_expandable_list_item_1,listnamefiles);
+		listview.setAdapter(adaptador);
 	}
 	private ArrayList<Friends> stringtoArrayListFriend(String friends){
 		if (friends == null){return new ArrayList<>();}
@@ -205,5 +210,27 @@ public class filesGroupActivity extends AppCompatActivity {
 		}
 		return resultado;
 	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data){
+		super.onActivityResult(requestCode,resultCode,data);
+		switch(requestCode){
+			case 1:
+				if(resultCode == Activity.RESULT_OK){
+					ArrayList newListFiles = data.getStringArrayListExtra("files");
+					for (int i=0; i<newListFiles.size(); i++)
+						if (!listnamefiles.contains(newListFiles.get(i))) {
+							listnamefiles.add(newListFiles.get(i));
+							newFiles.add(newListFiles.get(i));
+						}
+					adaptador = new AEArrayAdapter(this, android.R.layout.simple_expandable_list_item_1,listnamefiles);
+					listview = findViewById(R.id.listfilesgroups);
+					listview.setAdapter(adaptador);
+					break;
+				}
+
+		}
+	}
+
 
 }

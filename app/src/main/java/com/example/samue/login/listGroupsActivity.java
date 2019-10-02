@@ -79,12 +79,12 @@ public class listGroupsActivity extends AppCompatActivity {
                          */
                         final ArrayList<String> files = group.getListFiles();
                         Intent intent = new Intent(listGroupsActivity.this, filesGroupActivity.class);
-                        intent.putExtra("lista", files);
+                        intent.putExtra("lista", arrayListToString(group.getListFiles()));
                         intent.putExtra("listener", false);
                         intent.putExtra("owners", arrayListToString(group.getListOwners()));
                         intent.putExtra("username",username);
                         intent.putExtra("namegroup",group.getNameGroup());
-                        intent.putExtra("grupo",groupactual);
+                        intent.putExtra("group",groupactual);
                         startActivityForResult(intent, 3);
                         //Intent intent = new Intent(listGroupsActivity.this, friendsGroupActivity.class);
                         //intent.putExtra("folderName", folder_name);
@@ -250,16 +250,16 @@ public class listGroupsActivity extends AppCompatActivity {
     }
 
     //pasar de un array lists de amigos a un string
-    private String arrayListToString(ArrayList<Friends> listfriend) {
+    private String arrayListToString(ArrayList list) {
         String myString =null;
 
-        for (int i = 0; i<listfriend.size();i++){
+        for (int i = 0; i<list.size();i++){
             if (myString==null){
-                myString=listfriend.get(i).getNombre();
-                if (i < (listfriend.size() - 1)){myString = myString + ",";}
+                myString=list.get(i).toString();
+                if (i < (list.size() - 1)){myString = myString + ",";}
             }else {
-                myString = myString + listfriend.get(i).getNombre();
-                if (i < (listfriend.size() - 1)) {
+                myString = myString + list.get(i);
+                if (i < (list.size() - 1)) {
                     myString = myString + ",";
                 }
             }

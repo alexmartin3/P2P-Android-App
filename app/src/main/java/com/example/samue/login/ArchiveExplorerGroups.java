@@ -94,14 +94,22 @@ public class ArchiveExplorerGroups extends AppCompatActivity {
                             progressDialog.setIndeterminate(true);
                             progressDialog.setMessage("Subiendo " + name + "...");
                             progressDialog.show();
-                            //hay que ver si pasamos tura completa, nombre o que
+                            //hay que ver si pasamos ruta completa, nombre o que
                             add = updateGroupBBDD(groupname, name, group);
                             if (add) {
                                 Toast.makeText(getApplicationContext(), "File selected has been added", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent();
-                                //intent.putExtra("friends",friendsSelectedfinish);
+                                intent.putStringArrayListExtra("files",group.listFiles);
                                 setResult(Activity.RESULT_OK,intent);
-                                finish();
+
+
+
+
+                                //ASI ESTABA ANTES
+                                //Intent intent = new Intent();
+                                //intent.putExtra("friends",friendsSelectedfinish);
+                                //setResult(Activity.RESULT_OK,intent);
+                               //finish();
                             } else {
                                 Toast.makeText(getApplicationContext(), "Ha ocurrido un error", Toast.LENGTH_SHORT).show();
                             }
