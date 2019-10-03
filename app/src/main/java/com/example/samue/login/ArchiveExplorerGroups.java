@@ -38,7 +38,6 @@ public class ArchiveExplorerGroups extends AppCompatActivity {
     String groupname;
     Groups group;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +53,6 @@ public class ArchiveExplorerGroups extends AppCompatActivity {
         username= extras.getString("username");
         groupname=extras.getString("namegroup");
         group = (Groups) extras.getSerializable("group");
-
 
         // Compartir un archivo:
         listaItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -77,14 +75,12 @@ public class ArchiveExplorerGroups extends AppCompatActivity {
 
                     Button yes = mdialog.findViewById(R.id.confirm_archive_yes);
                     Button no = mdialog.findViewById(R.id.confirm_archive_no);
-
                     no.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             mdialog.dismiss();
                         }
                     });
-
                     yes.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -101,9 +97,7 @@ public class ArchiveExplorerGroups extends AppCompatActivity {
                                 Intent intent = new Intent();
                                 intent.putStringArrayListExtra("files",group.listFiles);
                                 setResult(Activity.RESULT_OK,intent);
-
-
-
+                                finish();
 
                                 //ASI ESTABA ANTES
                                 //Intent intent = new Intent();
@@ -113,9 +107,7 @@ public class ArchiveExplorerGroups extends AppCompatActivity {
                             } else {
                                 Toast.makeText(getApplicationContext(), "Ha ocurrido un error", Toast.LENGTH_SHORT).show();
                             }
-
-
-
+                            /* CREO QUE ESTO PUEDE SOBRAR
                             new android.os.Handler().postDelayed(new Runnable() {
                                 public void run() {
                                     // On complete call either onLoginSuccess or onLoginFailed
@@ -127,103 +119,16 @@ public class ArchiveExplorerGroups extends AppCompatActivity {
                                     finish();
                                     progressDialog.dismiss();
                                 }
-                            }, 2000);
-
+                            }, 2000);   */
                         }
                     });
-
                 } else {
                     // Si es un directorio mostramos todos los archivos que contiene
                     verArchivosDirectorio((String)listaRutasArchivos.get(position));
                 }
             }
         });
-        /*
-        // Compartir carpeta:
-        fab = findViewById(R.id.fab_folder_share_grupos);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mdialog = new Dialog(ArchiveExplorerGroups.this);
-                mdialog.setContentView(R.layout.dialog_share_folder);
-                mdialog.show();
-
-                Button yes = mdialog.findViewById(R.id.share_folder_yes);
-                Button no = mdialog.findViewById(R.id.share_folder_no);
-
-                no.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mdialog.dismiss();
-                    }
-                });
-                yes.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        final ProgressDialog progressDialog = new ProgressDialog(ArchiveExplorerGroups.this);
-                        progressDialog.setIndeterminate(true);
-                        progressDialog.setMessage("Compartiendo carpeta");
-                        progressDialog.show();
-
-                        new android.os.Handler().postDelayed(
-                                new Runnable() {
-                                    public void run() {
-                                        // Abrir diálogo para añadir amigos:
-                                        final Dialog addFriendsDl = new Dialog(ArchiveExplorerGroups.this);
-                                        addFriendsDl.setContentView(R.layout.dialog_addfriendssharedfolder);
-
-                                        // Obtener lista de amigos para elegir:
-                                        Intent intent = getIntent();
-                                        final ArrayList<Friends> friendsList = (ArrayList<Friends>) intent.getSerializableExtra("friendsList");
-                                        final ArrayList<String> friendsNames = Utils.getFriendsArrayListAsStrings(friendsList);
-                                        ListView selectionList = addFriendsDl.findViewById(R.id.select_friends_list);
-                                        final SelectFriends_Adapter fAdapter = new SelectFriends_Adapter(ArchiveExplorerGroups.this, friendsNames);
-                                        selectionList.setAdapter(fAdapter);
-                                        progressDialog.dismiss();
-                                        addFriendsDl.show();
-
-                                        Button addSelected = addFriendsDl.findViewById(R.id.button_add_selected);
-                                        addSelected.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View view) {
-                                                // Si hay alguno seleccionado se procede:
-                                                if (fAdapter.getCountSelected() > 0) {
-                                                    // Se añade la carpeta con los nombres de los archivos que contiene a la BD, excluyendo '../':
-                                                    ArrayList<String> sublist = new ArrayList<String>(listaNombresArchivos.subList(1,listaNombresArchivos.size()));
-                                                    Profile.mDatabaseHelper.addSharedFolder(currentFolder, Utils.joinStrings(",",sublist));
-                                                    // Se añaden los amigos seleccionados a la tabla de acceso:
-                                                    boolean selected[] = fAdapter.getSelected();
-                                                    ArrayList<String> friendsSelected = new ArrayList<>();
-                                                    for (int i = 0; i < friendsList.size(); i++) {
-                                                        if (selected[i])
-                                                            friendsSelected.add(friendsNames.get(i));
-                                                    }
-                                                    Profile.mDatabaseHelper.addFriends2Folder(friendsSelected, currentFolder);
-                                                    Intent result = new Intent();
-                                                    result.putExtra("folder_sharing", true);
-                                                    setResult(RESULT_OK, result);
-                                                    progressDialog.dismiss();
-                                                    addFriendsDl.dismiss();
-                                                    finish();
-                                                }
-                                                // Si no hay ninguno seleccionado...
-                                                else{
-                                                    Toast.makeText(ArchiveExplorerGroups.this, "ERROR: Ningún amigo seleccionado", Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
-                                        });
-                                    }
-                                }, 2000);
-                        mdialog.dismiss();
-                    }
-                });
-            }
-        });
-
-         */
     }
-
-
     private void verArchivosDirectorio(String rutaDirectorio) {
         carpetaActual.setText("Estas en: " + rutaDirectorio);
         currentFolder = rutaDirectorio;
@@ -236,11 +141,9 @@ public class ArchiveExplorerGroups extends AppCompatActivity {
         listaArchivos = directorioActual.listFiles();
 
         int x = 0;
-
         if (listaArchivos == null) {
             Toast.makeText(ArchiveExplorerGroups.this, "No se puede acceder",Toast.LENGTH_LONG).show(); return;
         }
-
         // Si no es nuestro directorio raiz creamos un elemento que nos
         // permita volver al directorio padre del directorio actual
         if (!rutaDirectorio.equals(directorioRaiz)) {
@@ -248,15 +151,12 @@ public class ArchiveExplorerGroups extends AppCompatActivity {
             listaRutasArchivos.add(directorioActual.getParent());
             x = 1;
         }
-
         // Almacenamos las rutas de todos los archivos y carpetas del directorio
         for (File archivo : listaArchivos) {
             listaRutasArchivos.add(archivo.getPath());
         }
-
         // Ordenamos la lista de archivos para que se muestren en orden alfabetico
         Collections.sort(listaRutasArchivos, String.CASE_INSENSITIVE_ORDER);
-
 
         // Recorremos la lista de archivos ordenada para crear la lista de los nombres
         // de los archivos que mostraremos en el listView
@@ -268,14 +168,11 @@ public class ArchiveExplorerGroups extends AppCompatActivity {
                 listaNombresArchivos.add("/" + archivo.getName());
             }
         }
-
         // Si no hay ningun archivo en el directorio lo indicamos
         if (listaArchivos.length < 1) {
             listaNombresArchivos.add("No hay ningun archivo");
             listaRutasArchivos.add(rutaDirectorio);
         }
-
-
         // Creamos el adaptador y le asignamos la lista de los nombres de los
         // archivos y el layout para los elementos de la lista
         adaptador = new AEArrayAdapter(this, android.R.layout.simple_list_item_1, listaNombresArchivos);
@@ -310,7 +207,6 @@ public class ArchiveExplorerGroups extends AppCompatActivity {
         }
         return myString;
     }
-
     @Override
     public void onBackPressed(){
         if (!currentFolder.equalsIgnoreCase(directorioRaiz)) {

@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class listGroupsActivity extends AppCompatActivity {
-
     private GroupsAdapter adapter;
     private ListView listView;
     private ArrayList<Groups> listGroups;
@@ -33,7 +32,6 @@ public class listGroupsActivity extends AppCompatActivity {
     EditText nameGroupText;
     String nameGroup;
     Button bf;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +65,6 @@ public class listGroupsActivity extends AppCompatActivity {
                 dialog.setContentView(R.layout.dialog_group);
 
                 dialog.show();
-
                 //Boton ver archivos del dialogo del grupo seleccionado
                 Button seeFiles = dialog.findViewById(R.id.files_button);
                 seeFiles.setOnClickListener(new View.OnClickListener() {
@@ -86,14 +83,9 @@ public class listGroupsActivity extends AppCompatActivity {
                         intent.putExtra("namegroup",group.getNameGroup());
                         intent.putExtra("group",groupactual);
                         startActivityForResult(intent, 3);
-                        //Intent intent = new Intent(listGroupsActivity.this, friendsGroupActivity.class);
-                        //intent.putExtra("folderName", folder_name);
-                        //intent.putExtra("users", foldersAccess.get(folder_name));
-                        //intent.putExtra("friends", al_friends);
                         dialog.dismiss();
                     }
                 });
-
                 //Boton ver amigos del dialogo del grupo seleccionado
                 Button seeFriends = dialog.findViewById(R.id.friends_button);
                 seeFriends.setOnClickListener(new View.OnClickListener() {
@@ -124,7 +116,6 @@ public class listGroupsActivity extends AppCompatActivity {
                 deletedialog.setContentView(R.layout.dialog_deletegroup);
                 deletedialog.show();
 
-
                 Button yes = deletedialog.findViewById(R.id.delete_group_yes);
                 yes.setOnClickListener(new View.OnClickListener() {
                     // Si se bloquea a un amigo este se borra de la lista de amigos.
@@ -140,7 +131,6 @@ public class listGroupsActivity extends AppCompatActivity {
                         loadGroupList();
                     }
                 });
-
                 Button no = deletedialog.findViewById(R.id.delete_group_no);
                 no.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -149,8 +139,6 @@ public class listGroupsActivity extends AppCompatActivity {
                 return true; //esto hay que ver que poner
             }
         });
-
-
 
         FloatingActionButton createGroup = findViewById(R.id.createGroup);
         createGroup.setOnClickListener(new View.OnClickListener() {
@@ -162,7 +150,6 @@ public class listGroupsActivity extends AppCompatActivity {
                 nameGroupText = (EditText) mdialogCreate.findViewById(R.id.nameGroup);
 
                 bf = (Button) mdialogCreate.findViewById(R.id.button_addFriends);
-
                 bf.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View view) {
                         mdialogCreate.dismiss();
@@ -201,7 +188,6 @@ public class listGroupsActivity extends AppCompatActivity {
         //Log.d("ALEX",c.getString(0));
         if (listGroups != null){listGroups.clear();}
         else {listGroups = new ArrayList<>();}
-
         while (c.moveToNext()) {
             ArrayList<Friends> friends = stringtoArrayListFriend(c.getString(1));
             ArrayList files = stringtoArrayList(c.getString(2));
@@ -248,7 +234,6 @@ public class listGroupsActivity extends AppCompatActivity {
         }
         return resultado;
     }
-
     //pasar de un array lists de amigos a un string
     private String arrayListToString(ArrayList list) {
         String myString =null;
@@ -266,7 +251,6 @@ public class listGroupsActivity extends AppCompatActivity {
         }
         return myString;
     }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

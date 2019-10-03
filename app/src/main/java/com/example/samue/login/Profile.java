@@ -64,15 +64,11 @@ import me.kevingleason.pnwebrtc.PnRTCClient;
 import me.kevingleason.pnwebrtc.PnRTCListener;
 import util.Constants;
 
-
-
 public class Profile extends AppCompatActivity {
 	Dialog mdialog;
-	Dialog mdialogGroup;
 	FloatingActionButton fab;
 	FloatingActionButton groups;
 	EditText name;
-	EditText nameGroup;
 	Button bf;
 	ListView friends_list;
 	FriendsAdapter adapter;
@@ -107,7 +103,6 @@ public class Profile extends AppCompatActivity {
 	private boolean mobileDataBlocked;
 	static ArrayList<Groups> listgroups;
 
-
 	private ServiceConnection serviceConnection = new ServiceConnection(){
 		@Override
 		public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -115,15 +110,12 @@ public class Profile extends AppCompatActivity {
 			downloadService = binder.getService();
 			serviceBound = true;
 		}
-
 		@Override
 		public void onServiceDisconnected(ComponentName componentName) {
 			serviceBound = false;
 			Log.e("ERROR EN DESCARGA", "SERVICIO DESCONECTADO INESPERADAMENTE");
 		}
 	};
-
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -142,7 +134,6 @@ public class Profile extends AppCompatActivity {
 		sendersManager.start();
 
 		loadGroupList();
-
 		populateListView();
 
 		friends_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -157,7 +148,6 @@ public class Profile extends AppCompatActivity {
 				Button seeFilesButton = mdialog.findViewById(R.id.seefriendfilesButton);
 				Button seeFriendSFButton = mdialog.findViewById(R.id.seefriendSFButton);
 				Button blockFriendButton = mdialog.findViewById(R.id.blockFriendButton);
-
 				// Ver archivos compartidos por el amigo seleccionado.
 				seeFilesButton.setOnClickListener(new View.OnClickListener() {
 					@Override
@@ -168,7 +158,6 @@ public class Profile extends AppCompatActivity {
 						publish(connectTo,"VAR");
 					}
 				});
-
 				// Borrar amigo.
 				deleteButton.setOnClickListener(new View.OnClickListener() {
 					@Override
@@ -180,7 +169,6 @@ public class Profile extends AppCompatActivity {
 						Toast.makeText(getApplicationContext(), "Amigo "+ connectTo + " eliminado", Toast.LENGTH_LONG).show();
 					}
 				});
-
 				// Ver carpetas compartidas con este dispositivo por el amigo seleccionado.
 				seeFriendSFButton.setOnClickListener(new View.OnClickListener() {
 					@Override
@@ -191,7 +179,6 @@ public class Profile extends AppCompatActivity {
 						publish(connectTo, "VSF"); //View Shared Folders
 					}
 				});
-
 				// Bloquear amigo.
 				blockFriendButton.setOnClickListener(new View.OnClickListener() {
 					@Override
@@ -209,14 +196,11 @@ public class Profile extends AppCompatActivity {
 				});
 			}
 		});
-
 		Toolbar myToolbar = findViewById(R.id.my_toolbar);
 		setSupportActionBar(myToolbar);
 		getSupportActionBar().setTitle("Amigos");
 		//getSupportActionBar().setTitle("Hola, " + getIntent().getExtras().getString("user"));
-
 		comprobarPermisos();
-
 		// Botón para ir a la activity de grupos.
 		groups = (FloatingActionButton) findViewById(R.id.groupsButton);
 		groups.setOnClickListener(new View.OnClickListener() {
@@ -227,9 +211,7 @@ public class Profile extends AppCompatActivity {
 				startActivityForResult(intent, 6);
 			}
 		});
-
 		fab = (FloatingActionButton) findViewById(R.id.addFriendsFAB);
-
 		// Botón para compartir un archivo o una carpeta.
 		fab.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -240,14 +222,11 @@ public class Profile extends AppCompatActivity {
 			}
 		});
 		initPubNub();
-
 		// Arranque del servicio de descargas.
 		dl_intent = new Intent(this, DownloadService.class);
 		startService(dl_intent);
 		serviceBound = bindService(dl_intent, serviceConnection, BIND_AUTO_CREATE);
 	}
-
-
 
 	private void publish(final String connectTo, final String connectionType){
 		String userCall = connectTo + Constants.STDBY_SUFFIX;
@@ -280,13 +259,11 @@ public class Profile extends AppCompatActivity {
 			e.printStackTrace();
 		}
 	}
-
 	private void comprobarPermisos(){
 		if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
 			ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
 		}
 	}
-
 	public void initPubNub(){
 		String stdbyChannel = this.username + Constants.STDBY_SUFFIX;
 		this.mPubNub = new Pubnub(Constants.PUB_KEY, Constants.SUB_KEY);
@@ -310,7 +287,6 @@ public class Profile extends AppCompatActivity {
 			e.printStackTrace();
 		}
 	}
-
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -323,7 +299,6 @@ public class Profile extends AppCompatActivity {
 						loadSharedFolders();
 						loadFoldersAccess();
 					}
-
 					// Si no se ha compartido una carpeta entonces se ha compartido un solo archivo:
 					else {
 						String name = data.getStringExtra("name");
@@ -383,12 +358,10 @@ public class Profile extends AppCompatActivity {
 							DG(deletegroups.get(i));
 						}
 					}
-
 				}catch(Exception e) {
 					e.printStackTrace();
 				}
 				break;
-
 			default:
 				if(!userRecursos.equals("")){
 					cerrarConexion(userRecursos);
@@ -397,7 +370,6 @@ public class Profile extends AppCompatActivity {
 				break;
 		}
 	}
-
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		switch(requestCode){
@@ -421,7 +393,6 @@ public class Profile extends AppCompatActivity {
 			}
 		}
 	}
-
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.my_toolbar, menu);
@@ -481,7 +452,6 @@ public class Profile extends AppCompatActivity {
 					@Override
 					public void onClick(View v) {
 						final String fr = name.getText().toString();
-
 						/* Si el nuevo amigo estaba bloqueado se elimina el bloqueo antes de enviar
 						 * la petición de amistad.
 						 */
@@ -522,39 +492,12 @@ public class Profile extends AppCompatActivity {
 					}
 				});
 				return true;
-				/*
-			case R.id.add_group:
-                //llevar a la nueva actividad de crear grupo
-                mdialogGroup = new Dialog(Profile.this);
-                mdialogGroup.setContentView(R.layout.dialog_newgroup);
-                mdialogGroup.show();
-                nameGroup = (EditText) mdialogGroup.findViewById(R.id.nameGroup);
-                bf = (Button) mdialogGroup.findViewById(R.id.button_addFriends);
-
-                bf.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View view) {
-                        mdialogGroup.dismiss();
-                        Intent myIntent = new Intent(Profile.this, friendsgroup.class);
-                        myIntent.putExtra("nameGroup", nameGroup.getText().toString());
-                        myIntent.putExtra("username",username);
-                        myIntent.putExtra("valor",1); //valor=1, crear grupo, valor=2, añadir amigos nuevos
-
-                        startActivityForResult(myIntent, 3);
-                    }
-
-                });
-                return true;
-
-				 */
 			default:
 				// If we got here, the user's action was not recognized.
 				// Invoke the superclass to handle it.
 				return super.onOptionsItemSelected(item);
-
 		}
 	}
-
-
 	private boolean listContains(String nombre, ArrayList<Friends> al){
 		for(Friends f : al){
 			if(f.getNombre().equals(nombre)){
@@ -563,14 +506,12 @@ public class Profile extends AppCompatActivity {
 		}
 		return false;
 	}
-
 	public void addData(String newEntry){ //llamar cuando aceptemos la peticion de amistad y cuando nos la acepten
 		boolean insertData = mDatabaseHelper.addData(newEntry, mDatabaseHelper.FRIENDS_TABLE_NAME);
 		if(insertData){
 			populateListView();
 		}
 	}
-
 	private void populateListView(){
 		Cursor data = mDatabaseHelper.getData(DatabaseHelper.FRIENDS_TABLE_NAME);
 		al_friends = new ArrayList<>();
@@ -580,11 +521,9 @@ public class Profile extends AppCompatActivity {
 		adapter = new FriendsAdapter(this, al_friends);
 		friends_list.setAdapter(adapter);
 	}
-
 	private ArrayList<String> getArchivesList(){
 		ArrayList<String> al = new ArrayList<String>();
 		Cursor data = mArchivesDatabase.getData();
-
 		while(data.moveToNext()){
 			al.add(data.getString(1));
 		}
@@ -616,7 +555,6 @@ public class Profile extends AppCompatActivity {
 		}
 	}
 
-
 	private void notificate(final String notification){
 		Profile.this.runOnUiThread(new Runnable() {
 			@Override
@@ -625,7 +563,6 @@ public class Profile extends AppCompatActivity {
 			}
 		});
 	}
-
 	private void cerrarConexion(String userTo){
 		this.pnRTCClient.closeConnection(userTo);
 	}
@@ -643,7 +580,6 @@ public class Profile extends AppCompatActivity {
 				msg.put("selectedFolder", selectedFolder);
 				selectedFolder = null;
 			}
-
 			/*
 			 * Si hay hilos de descarga disponibles se lanza.
 			 * si no, se añade a la cola y ya conectaré con el emisor.
@@ -672,8 +608,6 @@ public class Profile extends AppCompatActivity {
 			e.printStackTrace();
 		}
 	}
-
-
 	/**
 	 * Inicializa el cliente que va a recibir los datos de ficheros.
 	 * @param user Usuario con el que se establece la conexión.
@@ -689,13 +623,9 @@ public class Profile extends AppCompatActivity {
 		downloaderClient.connect(user);
 	}
 
-
-
 	private void handleSA(JSONObject jsonMsg){
 		this.downloadService.handleMsg(jsonMsg);
 	}
-
-
 
 	private void handleRA(JSONObject jsonMsg){
 		try{
@@ -733,7 +663,6 @@ public class Profile extends AppCompatActivity {
 							c.close();
 						}
 
-
 						JSONObject msg = new JSONObject();
 						msg.put(Utils.FRIEND_NAME, this.username);
 						msg.put("type", "SA");
@@ -764,7 +693,6 @@ public class Profile extends AppCompatActivity {
 
 						msg.put(Utils.FILE_LENGTH, fileLength);
 						msg.put(Utils.NEW_DL, true);
-
 
 						// Si no se está enviando ningún archivo y no hay ningún hilo en cola se lanza el hilo de subida.
 						if (!sendingFile && sendersManager.isQueueEmpty()) {
@@ -800,8 +728,6 @@ public class Profile extends AppCompatActivity {
 			e.printStackTrace();
 		}
 	}
-
-
 	/**
 	 * Prepara el fichero que se va a enviar para ser previsualizado en el destino.
 	 * @param path Ruta del fichero.
@@ -854,8 +780,6 @@ public class Profile extends AppCompatActivity {
 		}
 		return f;
 	}
-
-
 	/**
 	 * Crea una imagen de calidad reducida para la previsualización haciendo uso de las utilidades
 	 * de android para crear miniaturas.
@@ -885,8 +809,6 @@ public class Profile extends AppCompatActivity {
 		}
 		return f;
 	}
-
-
 	/**
 	 * Cuando el usuario remoto quiere previsualizar un archivo hay que enviarle cierta cantidad de
 	 * datos, la cual depende del tipo de archivo. Esté método determina la cantidad de datos que se
@@ -909,8 +831,6 @@ public class Profile extends AppCompatActivity {
 		return maxSize;
 	}
 
-
-
 	private void FR(String sendTo){ //Friend Request
 		try{
 			JSONObject msg = new JSONObject();
@@ -922,7 +842,6 @@ public class Profile extends AppCompatActivity {
 			e.printStackTrace();
 		}
 	}
-
 	private void handleFR(JSONObject jsonMsg){
 		try{
 			final String userFR = jsonMsg.getString("sendTo");
@@ -939,7 +858,6 @@ public class Profile extends AppCompatActivity {
 
 					Button yes = mdialog.findViewById(R.id.accept_friend_yes);
 					Button no = mdialog.findViewById(R.id.accept_friend_no);
-
 					no.setOnClickListener(new View.OnClickListener() {
 						@Override
 						public void onClick(View v) {
@@ -947,7 +865,6 @@ public class Profile extends AppCompatActivity {
 							cerrarConexion(userFR);
 						}
 					});
-
 					yes.setOnClickListener(new View.OnClickListener() {
 						@Override
 						public void onClick(View v) {
@@ -968,7 +885,6 @@ public class Profile extends AppCompatActivity {
 					mdialog.dismiss();
 				}
 			}
-
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -985,12 +901,10 @@ public class Profile extends AppCompatActivity {
 			e.printStackTrace();
 		}
 	}
-
 	private void handleFA(JSONObject jsonMsg){
 		try{
 			String addme = jsonMsg.getString("addme");
 			addData(addme);
-
 			cerrarConexion(addme);
 		}catch(Exception e){
 			e.printStackTrace();
@@ -1007,7 +921,6 @@ public class Profile extends AppCompatActivity {
 			e.printStackTrace();
 		}
 	}
-
 	/**
 	 * Método que envía la petición para ver las carpetas compartidas de un amigo.
 	 * @param sendTo
@@ -1028,13 +941,10 @@ public class Profile extends AppCompatActivity {
 			boolean blocked = jsonMsg.getBoolean("blocked");
 			if (!blocked) {
 				ArrayList<String> al = new ArrayList();
-
 				int size = jsonMsg.getInt("size");
-
 				for (int i = 0; i < size; i++) {
 					al.add(jsonMsg.getString("item" + i));
 				}
-
 				Intent intent = new Intent(Profile.this, Recursos.class);
 				intent.putExtra("lista", al);
 				intent.putExtra("listener", true);
@@ -1061,7 +971,6 @@ public class Profile extends AppCompatActivity {
 				msg.put("blocked", false);
 				msg.put("size", al.size());
 				int i = 0;
-
 				for (String item : al) {
 					msg.put("item" + i, item);
 					i++;
@@ -1075,9 +984,6 @@ public class Profile extends AppCompatActivity {
 			e.printStackTrace();
 		}
 	}
-
-
-
 	/**
 	 * Maneja la petición de ver carpetas compartidas por parte de un amigo.
 	 * @param jsonMsg
@@ -1088,7 +994,6 @@ public class Profile extends AppCompatActivity {
 			JSONObject msg = new JSONObject();
 			// Si el usuario no está bloqueado...
 			if (!listContains(userFR, al_blocked_users)) {
-
 				// Si el amigo tiene acceso a una o más carpetas, se le envían:
 				HashMap<String,ArrayList<String>> sf = getFriendAllowedFolders(userFR);
 				if (!sf.isEmpty()) {
@@ -1114,8 +1019,6 @@ public class Profile extends AppCompatActivity {
 			e.printStackTrace();
 		}
 	}
-
-
 	/**
 	 * Maneja la respuesta a la petición de ver carpetas compartidas.
 	 */
@@ -1143,7 +1046,6 @@ public class Profile extends AppCompatActivity {
 							map.put(key, filesList);
 						}
 					}
-
 					// Reutilizo el diálogo para ver el contenido de una carpeta compartida propia.
 					Profile.this.runOnUiThread(new Runnable() {
 						@Override
@@ -1186,15 +1088,12 @@ public class Profile extends AppCompatActivity {
 			e.printStackTrace();
 		}
 	}
-
-
 	/**
 	 * Devuelve las carpetas a las que tiene acceso el usuario que hace la petición.
 	 */
 	private HashMap<String,ArrayList<String>> getFriendAllowedFolders(String user){
 		HashMap<String,ArrayList<String>> result = new HashMap<>();
 		Iterator it = foldersAccess.entrySet().iterator();
-
 		while (it.hasNext()){
 			Map.Entry item = (Map.Entry) it.next();
 			ArrayList users = (ArrayList<String>) item.getValue();
@@ -1203,12 +1102,8 @@ public class Profile extends AppCompatActivity {
 				result.put(folder, sharedFolders.get(folder));
 			}
 		}
-
 		return result;
 	}
-
-
-
 	/**
 	 * Hilo para el envío de 1 archivo.
 	 */
@@ -1281,13 +1176,10 @@ public class Profile extends AppCompatActivity {
 
 				// Se avisa al manager de que se ha terminado la subida y puede lanzar la siguiente en la cola, si existe:
 				sendersManager.notifyFinishedUpload();
-
 			} catch (Exception e){
 				e.printStackTrace();
 			}
 		}
-
-
 		/**
 		 * Inicializa el cliente que va a enviar los datos de ficheros.
 		 * @param user Usuario con el que se establece la conexión.
@@ -1304,8 +1196,6 @@ public class Profile extends AppCompatActivity {
 			senderClient.listenOn(uuid);
 			senderClient.connect(user);
 		}
-
-
 		/**
 		 * Método para inicializar las variables del hilo, es obligatorio llamarlo antes de
 		 * arrancar el hilo.
@@ -1324,7 +1214,6 @@ public class Profile extends AppCompatActivity {
 			fis = fiss;
 			isPreview = prev;
 		}
-
 		/**
 		 * Devuelve el nombre del fichero que se está descargando.
 		 * @return nombre del fichero.
@@ -1332,7 +1221,6 @@ public class Profile extends AppCompatActivity {
 		public String getFileName(){
 			return file2.getName();
 		}
-
 		/**
 		 * Detiene el envío actual e interrumpe el hilo.
 		 */
@@ -1347,23 +1235,18 @@ public class Profile extends AppCompatActivity {
 		}
 	}
 
-
-
 	private class myRTCListener extends PnRTCListener{
 		@Override
 		public void onPeerConnectionClosed(PnPeer peer) {
 			super.onPeerConnectionClosed(peer);
 		}
-
 		@Override
 		public void onLocalStream(MediaStream localStream) {
 			super.onLocalStream(localStream);
 		}
-
 		public void onConnected(String userId){
 			Log.d("Md-a", "conectado a: " + userId);
 		}
-
 		@Override
 		public void onMessage(PnPeer peer, Object message) {
 			if (!(message instanceof JSONObject)) return; //Ignore if not JSONObject
@@ -1402,7 +1285,6 @@ public class Profile extends AppCompatActivity {
 				}else if(type.equals("NG")){
 					handleNG(jsonMsg);
 				}
-
 			} catch (JSONException e){
 				try{
 					String type = jsonMsg.getString(Utils.FOLDERSHARING_SPECIAL_CHARS + "type");
@@ -1413,10 +1295,8 @@ public class Profile extends AppCompatActivity {
 				}
 				catch (JSONException e1) {}
 			}
-
 		}
 	}
-
 	/**
 	 * Carga de los usuarios bloqueados almacenados en la BD.
 	 */
@@ -1431,7 +1311,6 @@ public class Profile extends AppCompatActivity {
 			al_blocked_users.add(f);
 		}
 	}
-
 	/**
 	 * Carga de las carpetas compartidas.
 	 */
@@ -1448,7 +1327,6 @@ public class Profile extends AppCompatActivity {
 			sharedFolders.put(folder, al_files);
 		}
 	}
-
 	/**
 	 * Carga de la lista de acceso de los amigos a las carpetas compartidas.
 	 */
@@ -1481,7 +1359,6 @@ public class Profile extends AppCompatActivity {
 		Cursor c = mDatabaseHelper.getData(DatabaseHelper.GROUPS_TABLE_NAME);
 		if (listgroups != null){listgroups.clear();}
 		else {listgroups = new ArrayList<>();}
-
 		while (c.moveToNext()) {
 			ArrayList<Friends> friends = stringtoArrayListFriend(c.getString(1));
 			ArrayList files = stringtoArrayList(c.getString(2));
@@ -1490,6 +1367,7 @@ public class Profile extends AppCompatActivity {
 			listgroups.add(g);
 		}
 	}
+	//pasar un String con los amigos a ArrayList de Amigos
 	private ArrayList<Friends> stringtoArrayListFriend(String friends){
 		if (friends == null){return new ArrayList<>();}
 		ArrayList<Friends> resultado= new ArrayList<>();
@@ -1499,6 +1377,7 @@ public class Profile extends AppCompatActivity {
 		}
 		return resultado;
 	}
+	//pasar un String con los archivos a ArrayList
 	private ArrayList stringtoArrayList(String files){
 		if (files == null){
 			return new ArrayList<>();
@@ -1510,6 +1389,7 @@ public class Profile extends AppCompatActivity {
 		}
 		return resultado;
 	}
+	//añadir nuevos grupos a la lista de grupos en caso de que alguno no este ya
 	private ArrayList<Groups> addnewgroups(ArrayList<Groups> newgroups){
 		ArrayList<Groups> resultado=new ArrayList<>();
 		for(Groups g: newgroups){
@@ -1521,7 +1401,6 @@ public class Profile extends AppCompatActivity {
 	}
 	private void NG(Groups group){
 		ArrayList<Friends> friendslist=group.getListFriends();
-
 		try{
 			for(int i=1; i<friendslist.size(); i++) {
 				JSONObject msg = new JSONObject();
@@ -1552,14 +1431,12 @@ public class Profile extends AppCompatActivity {
 				boolean remove = mDatabaseHelper.deleteGroup(groupnew.nameGroup,mDatabaseHelper.GROUPS_TABLE_NAME);
 			}
 			boolean inserted = mDatabaseHelper.addGroup(groupnew.getNameGroup(), ArrayListFriendToString(groupnew.getListFriends()), groupnew.getAdministrador());
-
 		}catch (Exception e){
 			e.printStackTrace();
 		}
 	}
 	private void DG(Groups group){
 		ArrayList<Friends> friendslist=group.getListFriends();
-
 		try{
 			for(int i=1; i<friendslist.size(); i++) {
 				JSONObject msg = new JSONObject();
@@ -1593,7 +1470,6 @@ public class Profile extends AppCompatActivity {
 	//pasar de un array lists de amigos a un string
 	private String arrayListToString(ArrayList<Friends> listfriend) {
 		String myString ="";
-
 		for (int i = 0; i<listfriend.size();i++){
 			if (myString.equals("")){
 				myString=listfriend.get(i).getNombre();
@@ -1607,15 +1483,11 @@ public class Profile extends AppCompatActivity {
 		}
 		return myString;
 	}
-
 	@Override
 	protected void onDestroy(){
 		downloadService.stop();
 		super.onDestroy();
 	}
-
-
-
 	@Override
 	public void onBackPressed(){
 		final Dialog d = new Dialog(Profile.this);
@@ -1631,7 +1503,6 @@ public class Profile extends AppCompatActivity {
 				System.exit(0);
 			}
 		});
-
 		Button no = d.findViewById(R.id.button_exit_no);
 		no.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -1640,5 +1511,4 @@ public class Profile extends AppCompatActivity {
 			}
 		});
 	}
-
 }

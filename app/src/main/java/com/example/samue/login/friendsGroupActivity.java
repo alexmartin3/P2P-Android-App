@@ -17,7 +17,6 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class friendsGroupActivity extends AppCompatActivity {
-
     private FriendsAdapter adapter;
     private ListView listView;
     private ArrayList<Friends> listFriends;
@@ -31,8 +30,6 @@ public class friendsGroupActivity extends AppCompatActivity {
     FloatingActionButton addFriend;
     String nameFriend;
     String friendsupdate;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +45,6 @@ public class friendsGroupActivity extends AppCompatActivity {
         newFriends = new ArrayList<>();
         loadFriendsList();
 
-
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
@@ -58,7 +54,6 @@ public class friendsGroupActivity extends AppCompatActivity {
                     final Dialog deletedialog = new Dialog(friendsGroupActivity.this);
                     deletedialog.setContentView(R.layout.dialog_deletefriendgroup);
                     deletedialog.show();
-
 
                     Button yes = deletedialog.findViewById(R.id.delete_friend_yes);
                     yes.setOnClickListener(new View.OnClickListener() {
@@ -72,10 +67,8 @@ public class friendsGroupActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), nameFriend + " se ha eliminado", Toast.LENGTH_SHORT).show();
                             deletedialog.dismiss();
                             reloadlistview(listFriends);
-
                         }
                     });
-
                     Button no = deletedialog.findViewById(R.id.delete_friend_no);
                     no.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -89,20 +82,16 @@ public class friendsGroupActivity extends AppCompatActivity {
         });
         FloatingActionButton addfriendgroup = findViewById(R.id.addFriends);
         addfriendgroup.setOnClickListener(new View.OnClickListener() {
-                                              @Override
-                                              public void onClick(View view) {
-                                                  Intent myIntent = new Intent(friendsGroupActivity.this, friendsgroup.class);
-                                                  myIntent.putExtra("nameGroup", groupname);
-                                                  myIntent.putExtra("username",username);
-                                                  myIntent.putExtra("valor",2); //valor=1, crear grupo, valor=2, añadir amigos nuevos
-                                                  myIntent.putExtra("friendsold",arrayListToString(listFriends));
-                                                  startActivityForResult(myIntent, 1);
-                                              }
-                                          }
-
-        );
-
-
+              @Override
+              public void onClick(View view) {
+                  Intent myIntent = new Intent(friendsGroupActivity.this, friendsgroup.class);
+                  myIntent.putExtra("nameGroup", groupname);
+                  myIntent.putExtra("username",username);
+                  myIntent.putExtra("valor",2); //valor=1, crear grupo, valor=2, añadir amigos nuevos
+                  myIntent.putExtra("friendsold",arrayListToString(listFriends));
+                  startActivityForResult(myIntent, 1);
+              }
+        });
     }
 
     private void loadFriendsList() {
@@ -117,14 +106,12 @@ public class friendsGroupActivity extends AppCompatActivity {
         adapter = new FriendsAdapter(this, listFriends);
         listView = findViewById(R.id.listfriendgroups);
         listView.setAdapter(adapter);
-
     }
     private void reloadlistview(ArrayList<Friends> friendsreload){
         adapter = new FriendsAdapter(this, friendsreload);
         listView = findViewById(R.id.listfriendgroups);
         listView.setAdapter(adapter);
     }
-
     private ArrayList<Friends> stringtoArrayListFriend(String friends){
         if (friends == null){return new ArrayList<>();}
         ArrayList<Friends> resultado= new ArrayList<>();
@@ -134,7 +121,6 @@ public class friendsGroupActivity extends AppCompatActivity {
         }
         return resultado;
     }
-
     //pasar de un array lists de amigos a un string
     private String arrayListToString(ArrayList<Friends> listfriend) {
         String myString =null;
@@ -152,7 +138,6 @@ public class friendsGroupActivity extends AppCompatActivity {
         }
         return myString;
     }
-
     public void isadmin(){
         if(adminGroup!=username){
             addFriend.setEnabled(false);
@@ -176,11 +161,8 @@ public class friendsGroupActivity extends AppCompatActivity {
                     listView.setAdapter(adapter);
                     break;
                 }
-
         }
     }
-
-
     @Override
     public void onBackPressed() {
         Intent result = new Intent();
@@ -194,6 +176,4 @@ public class friendsGroupActivity extends AppCompatActivity {
         //TODO: si no funciona llamar a finish()
         super.onBackPressed();
     }
-
-
 }

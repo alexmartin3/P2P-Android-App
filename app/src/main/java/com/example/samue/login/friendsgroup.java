@@ -55,7 +55,6 @@ public class friendsgroup extends AppCompatActivity {
         helperGroup = new DatabaseHelper(this);
         groupDatabaseHelper = new DatabaseHelper(this);
 
-
         Bundle extras = getIntent().getExtras();
         nameGroup = extras.getString("nameGroup");
         administrator = extras.getString("username");
@@ -131,7 +130,6 @@ public class friendsgroup extends AppCompatActivity {
             }
         });
     }
-
     // cargar lista de amigos
     public void friendslist() {
         Cursor data = groupDatabaseHelper.getData(DatabaseHelper.FRIENDS_TABLE_NAME);
@@ -165,7 +163,6 @@ public class friendsgroup extends AppCompatActivity {
         }
         return false;
     }
-
     //añadir el grupo creado a la BBDD
     private boolean addGroupBBDD(String name, ArrayList<Friends> listFriends, String administrator) {
         String listFriendStrings = arrayListToString(listFriends);
@@ -184,18 +181,12 @@ public class friendsgroup extends AppCompatActivity {
         else
             return false;
     }
-
-
-
-
     // ----------------------a partir de aqui revisar que esto no sobre-------------------
-
     private void removeGroup(String name) {
         boolean removed = helperGroup.deleteGroup(name, helperGroup.GROUPS_TABLE_NAME);
         if (removed)
             loadGroups();
     }
-
     private void loadGroups() {
         Cursor c = helperGroup.getData(helperGroup.GROUPS_TABLE_NAME);
         friends.clear();
@@ -205,7 +196,6 @@ public class friendsgroup extends AppCompatActivity {
         rvadapter = new RVadapter(friends);
         recyclerView.setAdapter(rvadapter);
     }
-
     //usar esta funcion para comprobar que no se crea un grupo igual al que ya pertenezca
     /**
      * Averigua si existe un objeto Groups cuyo nombre coincida con nameGroup.
@@ -222,7 +212,6 @@ public class friendsgroup extends AppCompatActivity {
         }
         return null;
     }
-
     //pasar de un array lists de amigos a un string
     private String arrayListToString(ArrayList<Friends> listfriend) {
         String myString =null;
@@ -260,6 +249,5 @@ public class friendsgroup extends AppCompatActivity {
                 }
         }
     }
-
 }
 

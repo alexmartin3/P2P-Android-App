@@ -218,17 +218,15 @@ public class filesGroupActivity extends AppCompatActivity {
 			case 1:
 				if(resultCode == Activity.RESULT_OK){
 					ArrayList newListFiles = data.getStringArrayListExtra("files");
-					for (int i=0; i<newListFiles.size(); i++)
-						if (!listnamefiles.contains(newListFiles.get(i))) {
-							listnamefiles.add(newListFiles.get(i));
-							newFiles.add(newListFiles.get(i));
+						if (listnamefiles.size() < newListFiles.size()){
+							listnamefiles.add(newListFiles.get(newListFiles.size()-1));
+							newFiles = new ArrayList(newListFiles);
 						}
 					adaptador = new AEArrayAdapter(this, android.R.layout.simple_expandable_list_item_1,listnamefiles);
 					listview = findViewById(R.id.listfilesgroups);
 					listview.setAdapter(adaptador);
 					break;
 				}
-
 		}
 	}
 
