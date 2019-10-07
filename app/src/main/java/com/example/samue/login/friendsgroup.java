@@ -88,44 +88,47 @@ public class friendsgroup extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 boolean add;
+                friendsSelected = rvadapter.obtenerSeleccionados();
+                if (friendsSelected.size() == 0){
+                    Toast.makeText(getApplicationContext(), "ERROR: No has seleccionado ningún amigo", Toast.LENGTH_SHORT).show();
+                }else {
 
-                if (valor == 1) {
-                    friendsSelected = rvadapter.obtenerSeleccionados();
-                    friendsSelectedfinish.add(new Friends(username, R.drawable.ic_launcher_foreground));
-                    friendsSelectedfinish.addAll(friendsSelected);
+                    if (valor == 1) {
+                        friendsSelectedfinish.add(new Friends(username, R.drawable.ic_launcher_foreground));
+                        friendsSelectedfinish.addAll(friendsSelected);
 
-                    newGroup = new Groups(nameGroup, R.drawable.icongroup, friendsSelectedfinish, administrator);
-                    add = addGroupBBDD(nameGroup, friendsSelectedfinish, administrator);
-                    if (add) {
-                        Toast.makeText(getApplicationContext(), "Group " + nameGroup + " has been created", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent();
-                        /*intent.putExtra("username", username);
-                        intent.putExtra("newgroupname",nameGroup);
-                        intent.putExtra("newFriends",friendsSelectedfinish);
-                        */
-                        intent.putExtra("newGroup",newGroup);
-                        setResult(Activity.RESULT_OK,intent);
-                        finish();
+                        newGroup = new Groups(nameGroup, R.drawable.icongroup, friendsSelectedfinish, administrator);
+                        add = addGroupBBDD(nameGroup, friendsSelectedfinish, administrator);
+                        if (add) {
+                            Toast.makeText(getApplicationContext(), "Group " + nameGroup + " has been created", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent();
+                            /*intent.putExtra("username", username);
+                            intent.putExtra("newgroupname",nameGroup);
+                            intent.putExtra("newFriends",friendsSelectedfinish);
+                            */
+                            intent.putExtra("newGroup", newGroup);
+                            setResult(Activity.RESULT_OK, intent);
+                            finish();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Ha ocurrido un error", Toast.LENGTH_SHORT).show();
+                        }
+                    } else if (valor == 2) {
+                        friendsSelectedfinish.addAll(stringtoArrayListFriend(aux));
+                        friendsSelectedfinish.addAll(friendsSelected);
+                        add = updateGroupBBDD(nameGroup, friendsSelectedfinish);
+                        if (add) {
+                            Toast.makeText(getApplicationContext(), "Friends selected has been added", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent();
+                            intent.putExtra("friends", friendsSelectedfinish);
+                            setResult(Activity.RESULT_OK, intent);
+                            finish();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Ha ocurrido un error", Toast.LENGTH_SHORT).show();
+                        }
+
                     } else {
                         Toast.makeText(getApplicationContext(), "Ha ocurrido un error", Toast.LENGTH_SHORT).show();
                     }
-                }else if (valor == 2){
-                    friendsSelected = rvadapter.obtenerSeleccionados();
-                    friendsSelectedfinish.addAll(stringtoArrayListFriend(aux));
-                    friendsSelectedfinish.addAll(friendsSelected);
-                    add = updateGroupBBDD(nameGroup, friendsSelectedfinish);
-                    if (add) {
-                        Toast.makeText(getApplicationContext(), "Friends selected has been added", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent();
-                        intent.putExtra("friends",friendsSelectedfinish);
-                        setResult(Activity.RESULT_OK,intent);
-                        finish();
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Ha ocurrido un error", Toast.LENGTH_SHORT).show();
-                    }
-
-                }else{
-                    Toast.makeText(getApplicationContext(), "Ha ocurrido un error", Toast.LENGTH_SHORT).show();
                 }
             }
         });

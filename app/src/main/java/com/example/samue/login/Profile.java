@@ -1407,9 +1407,9 @@ public class Profile extends AppCompatActivity {
 				msg.put("type", "NG");
 				msg.put("nameGroup", group.nameGroup);
 				msg.put("imgGroup", group.imgGroup);
-				msg.put("listFriends",arrayListToString(group.listFriends));
+				msg.put("listFriends",arrayListFriendsToString(group.listFriends));
 				msg.put("listFiles", Utils.joinStrings(",",group.listFiles));
-				msg.put("listOwners", arrayListToString(group.listOwners));
+				msg.put("listOwners", arrayListFriendsToString(group.listOwners));
 				msg.put("admin", group.administrator);
 				this.pnRTCClient.transmit(friendslist.get(i).getNombre(), msg);
 			}
@@ -1430,7 +1430,7 @@ public class Profile extends AppCompatActivity {
 			if (mDatabaseHelper.existGroup(groupnew.nameGroup)){
 				boolean remove = mDatabaseHelper.deleteGroup(groupnew.nameGroup,mDatabaseHelper.GROUPS_TABLE_NAME);
 			}
-			boolean inserted = mDatabaseHelper.addGroup(groupnew.getNameGroup(), ArrayListFriendToString(groupnew.getListFriends()), groupnew.getAdministrador());
+			boolean inserted = mDatabaseHelper.addGroup(groupnew.getNameGroup(), arrayListFriendsToString(groupnew.getListFriends()), groupnew.getAdministrador());
 		}catch (Exception e){
 			e.printStackTrace();
 		}
@@ -1468,7 +1468,7 @@ public class Profile extends AppCompatActivity {
 		return resultado;
 	}
 	//pasar de un array lists de amigos a un string
-	private String arrayListToString(ArrayList<Friends> listfriend) {
+	private String arrayListFriendsToString(ArrayList<Friends> listfriend) {
 		String myString ="";
 		for (int i = 0; i<listfriend.size();i++){
 			if (myString.equals("")){

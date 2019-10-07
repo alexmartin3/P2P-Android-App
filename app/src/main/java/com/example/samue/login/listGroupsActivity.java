@@ -99,7 +99,7 @@ public class listGroupsActivity extends AppCompatActivity {
                         dialog.dismiss();
                         Intent intent = new Intent(listGroupsActivity.this, friendsGroupActivity.class);
                         intent.putExtra("nameGroup", group.getNameGroup());
-                        intent.putExtra("friends", arrayListToString(group.getListFriends()));
+                        intent.putExtra("friends", arrayListFriendsToString(group.getListFriends()));
                         intent.putExtra("administrator", group.getAdministrador());
                         intent.putExtra("username",username);
                         startActivityForResult(intent, 1);
@@ -227,12 +227,21 @@ public class listGroupsActivity extends AppCompatActivity {
         }
         return resultado;
     }
-    private String ArrayListFriendToString (ArrayList<Friends> list) {
-        String resultado = "";
-        for (int i = 0; i < list.size(); i++) {
-            resultado = resultado + list.get(i).getNombre();
+    //pasar de un array lists de amigos a un string
+    private String arrayListFriendsToString(ArrayList<Friends> listfriend) {
+        String myString ="";
+        for (int i = 0; i<listfriend.size();i++){
+            if (myString.equals("")){
+                myString=listfriend.get(i).getNombre();
+                if (i < (listfriend.size() - 1)){myString = myString + ",";}
+            }else {
+                myString = myString + listfriend.get(i).getNombre();
+                if (i < (listfriend.size() - 1)) {
+                    myString = myString + ",";
+                }
+            }
         }
-        return resultado;
+        return myString;
     }
     //pasar de un array lists de amigos a un string
     private String arrayListToString(ArrayList list) {
