@@ -354,7 +354,7 @@ public class Profile extends AppCompatActivity {
 					}
 					ArrayList<Groups> deletegroups = (ArrayList<Groups>) data.getSerializableExtra("deletegroups");
 					if (!deletegroups.isEmpty()) {
-						for (int i = 0; i < newgroups.size(); i++) {
+						for (int i = 0; i < deletegroups.size(); i++) {
 							DG(deletegroups.get(i));
 						}
 					}
@@ -1284,7 +1284,9 @@ public class Profile extends AppCompatActivity {
 					handleVSF(jsonMsg);
 				}else if(type.equals("NG")){
 					handleNG(jsonMsg);
-				}
+				}else if(type.equals("DG")){
+				handleDG(jsonMsg);
+			}
 			} catch (JSONException e){
 				try{
 					String type = jsonMsg.getString(Utils.FOLDERSHARING_SPECIAL_CHARS + "type");
@@ -1440,7 +1442,7 @@ public class Profile extends AppCompatActivity {
 		try{
 			for(int i=1; i<friendslist.size(); i++) {
 				JSONObject msg = new JSONObject();
-				msg.put("type", "NG");
+				msg.put("type", "DG");
 				msg.put("nameGroup", group.nameGroup);
 				this.pnRTCClient.transmit(friendslist.get(i).getNombre(), msg);
 			}

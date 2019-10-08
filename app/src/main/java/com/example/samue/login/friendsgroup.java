@@ -102,10 +102,6 @@ public class friendsgroup extends AppCompatActivity {
                         if (add) {
                             Toast.makeText(getApplicationContext(), "Group " + nameGroup + " has been created", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent();
-                            /*intent.putExtra("username", username);
-                            intent.putExtra("newgroupname",nameGroup);
-                            intent.putExtra("newFriends",friendsSelectedfinish);
-                            */
                             intent.putExtra("newGroup", newGroup);
                             setResult(Activity.RESULT_OK, intent);
                             finish();
