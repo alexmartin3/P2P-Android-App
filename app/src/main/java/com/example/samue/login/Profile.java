@@ -102,6 +102,10 @@ public class Profile extends AppCompatActivity {
 	private boolean serviceBound = false;
 	private boolean mobileDataBlocked;
 	static ArrayList<Groups> listgroups;
+	private ArrayList<Groups> newgroups;
+	private ArrayList<Groups> deletegroups;
+	private Groups NGGroup;
+	private Groups DGGroup;
 
 	private ServiceConnection serviceConnection = new ServiceConnection(){
 		@Override
@@ -252,6 +256,10 @@ public class Profile extends AppCompatActivity {
 						FR(connectTo);
 					}else if(connectionType.equals("VSF")){
 						VSF(connectTo);
+					}else if(connectionType.equals("NG")){
+						NG(connectTo);
+					}else if(connectionType.equals("DG")){
+						DG(connectTo);
 					}
 				}
 			});
@@ -345,17 +353,29 @@ public class Profile extends AppCompatActivity {
 			case 6:
 				try {
 					// Si hay grupos nuevos, modificados o con ficheros moodificados:
-					ArrayList<Groups> newgroups = (ArrayList<Groups>) data.getSerializableExtra("newgroups");
+					newgroups = (ArrayList<Groups>) data.getSerializableExtra("newgroups");
 					if (!newgroups.isEmpty()) {
-						//ArrayList<Groups> finalgroups = addnewgroups(newgroups);
+						//Para cada grupo, debemos ver los usuarios que tiene cada uno y estrablecer una conexión con ellos, y enviar la informacion del grupo
 						for (int i = 0; i < newgroups.size(); i++) {
-							NG(newgroups.get(i));
+							NGGroup = newgroups.get(i);
+							ArrayList<Friends> friendslist=NGGroup.getListFriends();
+							for(int j=1; j<friendslist.size(); j++) {
+								publish(friendslist.get(j).getNombre(), "NG");
+								//NG(newgroups.get(j));
+							}
 						}
 					}
-					ArrayList<Groups> deletegroups = (ArrayList<Groups>) data.getSerializableExtra("deletegroups");
+					//si hay grupos que borrar:
+					deletegroups = (ArrayList<Groups>) data.getSerializableExtra("deletegroups");
 					if (!deletegroups.isEmpty()) {
+						//Para cada grupo, debemos ver los usuarios que tiene cada uno y establecer una conexión con ellos, y borrarlo
 						for (int i = 0; i < deletegroups.size(); i++) {
-							DG(deletegroups.get(i));
+							DGGroup = deletegroups.get(i);
+							ArrayList<Friends> friendslist=DGGroup.getListFriends();
+							for(int j=1; j<friendslist.size(); j++) {
+								publish(friendslist.get(j).getNombre(), "DG");
+								//DG(deletegroups.get(i));
+							}
 						}
 					}
 				}catch(Exception e) {
@@ -1285,8 +1305,8 @@ public class Profile extends AppCompatActivity {
 				}else if(type.equals("NG")){
 					handleNG(jsonMsg);
 				}else if(type.equals("DG")){
-				handleDG(jsonMsg);
-			}
+					handleDG(jsonMsg);
+				}
 			} catch (JSONException e){
 				try{
 					String type = jsonMsg.getString(Utils.FOLDERSHARING_SPECIAL_CHARS + "type");
@@ -1401,20 +1421,19 @@ public class Profile extends AppCompatActivity {
 		}
 		return resultado;
 	}
-	private void NG(Groups group){
-		ArrayList<Friends> friendslist=group.getListFriends();
+	private void NG(String namefriend){
 		try{
-			for(int i=1; i<friendslist.size(); i++) {
-				JSONObject msg = new JSONObject();
-				msg.put("type", "NG");
-				msg.put("nameGroup", group.nameGroup);
-				msg.put("imgGroup", group.imgGroup);
-				msg.put("listFriends",arrayListFriendsToString(group.listFriends));
-				msg.put("listFiles", Utils.joinStrings(",",group.listFiles));
-				msg.put("listOwners", arrayListFriendsToString(group.listOwners));
-				msg.put("admin", group.administrator);
-				this.pnRTCClient.transmit(friendslist.get(i).getNombre(), msg);
-			}
+			String friend = namefriend;
+			JSONObject msg = new JSONObject();
+			msg.put("type", "NG");
+			msg.put("nameGroup", NGGroup.getNameGroup());
+			msg.put("imgGroup", NGGroup.getImgGroup());
+			msg.put("listFriends",arrayListFriendsToString(NGGroup.listFriends));
+			msg.put("listFiles", Utils.joinStrings(",",NGGroup.listFiles));
+			msg.put("listOwners", arrayListFriendsToString(NGGroup.listOwners));
+			msg.put("admin", NGGroup.getAdministrador());
+
+			this.pnRTCClient.transmit(friend, msg);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -1437,15 +1456,13 @@ public class Profile extends AppCompatActivity {
 			e.printStackTrace();
 		}
 	}
-	private void DG(Groups group){
-		ArrayList<Friends> friendslist=group.getListFriends();
+	private void DG(String namefriend){
 		try{
-			for(int i=1; i<friendslist.size(); i++) {
-				JSONObject msg = new JSONObject();
-				msg.put("type", "DG");
-				msg.put("nameGroup", group.nameGroup);
-				this.pnRTCClient.transmit(friendslist.get(i).getNombre(), msg);
-			}
+			JSONObject msg = new JSONObject();
+			msg.put("type", "DG");
+			msg.put("nameGroup", DGGroup.nameGroup);
+			this.pnRTCClient.transmit(namefriend, msg);
+
 		}catch(Exception e){
 			e.printStackTrace();
 		}

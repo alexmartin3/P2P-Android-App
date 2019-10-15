@@ -564,7 +564,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		String q = "SELECT * FROM " + GROUPS_TABLE_NAME;
 		Cursor data = db.rawQuery(q, null);
 		while (data.moveToNext()){
-			if (data.getString(1).equals(nameGroup)) return true;
+			if (data.getString(0).equals(nameGroup)) return true;
 		}
 		return false;
 	}

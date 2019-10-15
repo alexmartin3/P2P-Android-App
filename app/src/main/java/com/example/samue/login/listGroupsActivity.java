@@ -171,15 +171,6 @@ public class listGroupsActivity extends AppCompatActivity {
             }
         });
     }
-
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent();
-        intent.putExtra("newgroups",new_groups);
-        intent.putExtra("deletegroups",delete_groups);
-        setResult(Activity.RESULT_OK,intent);
-        super.onBackPressed();
-    }
     /**
      * Carga de los grupos que estan almacenados en la BD.
      */
@@ -295,5 +286,13 @@ public class listGroupsActivity extends AppCompatActivity {
                 }catch (NullPointerException e){}
                 break;
         }
+    }
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra("newgroups",new_groups);
+        intent.putExtra("deletegroups",delete_groups);
+        setResult(Activity.RESULT_OK,intent);
+        super.onBackPressed();
     }
 }
