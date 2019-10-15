@@ -13,6 +13,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -104,8 +105,6 @@ public class Profile extends AppCompatActivity {
 	static ArrayList<Groups> listgroups;
 	private ArrayList<Groups> newgroups;
 	private ArrayList<Groups> deletegroups;
-	private Groups NGGroup;
-	private Groups DGGroup;
 
 	private ServiceConnection serviceConnection = new ServiceConnection(){
 		@Override
@@ -159,7 +158,7 @@ public class Profile extends AppCompatActivity {
 						mdialog.dismiss();
 						userRecursos = connectTo;
 						Toast.makeText(getApplicationContext(), "Conectando con "+connectTo, Toast.LENGTH_LONG).show();
-						publish(connectTo,"VAR");
+						publish(connectTo,"VAR","");
 					}
 				});
 				// Borrar amigo.
@@ -180,7 +179,7 @@ public class Profile extends AppCompatActivity {
 						mdialog.dismiss();
 						userRecursos = connectTo;
 						Toast.makeText(getApplicationContext(), "Conectando con "+connectTo, Toast.LENGTH_LONG).show();
-						publish(connectTo, "VSF"); //View Shared Folders
+						publish(connectTo, "VSF",""); //View Shared Folders
 					}
 				});
 				// Bloquear amigo.
@@ -232,7 +231,7 @@ public class Profile extends AppCompatActivity {
 		serviceBound = bindService(dl_intent, serviceConnection, BIND_AUTO_CREATE);
 	}
 
-	private void publish(final String connectTo, final String connectionType){
+	private void publish(final String connectTo, final String connectionType, final String nameGroup){
 		String userCall = connectTo + Constants.STDBY_SUFFIX;
 		JSONObject jsonCall = new JSONObject();
 		try {
@@ -257,9 +256,9 @@ public class Profile extends AppCompatActivity {
 					}else if(connectionType.equals("VSF")){
 						VSF(connectTo);
 					}else if(connectionType.equals("NG")){
-						NG(connectTo);
+						NG(connectTo,nameGroup);
 					}else if(connectionType.equals("DG")){
-						DG(connectTo);
+						DG(connectTo,nameGroup);
 					}
 				}
 			});
@@ -357,11 +356,10 @@ public class Profile extends AppCompatActivity {
 					if (!newgroups.isEmpty()) {
 						//Para cada grupo, debemos ver los usuarios que tiene cada uno y estrablecer una conexión con ellos, y enviar la informacion del grupo
 						for (int i = 0; i < newgroups.size(); i++) {
-							NGGroup = newgroups.get(i);
+							Groups NGGroup = newgroups.get(i);
 							ArrayList<Friends> friendslist=NGGroup.getListFriends();
 							for(int j=1; j<friendslist.size(); j++) {
-								publish(friendslist.get(j).getNombre(), "NG");
-								//NG(newgroups.get(j));
+								publish(friendslist.get(j).getNombre(), "NG",NGGroup.getNameGroup());
 							}
 						}
 					}
@@ -370,11 +368,10 @@ public class Profile extends AppCompatActivity {
 					if (!deletegroups.isEmpty()) {
 						//Para cada grupo, debemos ver los usuarios que tiene cada uno y establecer una conexión con ellos, y borrarlo
 						for (int i = 0; i < deletegroups.size(); i++) {
-							DGGroup = deletegroups.get(i);
+							Groups DGGroup = deletegroups.get(i);
 							ArrayList<Friends> friendslist=DGGroup.getListFriends();
 							for(int j=1; j<friendslist.size(); j++) {
-								publish(friendslist.get(j).getNombre(), "DG");
-								//DG(deletegroups.get(i));
+								publish(friendslist.get(j).getNombre(), "DG",DGGroup.getNameGroup());
 							}
 						}
 					}
@@ -489,7 +486,7 @@ public class Profile extends AppCompatActivity {
 								public void onClick(View view) {
 									mDatabaseHelper.removeData(fr, mDatabaseHelper.BLOCKED_TABLE_NAME);
 									loadBlockedUsersList();
-									publish(fr, "FR");
+									publish(fr, "FR","");
 									Toast.makeText(getApplicationContext(), "Petición de amistad enviada", Toast.LENGTH_SHORT).show();
 									removeBlockedDialog.dismiss();
 								}
@@ -503,7 +500,7 @@ public class Profile extends AppCompatActivity {
 							});
 						}
 						else if(!listContains(fr, al_friends)) {
-							publish(fr, "FR");
+							publish(fr, "FR","");
 							Toast.makeText(getApplicationContext(), "Petición de amistad enviada", Toast.LENGTH_SHORT).show();
 						}else{
 							Toast.makeText(getApplicationContext(), "Ya eres amigo de " + fr, Toast.LENGTH_SHORT).show();
@@ -1421,17 +1418,23 @@ public class Profile extends AppCompatActivity {
 		}
 		return resultado;
 	}
-	private void NG(String namefriend){
+	private void NG(String namefriend, String nameGroup){
 		try{
+			Groups g = new Groups();
+			for (int i=0; i<newgroups.size(); i++){
+				if (newgroups.get(i).getNameGroup().equals(nameGroup)){
+					g.equals(newgroups.get(i));
+				}
+			}
 			String friend = namefriend;
 			JSONObject msg = new JSONObject();
 			msg.put("type", "NG");
-			msg.put("nameGroup", NGGroup.getNameGroup());
-			msg.put("imgGroup", NGGroup.getImgGroup());
-			msg.put("listFriends",arrayListFriendsToString(NGGroup.listFriends));
-			msg.put("listFiles", Utils.joinStrings(",",NGGroup.listFiles));
-			msg.put("listOwners", arrayListFriendsToString(NGGroup.listOwners));
-			msg.put("admin", NGGroup.getAdministrador());
+			msg.put("nameGroup", nameGroup);
+			msg.put("imgGroup", g.getImgGroup());
+			msg.put("listFriends",arrayListFriendsToString(g.listFriends));
+			msg.put("listFiles", Utils.joinStrings(",",g.listFiles));
+			msg.put("listOwners", arrayListFriendsToString(g.listOwners));
+			msg.put("admin", g.getAdministrador());
 
 			this.pnRTCClient.transmit(friend, msg);
 		}catch(Exception e){
@@ -1456,11 +1459,11 @@ public class Profile extends AppCompatActivity {
 			e.printStackTrace();
 		}
 	}
-	private void DG(String namefriend){
+	private void DG(String namefriend, String nameGroup){
 		try{
 			JSONObject msg = new JSONObject();
 			msg.put("type", "DG");
-			msg.put("nameGroup", DGGroup.nameGroup);
+			msg.put("nameGroup", nameGroup);
 			this.pnRTCClient.transmit(namefriend, msg);
 
 		}catch(Exception e){
