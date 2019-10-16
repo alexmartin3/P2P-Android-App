@@ -1423,7 +1423,7 @@ public class Profile extends AppCompatActivity {
 			Groups g = new Groups();
 			for (int i=0; i<newgroups.size(); i++){
 				if (newgroups.get(i).getNameGroup().equals(nameGroup)){
-					g.equals(newgroups.get(i));
+					g=newgroups.get(i);
 				}
 			}
 			String friend = namefriend;
@@ -1455,6 +1455,7 @@ public class Profile extends AppCompatActivity {
 				boolean remove = mDatabaseHelper.deleteGroup(groupnew.nameGroup,mDatabaseHelper.GROUPS_TABLE_NAME);
 			}
 			boolean inserted = mDatabaseHelper.addGroup(groupnew.getNameGroup(), arrayListFriendsToString(groupnew.getListFriends()), groupnew.getAdministrador());
+			Toast.makeText(getApplicationContext(), "Has sido añadido al grupo " + nameGroup, Toast.LENGTH_SHORT).show();
 		}catch (Exception e){
 			e.printStackTrace();
 		}
@@ -1477,6 +1478,7 @@ public class Profile extends AppCompatActivity {
 
 			if (mDatabaseHelper.existGroup(nameGroup)){
 				boolean remove = mDatabaseHelper.deleteGroup(nameGroup,mDatabaseHelper.GROUPS_TABLE_NAME);
+				Toast.makeText(getApplicationContext(), "Has sido borrado del grupo " + nameGroup, Toast.LENGTH_SHORT).show();
 			}
 		}catch (Exception e){
 			e.printStackTrace();

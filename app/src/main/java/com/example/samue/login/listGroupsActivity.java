@@ -28,9 +28,9 @@ public class listGroupsActivity extends AppCompatActivity {
     static ArrayList<Groups> new_groups;
     static ArrayList<Groups> delete_groups;
 
+
     Dialog mdialogCreate;
     EditText nameGroupText;
-    String nameGroup;
     Button bf;
 
     @Override
@@ -46,8 +46,6 @@ public class listGroupsActivity extends AppCompatActivity {
         listGroups= new ArrayList<Groups>();
         Bundle extras = getIntent().getExtras();
         username=extras.getString("username");
-        Groups newgroup = (Groups) extras.getSerializable("newgroup");
-        if (newgroup != null) new_groups.add(newgroup);
         new_groups= new ArrayList<Groups>();
         delete_groups = new ArrayList<Groups>();
 
@@ -56,11 +54,7 @@ public class listGroupsActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                final Groups groupactual;
-                loadGroupList();
-                nameGroup = listGroups.get(i).getNameGroup();
-                groupactual=listGroups.get(i);
-                final Groups group = listGroups.get(i);
+                final Groups grupoactual = listGroups.get(i);
                 final Dialog dialog = new Dialog(listGroupsActivity.this);
                 dialog.setContentView(R.layout.dialog_group);
 
@@ -74,15 +68,12 @@ public class listGroupsActivity extends AppCompatActivity {
                          * Se abre la actividad que permite ver, añadir y eliminar algún amigo
                          * del grupo seleccionado.
                          */
-                        final ArrayList<String> files = group.getListFiles();
+                        final ArrayList<String> files = grupoactual.getListFiles();
                         Intent intent = new Intent(listGroupsActivity.this, filesGroupActivity.class);
-                        intent.putExtra("lista", arrayListToString(group.getListFiles()));
                         intent.putExtra("listener", false);
-                        intent.putExtra("owners", arrayListToString(group.getListOwners()));
                         intent.putExtra("username",username);
-                        intent.putExtra("namegroup",group.getNameGroup());
-                        intent.putExtra("group",groupactual);
-                        startActivityForResult(intent, 3);
+                        intent.putExtra("group",grupoactual);
+                        startActivityForResult(intent, 6);
                         dialog.dismiss();
                     }
                 });
@@ -98,11 +89,9 @@ public class listGroupsActivity extends AppCompatActivity {
                          */
                         dialog.dismiss();
                         Intent intent = new Intent(listGroupsActivity.this, friendsGroupActivity.class);
-                        intent.putExtra("nameGroup", group.getNameGroup());
-                        intent.putExtra("friends", arrayListFriendsToString(group.getListFriends()));
-                        intent.putExtra("administrator", group.getAdministrador());
                         intent.putExtra("username",username);
-                        startActivityForResult(intent, 1);
+                        intent.putExtra("group",grupoactual);
+                        startActivityForResult(intent, 6);
                         loadGroupList();
                     }
                 });
@@ -111,7 +100,7 @@ public class listGroupsActivity extends AppCompatActivity {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                nameGroup = listGroups.get(position).getNameGroup();
+                final Groups grupoactual = listGroups.get(position);
                 final Dialog deletedialog = new Dialog(listGroupsActivity.this);
                 deletedialog.setContentView(R.layout.dialog_deletegroup);
                 deletedialog.show();
@@ -122,10 +111,10 @@ public class listGroupsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         //removeGroup(nameGroup);
-                        delete_groups.add(listGroups.get(position));
-                        listGroups.remove(listGroups.get(position));
-                        groupDatabaseHelper.deleteGroup(nameGroup, groupDatabaseHelper.GROUPS_TABLE_NAME);
-                        Toast.makeText(getApplicationContext(),nameGroup + " se ha eliminado", Toast.LENGTH_SHORT).show();
+                        delete_groups.add(grupoactual);
+                        listGroups.remove(grupoactual);
+                        groupDatabaseHelper.deleteGroup(grupoactual.getNameGroup(), groupDatabaseHelper.GROUPS_TABLE_NAME);
+                        Toast.makeText(getApplicationContext(),grupoactual.getNameGroup() + " se ha eliminado", Toast.LENGTH_SHORT).show();
                         deletedialog.dismiss();
 
                         loadGroupList();
@@ -136,7 +125,7 @@ public class listGroupsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {deletedialog.dismiss();}
                 });
-                return true; //esto hay que ver que poner
+                return true;
             }
         });
 
@@ -176,7 +165,6 @@ public class listGroupsActivity extends AppCompatActivity {
      */
     private void loadGroupList() {
         Cursor c = groupDatabaseHelper.getData(DatabaseHelper.GROUPS_TABLE_NAME);
-        //Log.d("ALEX",c.getString(0));
         if (listGroups != null){listGroups.clear();}
         else {listGroups = new ArrayList<>();}
         while (c.moveToNext()) {
@@ -189,7 +177,6 @@ public class listGroupsActivity extends AppCompatActivity {
         adapter = new GroupsAdapter(this, listGroups);
         listView = findViewById(R.id.groups_list);
         listView.setAdapter(adapter);
-
     }
     private ArrayList<Friends> stringtoArrayListFriend(String friends){
         if (friends == null){return new ArrayList<>();}
@@ -262,6 +249,7 @@ public class listGroupsActivity extends AppCompatActivity {
                     new_groups.add(newGroup);
 
                     // Si listGroups contiene el grupo i entonces es uno modificado (amigos o ficheros):
+                    //esta comprobacion se puede hacer de otra forma, un for comparando nombre del nuevo grupo, y si lo contiene, se hace la sustitucion
                     if (listGroups.contains(newGroup)) {
                         for (int i = 0; i < new_groups.size(); i++) {
                             Groups g = new_groups.get(i);
