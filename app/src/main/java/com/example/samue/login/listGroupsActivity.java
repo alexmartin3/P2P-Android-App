@@ -246,27 +246,15 @@ public class listGroupsActivity extends AppCompatActivity {
                 String groupName = null;
                 try{ // Vienes de cambiar o añadir grupo:
                     Groups newGroup = (Groups) data.getSerializableExtra("newGroup");
+                    Groups deleteGroup = (Groups) data.getSerializableExtra("deleteGroup");
                     new_groups.add(newGroup);
+                    delete_groups.add(deleteGroup);
 
                     // Si listGroups contiene el grupo i entonces es uno modificado (amigos o ficheros):
                     //esta comprobacion se puede hacer de otra forma, un for comparando nombre del nuevo grupo, y si lo contiene, se hace la sustitucion
                     if (listGroups.contains(newGroup)) {
-                        for (int i = 0; i < new_groups.size(); i++) {
-                            Groups g = new_groups.get(i);
-                            boolean found = false;
-                            int j;
-                            for (j = 0; (j < listGroups.size()) && !found; j++) {
-                                found = listGroups.get(j).equals(newGroup);
-                            }
-                            ArrayList<Friends> friends = g.listFriends;
-                            ArrayList files = g.listFiles;
-                            ArrayList<Friends> owners = g.listOwners;
-                            String admin = g.administrator;
-                            if (found) {
-                                listGroups.set(j, g);
-                            }
-                        }
-                        // Si no, es nuevo de verdad:
+                        listGroups.remove(newGroup);
+                        listGroups.add(newGroup);
                     }else{
                         listGroups.add(newGroup);
                     }

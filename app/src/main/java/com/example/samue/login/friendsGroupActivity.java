@@ -21,6 +21,7 @@ public class friendsGroupActivity extends AppCompatActivity {
     private ListView listView;
     private String username;
     private Groups grupoactual;
+    private Groups grupoeliminado;
     static DatabaseHelper friendsGroupDatabaseHelper;
 
     FloatingActionButton addFriend;
@@ -38,7 +39,7 @@ public class friendsGroupActivity extends AppCompatActivity {
         addFriend = findViewById(R.id.addFriends);
         Bundle extras = getIntent().getExtras();
         username = extras.getString("username");
-        grupoactual = (Groups) extras.get("newGroup");
+        grupoactual = (Groups) extras.get("group");
         changeGroup=false;
 
         loadFriendsList(grupoactual.getListFriends());
@@ -67,6 +68,10 @@ public class friendsGroupActivity extends AppCompatActivity {
                             deletedialog.dismiss();
                             loadFriendsList(grupoactual.getListFriends());
                             changeGroup=true;
+                            ArrayList<Friends> nuevo=new ArrayList<>();
+                            nuevo.add(grupoactual.getListFriends().get(position));
+                            grupoeliminado = new Groups(grupoactual.getNameGroup(),R.drawable.icongroup,nuevo,grupoactual.getListFriends().get(position).getNombre());
+
                         }
                     });
                     Button no = deletedialog.findViewById(R.id.delete_friend_no);
@@ -126,7 +131,8 @@ public class friendsGroupActivity extends AppCompatActivity {
         return myString;
     }
     public void isadmin(){
-        if(grupoactual.getAdministrador()!=username){
+        String user = grupoactual.getAdministrador();
+        if(!username.equals(user)){
             addFriend.setEnabled(false);
         }
     }
@@ -152,6 +158,7 @@ public class friendsGroupActivity extends AppCompatActivity {
         Intent result = new Intent();
         if (changeGroup) {
             result.putExtra("newGroup", grupoactual);
+            result.putExtra("deleteGroup",grupoeliminado);
         }
         setResult(Activity.RESULT_OK, result);
         super.onBackPressed();
