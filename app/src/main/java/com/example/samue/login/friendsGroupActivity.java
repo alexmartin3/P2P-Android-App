@@ -28,6 +28,7 @@ public class friendsGroupActivity extends AppCompatActivity {
     String nameFriend;
     String friendsupdate;
     boolean changeGroup;
+    ArrayList<Friends> nuevo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,7 @@ public class friendsGroupActivity extends AppCompatActivity {
         username = extras.getString("username");
         grupoactual = (Groups) extras.get("group");
         changeGroup=false;
+        nuevo=new ArrayList<>();
 
         loadFriendsList(grupoactual.getListFriends());
         isadmin();
@@ -61,6 +63,8 @@ public class friendsGroupActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View view) {
                             //removeGroup(nameGroup);
+                            nuevo.add(grupoactual.getListFriends().get(position));
+                            grupoeliminado = new Groups(grupoactual.getNameGroup(),R.drawable.icongroup,nuevo,grupoactual.getListFriends().get(position).getNombre());
                             grupoactual.getListFriends().remove(grupoactual.getListFriends().get(position));
                             friendsupdate = arrayListToString(grupoactual.getListFriends());
                             friendsGroupDatabaseHelper.deleteFriendToGroup(grupoactual.getNameGroup(), friendsupdate, friendsGroupDatabaseHelper.GROUPS_TABLE_NAME);
@@ -68,9 +72,7 @@ public class friendsGroupActivity extends AppCompatActivity {
                             deletedialog.dismiss();
                             loadFriendsList(grupoactual.getListFriends());
                             changeGroup=true;
-                            ArrayList<Friends> nuevo=new ArrayList<>();
-                            nuevo.add(grupoactual.getListFriends().get(position));
-                            grupoeliminado = new Groups(grupoactual.getNameGroup(),R.drawable.icongroup,nuevo,grupoactual.getListFriends().get(position).getNombre());
+
 
                         }
                     });
