@@ -35,7 +35,6 @@ public class ArchiveExplorerGroups extends AppCompatActivity {
     private File[] listaArchivos;
     static DatabaseHelper filesDatabaseHelper;
     String username;
-    String groupname;
     Groups group;
 
     @Override
@@ -51,7 +50,6 @@ public class ArchiveExplorerGroups extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         username= extras.getString("username");
-        groupname=extras.getString("namegroup");
         group = (Groups) extras.getSerializable("group");
 
         // Compartir un archivo:
@@ -91,11 +89,11 @@ public class ArchiveExplorerGroups extends AppCompatActivity {
                             progressDialog.setMessage("Subiendo " + name + "...");
                             progressDialog.show();
                             //hay que ver si pasamos ruta completa, nombre o que
-                            add = updateGroupBBDD(groupname, name, group);
+                            add = updateGroupBBDD(group.getNameGroup(), name, group);
                             if (add) {
                                 Toast.makeText(getApplicationContext(), "File selected has been added", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent();
-                                intent.putStringArrayListExtra("files",group.listFiles);
+                                intent.putExtra("file",name);
                                 setResult(Activity.RESULT_OK,intent);
                                 finish();
 

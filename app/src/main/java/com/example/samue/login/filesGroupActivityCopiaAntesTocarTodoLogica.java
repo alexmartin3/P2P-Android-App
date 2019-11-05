@@ -3,7 +3,6 @@ package com.example.samue.login;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -18,8 +17,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-
-public class filesGroupActivity extends AppCompatActivity {
+/*
+public class filesGroupActivityCopiaAntesTocarTodoLogica extends AppCompatActivity {
 	private ArrayAdapter<String> adaptador;
 	private ListView listview;
 	private Groups grupoactual;
@@ -28,7 +27,6 @@ public class filesGroupActivity extends AppCompatActivity {
 
 	private Dialog mdialog;
 	private ArrayList listnamefiles;
-	private ArrayList listownersfiles;
 
 
 	@Override
@@ -44,6 +42,8 @@ public class filesGroupActivity extends AppCompatActivity {
 		listnamefiles = new ArrayList();
 		loadfilesGroup();
 
+
+
 		boolean listener = extras.getBoolean("listener");
 		final String sendTo = extras.getString("sendTo");
 		final boolean isFS = extras.getBoolean("isFS", false);
@@ -53,16 +53,13 @@ public class filesGroupActivity extends AppCompatActivity {
 		else
 			folderName = null;
 
-		//	COMENZAMOS REESTRUCTURACIÓN
-
-		/*
 		if(listener){
 			listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 					final String name = listnamefiles.get(position).toString();
 
-					mdialog = new Dialog(filesGroupActivity.this);
+					mdialog = new Dialog(filesGroupActivityCopiaAntesTocarTodoLogica.this);
 					mdialog.setContentView(R.layout.dialog_confirmdownload);
 					mdialog.show();
 
@@ -123,7 +120,7 @@ public class filesGroupActivity extends AppCompatActivity {
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 					final String name = listnamefiles.get(position).toString();
 
-					mdialog = new Dialog(filesGroupActivity.this);
+					mdialog = new Dialog(filesGroupActivityCopiaAntesTocarTodoLogica.this);
 					mdialog.setContentView(R.layout.dialog_confirmsharedarchive);
 					mdialog.show();
 
@@ -154,16 +151,18 @@ public class filesGroupActivity extends AppCompatActivity {
 				}
 			});
 		}
-		 */
 
 		FloatingActionButton addFile = findViewById(R.id.addfile);
 		// Botón para compartir un archivo o una carpeta.
 		addFile.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(filesGroupActivity.this, ArchiveExplorerGroups.class);
+				Intent intent = new Intent(filesGroupActivityCopiaAntesTocarTodoLogica.this, ArchiveExplorerGroups.class);
 				intent.putExtra("username", username);
-				intent.putExtra("group",grupoactual);
+				intent.putExtra("namegroup",namegroup);
+				intent.putExtra("listfiles",listnamefilesstring);
+				intent.putExtra("listowners",listownersfilesstring);
+				intent.putExtra("group",group);
 				startActivityForResult(intent,1);
 			}
 		});
@@ -173,8 +172,8 @@ public class filesGroupActivity extends AppCompatActivity {
 		if (listnamefiles != null){listnamefiles.clear();}
 		else {listnamefiles = new ArrayList();}
 
-		listnamefiles = grupoactual.getListFiles();
-		listownersfiles = grupoactual.getListOwners();
+		listnamefiles = stringtoArrayList(listnamefilesstring);
+		listownersfiles = stringtoArrayListFriend(listownersfilesstring);
 
 		adaptador = new AEArrayAdapter(this, android.R.layout.simple_expandable_list_item_1,listnamefiles);
 		listview.setAdapter(adaptador);
@@ -206,14 +205,18 @@ public class filesGroupActivity extends AppCompatActivity {
 		switch(requestCode){
 			case 1:
 				if(resultCode == Activity.RESULT_OK){
-					String newFile = data.getStringExtra("file");
-						if (!listnamefiles.contains(newFile)){
-							grupoactual.getListFiles().add(newFile);
-							grupoactual.getListOwners().add(new Friends(username,R.drawable.ic_launcher_foreground));
+					ArrayList newListFiles = data.getStringArrayListExtra("files");
+						if (listnamefiles.size() < newListFiles.size()){
+							listnamefiles.add(newListFiles.get(newListFiles.size()-1));
+							newFiles = new ArrayList(newListFiles);
 						}
-					loadfilesGroup();
+					adaptador = new AEArrayAdapter(this, android.R.layout.simple_expandable_list_item_1,listnamefiles);
+					listview = findViewById(R.id.listfilesgroups);
+					listview.setAdapter(adaptador);
 					break;
 				}
 		}
 	}
-}
+
+
+}*/
