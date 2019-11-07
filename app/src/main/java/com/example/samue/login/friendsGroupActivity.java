@@ -27,7 +27,7 @@ public class friendsGroupActivity extends AppCompatActivity {
     FloatingActionButton addFriend;
     String nameFriend;
     String friendsupdate;
-    boolean changeGroup;
+    private boolean changeGroup;
     ArrayList<Friends> nuevo;
 
     @Override
@@ -65,15 +65,13 @@ public class friendsGroupActivity extends AppCompatActivity {
                             //removeGroup(nameGroup);
                             nuevo.add(grupoactual.getListFriends().get(position));
                             grupoeliminado = new Groups(grupoactual.getNameGroup(),R.drawable.icongroup,nuevo,grupoactual.getListFriends().get(position).getNombre());
-                            grupoactual.getListFriends().remove(grupoactual.getListFriends().get(position));
-                            friendsupdate = arrayListToString(grupoactual.getListFriends());
+                            grupoactual.getListFriends().remove(position);
+                            friendsupdate = arrayListFriendsToString(grupoactual.getListFriends());
                             friendsGroupDatabaseHelper.deleteFriendToGroup(grupoactual.getNameGroup(), friendsupdate, friendsGroupDatabaseHelper.GROUPS_TABLE_NAME);
                             Toast.makeText(getApplicationContext(), nameFriend + " se ha eliminado", Toast.LENGTH_SHORT).show();
                             deletedialog.dismiss();
                             loadFriendsList(grupoactual.getListFriends());
                             changeGroup=true;
-
-
                         }
                     });
                     Button no = deletedialog.findViewById(R.id.delete_friend_no);
@@ -95,7 +93,7 @@ public class friendsGroupActivity extends AppCompatActivity {
                   myIntent.putExtra("nameGroup", grupoactual.getNameGroup());
                   myIntent.putExtra("username",username);
                   myIntent.putExtra("valor",2); //valor=1, crear grupo, valor=2, añadir amigos nuevos
-                  myIntent.putExtra("friendsold",arrayListToString(grupoactual.getListFriends()));
+                  myIntent.putExtra("friendsold",arrayListFriendsToString(grupoactual.getListFriends()));
                   startActivityForResult(myIntent, 1);
               }
         });
@@ -116,7 +114,7 @@ public class friendsGroupActivity extends AppCompatActivity {
         return resultado;
     }
     //pasar de un array lists de amigos a un string
-    private String arrayListToString(ArrayList<Friends> listfriend) {
+    private String arrayListFriendsToString(ArrayList<Friends> listfriend) {
         String myString =null;
 
         for (int i = 0; i<listfriend.size();i++){

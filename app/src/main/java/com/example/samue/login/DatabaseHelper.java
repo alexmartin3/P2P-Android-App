@@ -531,6 +531,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		else
 			return true;
 	}
+	/**
+	 * Método para eliminar un archivo de un grupo.
+	 * @param nameGroup String con el nombre del eliminado.
+	 * @param table Tabla seleccionada.
+	 * @return true si ha tenido éxito, false en caso contrario.
+	 */
+	public boolean deleteFileToGroup(String nameGroup,String filesnews, String ownersnews, String table){
+		SQLiteDatabase db = this.getWritableDatabase();
+		String[] args = new String[]{nameGroup};
+		ContentValues cv = new ContentValues();
+		cv.put("files",filesnews);
+		cv.put("owners",ownersnews);
+		int result = db.update(table,cv,"name_group=?",args);
+
+		if (result == -1)
+			return false;
+		else
+			return true;
+	}
 
 	public boolean addFileGroup(String nameGroup,String filesnews, String ownersnews, String table) {
 		SQLiteDatabase db = this.getWritableDatabase();

@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-/*
+ /* para volver a comentar y ver las cosas bien
 public class filesGroupActivityCopiaAntesTocarTodoLogica extends AppCompatActivity {
 	private ArrayAdapter<String> adaptador;
 	private ListView listview;
@@ -115,68 +115,11 @@ public class filesGroupActivityCopiaAntesTocarTodoLogica extends AppCompatActivi
 				}
 			});
 		}else{
-			listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-				@Override
-				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-					final String name = listnamefiles.get(position).toString();
-
-					mdialog = new Dialog(filesGroupActivityCopiaAntesTocarTodoLogica.this);
-					mdialog.setContentView(R.layout.dialog_confirmsharedarchive);
-					mdialog.show();
-
-					TextView tv = (TextView) mdialog.findViewById(R.id.confirm_archive_tv);
-					tv.setText("¿Quieres borrar " + name + "?");
-
-					Button yes = mdialog.findViewById(R.id.confirm_archive_yes);
-					Button no = mdialog.findViewById(R.id.confirm_archive_no);
-
-					no.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							mdialog.dismiss();
-						}
-					});
-
-					yes.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							mdialog.dismiss();
-							Uri dato = Uri.parse("content://name/" + name);
-							Intent resultado = new Intent(null, dato);
-							resultado.putExtra("name", name);
-							setResult(RESULT_OK, resultado);
-							finish();
-						}
-					});
-				}
-			});
 		}
-
-		FloatingActionButton addFile = findViewById(R.id.addfile);
-		// Botón para compartir un archivo o una carpeta.
-		addFile.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(filesGroupActivityCopiaAntesTocarTodoLogica.this, ArchiveExplorerGroups.class);
-				intent.putExtra("username", username);
-				intent.putExtra("namegroup",namegroup);
-				intent.putExtra("listfiles",listnamefilesstring);
-				intent.putExtra("listowners",listownersfilesstring);
-				intent.putExtra("group",group);
-				startActivityForResult(intent,1);
-			}
-		});
 	}
 
 	private void loadfilesGroup(){
-		if (listnamefiles != null){listnamefiles.clear();}
-		else {listnamefiles = new ArrayList();}
 
-		listnamefiles = stringtoArrayList(listnamefilesstring);
-		listownersfiles = stringtoArrayListFriend(listownersfilesstring);
-
-		adaptador = new AEArrayAdapter(this, android.R.layout.simple_expandable_list_item_1,listnamefiles);
-		listview.setAdapter(adaptador);
 	}
 	private ArrayList<Friends> stringtoArrayListFriend(String friends){
 		if (friends == null){return new ArrayList<>();}

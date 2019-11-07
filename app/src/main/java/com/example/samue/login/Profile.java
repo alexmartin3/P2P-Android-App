@@ -1484,13 +1484,6 @@ public class Profile extends AppCompatActivity {
 			e.printStackTrace();
 		}
 	}
-	private String ArrayListFriendToString (ArrayList<Friends> list) {
-		String resultado = "";
-		for (int i = 0; i < list.size(); i++) {
-			resultado = resultado + list.get(i).getNombre();
-		}
-		return resultado;
-	}
 	//pasar de un array lists de amigos a un string
 	private String arrayListFriendsToString(ArrayList<Friends> listfriend) {
 		String myString ="";
