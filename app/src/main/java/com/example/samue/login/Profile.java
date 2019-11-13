@@ -1454,8 +1454,14 @@ public class Profile extends AppCompatActivity {
 			if (mDatabaseHelper.existGroup(groupnew.nameGroup)){
 				boolean remove = mDatabaseHelper.deleteGroup(groupnew.nameGroup,mDatabaseHelper.GROUPS_TABLE_NAME);
 			}
-			boolean inserted = mDatabaseHelper.addGroup(groupnew.getNameGroup(), arrayListFriendsToString(groupnew.getListFriends()), groupnew.getAdministrador());
-			Toast.makeText(getApplicationContext(), "Has sido añadido al grupo " + nameGroup, Toast.LENGTH_SHORT).show();
+			if (listFiles.isEmpty()){
+				boolean inserted = mDatabaseHelper.addGroup(groupnew.getNameGroup(), arrayListFriendsToString(groupnew.getListFriends()), groupnew.getAdministrador());
+				Toast.makeText(getApplicationContext(), "Has sido añadido al grupo " + nameGroup, Toast.LENGTH_SHORT).show();
+			}else{
+				boolean inserted = mDatabaseHelper.addGroupComplete(groupnew.getNameGroup(), arrayListFriendsToString(groupnew.getListFriends()),Utils.joinStrings(",",groupnew.getListFiles()),arrayListFriendsToString(groupnew.getListOwners()), groupnew.getAdministrador());
+				Toast.makeText(getApplicationContext(), "Has sido añadido al grupo " + nameGroup, Toast.LENGTH_SHORT).show();
+			}
+
 		}catch (Exception e){
 			e.printStackTrace();
 		}

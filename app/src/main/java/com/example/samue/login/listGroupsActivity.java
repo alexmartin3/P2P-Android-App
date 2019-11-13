@@ -259,7 +259,9 @@ public class listGroupsActivity extends AppCompatActivity {
                         listGroups.add(newGroup);
                     }
                     loadGroupList();
-                }catch (NullPointerException e){}
+                }catch (NullPointerException e){
+                    e.printStackTrace();
+                }
                 break;
         }
     }

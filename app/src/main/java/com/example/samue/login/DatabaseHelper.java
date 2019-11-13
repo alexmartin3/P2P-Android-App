@@ -388,6 +388,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		else
 			return true;
 	}
+	/**
+	 * Añade un nuevo grupo a la base de datos junto con la lista de amigos que lo forman.
+	 * @param  name nombre del grupo
+	 * @param friends Lista de amigos del grupo en un string.
+	 * @return true si ha tenido éxito, false en caso contrario.
+	 */
+	public boolean addGroupComplete(String name, String friends, String files, String owners, String administrator){
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues contentValues = new ContentValues();
+		contentValues.put(GROUPS_COL1, name);
+		contentValues.put(GROUPS_COL2, friends);
+		contentValues.put(GROUPS_COL3, files);
+		contentValues.put(GROUPS_COL4, owners);
+		contentValues.put(GROUPS_COL5,administrator);
+		Log.d(TAG, "addData: Adding " + name + " to " + GROUPS_TABLE_NAME);
+		long result = db.insert(GROUPS_TABLE_NAME, null, contentValues);
+
+		if (result == -1)
+			return false;
+		else
+			return true;
+	}
 
 	/**
 	 * Añade ficheros a la lista de archivos compartidos de un grupo.
