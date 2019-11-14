@@ -1,0 +1,85 @@
+1 Octubre, Martes
++ creado nuevo repositorio
++ cambiado nombre app
+- ver listado ficheros	->ver/crear adaptador
+			->recargar lista ficheros
+			->ver bbdd al añadir ficheros
+2 Octubre, Miercoles
++ arreglado mostrar listado de ficheros de un grupo al inicio	-> en la BBDD se guarda pero no recarga
+- pendiente que cuando se añada un fichero se muestre la lista actualizada
+- necesario revisar el flujo entre activity, es un caos todo
+- dibujar de nuevo el flujo entre activity para tener claro todo
+- coger ficheros de grupos y revisar que es necesario y que no, hacer limpieza
+
+3 Octubre, Jueves
++ arreglado actualizar lista archivos al añadir un archivo
++ creado en cuaderno diagrama de flujo de grupos
+- revisar diagrama y detallar mas
+- revisar flujo entre activity
+- hacer limpieza de funciones
+
+7 Octubre, Lunes
++ arreglado vista nombre amigos de un grupo
++ comprobado que haya seleccionado un amigo al crear grupo/añadir amigos grupo
+
+8 Octubre, Martes
++ arreglado creacion varios grupos, con varios amigos
+- no terminado borrado grupos, ver listas estaticas de delete_groups y list_groups de listgroupactivity
+
+14 Octubre, Lunes
++ arreglado la creacion de amigos tras cerrar la app, sin necesidad de borrar y añadir de neuvo al amigo
+- en proceso de arreglar el borrar grupos
+- añadir mejora de solo poder borrar grupos el admin
+- poder borrar varios grupos a la vez
+
+15 Octubre, Martes
++ arreglado el poder crear varios grupos a la vez, metiendo el namegroup en el publish, ver si se puede mejorar
+  o separar en otro para no interferir en los demas publish de los otros mensajes
+- realizar varias pruebas con esto, grupos de 3 y ver en los otros 2, grupos de pares, etc
+- falta aplicar lo mismo en deletegroup, vale no hace falta, solo el nombre del grupo :)
+
+16 Octubre, Miercoles
++ probado agregar varios grupos antes de ir a profile, y lo mismo con borrar grupo->OK
++ implementado el traspaso del grupo si se cambia algo en los amigos. Hay un booleano, si se cambia algo,
+  se borra amigo o se añade alguno, se pone a true y al volver se pasa el grupo, si no no se cambia nada al 
+  volver atras.
+- comprobar la eliminacion y añadir amigos en un grupo y el comportamiento, debugear onback de friendgroupactivity
+  para comprobarlo bien
+
+22 Octubre, Martes
++ probado el funcionamiento de añadir un amigo al grupo, y que se comunique al resto
+  y al nuevo amigo añadido se le cree el grupo
++ para eliminar amigo, implementado un grupo con el solo para eliminar con el mismo nombre
+- probar que la solucion anterior funciona y depurar
+- ver como implementar que al borrar un amigo de un grupo se borre el grupo a ese amigo
+- ver porque no se muestran los mensajes de cuando se le añade a un grupo
+
+7 Noviembre, Jueves
++ probado el crear grupo del amigo elimando y eliminar el grupo en ese amigo
++ implementado y probado el borrar un grupo al amigo que se borra del grupo
+- no revisado el porque no se muestran los mensajes
++ implementado añadir y eliminar ficheros a un grupo
++ implementado diferenciacion entre dueño y otros al selecionar en un archivo para eliminar o descargarlo
++ probar añadir y eliminar ficheros
+- probar añadir y eliminar ficheros y que se comunique a todos los amigos
+- implementar descarga de ficheros por parte de otros amigos
+- probar descarga de ficheros de un grupo
+
+13 Noviembre, Miercoles
++ implementeado añadir y eliminar fichero y que se comunique a los amigos
+- falta tocar funcion de conexiones entre amigos en lugar de a partir de 1, comprobar si es 
+el admin o usuario del fichero, para establecer la conexion, sino otros no pueden añadir cosas
+- implementar descarga de ficheros por parte de otros amigos
+- probar descarga de ficheros de un grupo
+
+14 Noviembre, Jueves
+
+
+
+
+
+
+
+
+
+
