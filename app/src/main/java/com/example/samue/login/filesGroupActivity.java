@@ -56,7 +56,6 @@ public class filesGroupActivity extends AppCompatActivity {
 		else
 			folderName = null;
 
-		//	COMENZAMOS REESTRUCTURACIÓN
 		listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
@@ -148,107 +147,6 @@ public class filesGroupActivity extends AppCompatActivity {
 			}
 		});
 
-		/*
-		if(listener){
-			listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-				@Override
-				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-					final String name = listnamefiles.get(position).toString();
-
-					mdialog = new Dialog(filesGroupActivity.this);
-					mdialog.setContentView(R.layout.dialog_confirmdownload);
-					mdialog.show();
-
-					TextView tv = mdialog.findViewById(R.id.confirm_archive_tv);
-					tv.setText("¿Quieres descargar " + name + "?");
-
-					Button yes = mdialog.findViewById(R.id.confirm_archive_yes);
-					Button no = mdialog.findViewById(R.id.confirm_archive_no);
-					Button preview = mdialog.findViewById(R.id.confirm_archive_preview);
-
-					no.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							mdialog.dismiss();
-						}
-					});
-
-					String ext = name.substring(name.lastIndexOf('.')+1);
-					if (!Utils.SUPPORTED_PREVIEW_FORMATS.contains(ext)) {
-						preview.setEnabled(false);
-						preview.setAlpha(.5f);
-					}
-					preview.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View view) {
-							mdialog.dismiss();
-							Uri dato = Uri.parse("content://name/" + name);
-							Intent resultado = new Intent(null, dato);
-							resultado.putExtra("name", name);
-							resultado.putExtra("sendTo", sendTo);
-							resultado.putExtra(Utils.REQ_PREVIEW, true);
-							if (isFS)
-								resultado.putExtra("folderName", folderName);
-							setResult(RESULT_OK, resultado);
-							finish();
-						}
-					});
-					yes.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							mdialog.dismiss();
-							Uri dato = Uri.parse("content://name/" + name);
-							Intent resultado = new Intent(null, dato);
-							resultado.putExtra("name", name);
-							resultado.putExtra("sendTo", sendTo);
-							resultado.putExtra(Utils.REQ_PREVIEW, false);
-							if (isFS)
-								resultado.putExtra("folderName", folderName);
-							setResult(RESULT_OK, resultado);
-							finish();
-						}
-					});
-				}
-			});
-		}else{
-			listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-				@Override
-				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-					final String name = listnamefiles.get(position).toString();
-
-					mdialog = new Dialog(filesGroupActivity.this);
-					mdialog.setContentView(R.layout.dialog_confirmsharedarchive);
-					mdialog.show();
-
-					TextView tv = (TextView) mdialog.findViewById(R.id.confirm_archive_tv);
-					tv.setText("¿Quieres borrar " + name + "?");
-
-					Button yes = mdialog.findViewById(R.id.confirm_archive_yes);
-					Button no = mdialog.findViewById(R.id.confirm_archive_no);
-
-					no.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							mdialog.dismiss();
-						}
-					});
-
-					yes.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							mdialog.dismiss();
-							Uri dato = Uri.parse("content://name/" + name);
-							Intent resultado = new Intent(null, dato);
-							resultado.putExtra("name", name);
-							setResult(RESULT_OK, resultado);
-							finish();
-						}
-					});
-				}
-			});
-		}
-		 */
-
 		FloatingActionButton addFile = findViewById(R.id.addfile);
 		// Botón para compartir un archivo o una carpeta.
 		addFile.setOnClickListener(new View.OnClickListener() {
@@ -265,10 +163,13 @@ public class filesGroupActivity extends AppCompatActivity {
 	private void loadfilesGroup(Groups group){
 		//if (listnamefiles != null){listnamefiles.clear();}
 		//else {listnamefiles = new ArrayList();}
-
 		listnamefiles = group.getListFiles();
-
-		adaptador = new AEArrayAdapter(this, android.R.layout.simple_expandable_list_item_1,listnamefiles);
+		ArrayList listfinal= new ArrayList();
+		for (int i=0; i<listnamefiles.size(); i++){
+		    String path=listnamefiles.get(i).toString();
+		    listfinal.add(path.substring(path.lastIndexOf('/')+1));
+        }
+		adaptador = new AEArrayAdapter(this, android.R.layout.simple_expandable_list_item_1,listfinal);
 		listview.setAdapter(adaptador);
 	}
 	private boolean isOwner(int position){

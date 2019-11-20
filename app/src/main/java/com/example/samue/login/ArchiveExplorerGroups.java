@@ -88,20 +88,14 @@ public class ArchiveExplorerGroups extends AppCompatActivity {
                             progressDialog.setIndeterminate(true);
                             progressDialog.setMessage("Subiendo " + name + "...");
                             progressDialog.show();
-                            //hay que ver si pasamos ruta completa, nombre o que
-                            add = updateGroupBBDD(group.getNameGroup(), name, group);
+                            add = updateGroupBBDD(group.getNameGroup(), path, group);
+                            //para obtener solo el nombre y mostrarlo usar esta funcion: path.substring(path.lastIndexOf('/')+1)
                             if (add) {
                                 Toast.makeText(getApplicationContext(), "File selected has been added", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent();
-                                intent.putExtra("file",name);
+                                intent.putExtra("file",path);
                                 setResult(Activity.RESULT_OK,intent);
                                 finish();
-
-                                //ASI ESTABA ANTES
-                                //Intent intent = new Intent();
-                                //intent.putExtra("friends",friendsSelectedfinish);
-                                //setResult(Activity.RESULT_OK,intent);
-                               //finish();
                             } else {
                                 Toast.makeText(getApplicationContext(), "Ha ocurrido un error", Toast.LENGTH_SHORT).show();
                             }

@@ -1,3 +1,8 @@
+PLANIFICACION ENTREGA ENERO
+- 9 Enero: Entrega borrador proyecto
+- 16 Enero: Apto/no apto profesor
+- 23 Enero: Entrega memoria final
+
 1 Octubre, Martes
 + creado nuevo repositorio
 + cambiado nombre app
@@ -73,8 +78,35 @@ el admin o usuario del fichero, para establecer la conexion, sino otros no puede
 - probar descarga de ficheros de un grupo
 
 14 Noviembre, Jueves
+Tras reunión con Pablo:
+- Falta borrarse uno de un grupo, y actualizar al resto, sin ser admin
+- Ver mensajes que mostrar al hacer acciones
+- al borrar un amigo, ver que se le borra el grupo 
+(caso con el profe: un grupo de 2, añado a un tercero, le elimino y no se le elimina el grupo)
 
+19 Noviembre, Martes
+Tras hablar con Julio:
+- reutilizable todo el proceso de descarga desde el punto 5) donde se hace la llamada a RA
+  para ello hay que pasar hacia atras el nombre del archivo, y algun valor para en profile
+  realizar el proceso de llamar a RA como en case 2 y llamar a finish y sucesivos para llegar 
+  a profile y hacer la llamada
+- despues de la llamada RA, ahi que hacer un redireccion hacia descargas
+- hay que ver como tratar el tema de las rutas de los archivos, o solo mostramos el nombre,
+  o toda la ruta, o hacemos una diferenciacion en algun lado de BBDD
+  Lo mejor para los nombres, es guardar la ruta completa, usando getpath y getname, guardar en
+  la base de datos la ruta completa, y cuando lo obtengamos solo mostrar el getname
+- Para tratarlo con rutas, en RA hay que añadir algun booleando de grupos, que en handleRA,
+  cuando se va a obtener la path de BBDD se guarde directametne de la ruta que se le pasa
 
+20 Noviembre, Miercoles
++ guardado en la base de datos la ruta en lugar de solo el nombre de los archivos de grupo
+  modificado en ArchiveExplorerGroups
+- PASOS A REALIZAR
+  1. Guardar las rutas, y si queremos mostrar los nombres solo, pero en BBDD siempre ruta
+  2. Hacer flujo desde añadir archivo a profile pasando booleano y terminando las activities,
+     y en profile se llama a RA y se inicia el luego descargas
+  3. En handleRA mirar en el path si en el msg hay un booleano grupo, no buscar en BBDD, sino 
+     solo guardar el nombre que se da, que es la ruta completa
 
 
 
