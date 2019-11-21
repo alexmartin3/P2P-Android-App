@@ -325,7 +325,7 @@ public class Profile extends AppCompatActivity {
 					final String name = data.getStringExtra("name");
 					String sendTo = data.getStringExtra("sendTo");
 					boolean isPreview = data.getBooleanExtra(Utils.REQ_PREVIEW, false);
-					RA(name, sendTo, isPreview);
+					RA(name, sendTo, isPreview,false);
 				}
 				break;
 			case 3:
@@ -351,28 +351,40 @@ public class Profile extends AppCompatActivity {
 				break;
 			case 6:
 				try {
-					// Si hay grupos nuevos, modificados o con ficheros moodificados:
-					newgroups = (ArrayList<Groups>) data.getSerializableExtra("newgroups");
-					if (!newgroups.isEmpty()) {
-						//Para cada grupo, debemos ver los usuarios que tiene cada uno y estrablecer una conexión con ellos, y enviar la informacion del grupo
-						for (int i = 0; i < newgroups.size(); i++) {
-							Groups NGGroup = newgroups.get(i);
-							ArrayList<Friends> friendslist=NGGroup.getListFriends();
-							for(int j=1; j<friendslist.size(); j++) {
-								publish(friendslist.get(j).getNombre(), "NG",NGGroup.getNameGroup());
+					boolean download = data.getBooleanExtra("download",false);
+					if (download==true){
+						String name = data.getStringExtra("name");
+						String owner = data.getStringExtra("owner");
+						RA(name,owner,false,true);
+
+						Intent Intent = new Intent(this, DownloadManagerActivity.class);
+						Intent.putExtra("downloadServiceIntent", this.dl_intent);
+						startActivity(Intent);
+
+					}else {// Si hay grupos nuevos, modificados o con ficheros moodificados:
+						newgroups = (ArrayList<Groups>) data.getSerializableExtra("newgroups");
+						if (!newgroups.isEmpty()) {
+							//Para cada grupo, debemos ver los usuarios que tiene cada uno y estrablecer una conexión con ellos, y enviar la informacion del grupo
+							for (int i = 0; i < newgroups.size(); i++) {
+								Groups NGGroup = newgroups.get(i);
+								ArrayList<Friends> friendslist = NGGroup.getListFriends();
+								for (int j = 1; j < friendslist.size(); j++) {
+									publish(friendslist.get(j).getNombre(), "NG", NGGroup.getNameGroup());
+								}
 							}
 						}
-					}
-					//si hay grupos que borrar:
-					deletegroups = (ArrayList<Groups>) data.getSerializableExtra("deletegroups");
-					if (!deletegroups.isEmpty()) {
-						//Para cada grupo, debemos ver los usuarios que tiene cada uno y establecer una conexión con ellos, y borrarlo
-						for (int i = 0; i < deletegroups.size(); i++) {
-							Groups DGGroup = deletegroups.get(i);
-							ArrayList<Friends> friendslist=DGGroup.getListFriends();
-							for(int j=1; j<friendslist.size(); j++) {
-								publish(friendslist.get(j).getNombre(), "DG",DGGroup.getNameGroup());
+						//si hay grupos que borrar:
+						deletegroups = (ArrayList<Groups>) data.getSerializableExtra("deletegroups");
+						if (!deletegroups.isEmpty()) {
+							//Para cada grupo, debemos ver los usuarios que tiene cada uno y establecer una conexión con ellos, y borrarlo
+							for (int i = 0; i < deletegroups.size(); i++) {
+								Groups DGGroup = deletegroups.get(i);
+								ArrayList<Friends> friendslist = DGGroup.getListFriends();
+								for (int j = 1; j < friendslist.size(); j++) {
+									publish(friendslist.get(j).getNombre(), "DG", DGGroup.getNameGroup());
+								}
 							}
+
 						}
 					}
 				}catch(Exception e) {
@@ -584,7 +596,7 @@ public class Profile extends AppCompatActivity {
 		this.pnRTCClient.closeConnection(userTo);
 	}
 
-	private void RA(String name, String sendTo, boolean isPreview){ //Request Archive
+	private void RA(String name, String sendTo, boolean isPreview, boolean group){ //Request Archive
 		try{
 			JSONObject msg = new JSONObject();
 			final String finalName = name;
@@ -592,6 +604,7 @@ public class Profile extends AppCompatActivity {
 			msg.put("sendTo", this.username);
 			msg.put(Utils.NAME, name);
 			msg.put(Utils.REQ_PREVIEW, isPreview);
+			msg.put("group", group);
 			// Útil para la descarga desde una carpeta compartida:
 			if (selectedFolder != null){
 				msg.put("selectedFolder", selectedFolder);
@@ -671,13 +684,18 @@ public class Profile extends AppCompatActivity {
 						}
 
 						String path;
-						if (folder != null) {
-							path = folder + '/' + archive;
-						} else {
-							Cursor c = this.mArchivesDatabase.getData(archive);
-							c.moveToNext();
-							path = c.getString(1);
-							c.close();
+						boolean group = jsonMsg.getBoolean("group");
+						if (group==true){
+							path = archive;
+						}else {
+							if (folder != null) {
+								path = folder + '/' + archive;
+							} else {
+								Cursor c = this.mArchivesDatabase.getData(archive);
+								c.moveToNext();
+								path = c.getString(1);
+								c.close();
+							}
 						}
 
 						JSONObject msg = new JSONObject();

@@ -47,15 +47,6 @@ public class filesGroupActivity extends AppCompatActivity {
 		listnamefiles = new ArrayList();
 		loadfilesGroup(grupoactual);
 
-		boolean listener = extras.getBoolean("listener");
-		final String sendTo = extras.getString("sendTo");
-		final boolean isFS = extras.getBoolean("isFS", false);
-		final String folderName;
-		if (isFS)
-			folderName = extras.getString("folderName");
-		else
-			folderName = null;
-
 		listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
@@ -67,7 +58,7 @@ public class filesGroupActivity extends AppCompatActivity {
 					mdialog.show();
 
 					TextView tv = (TextView) mdialog.findViewById(R.id.confirm_archive_tv);
-					tv.setText("¿Quieres borrar " + name + "?");
+					tv.setText("¿Quieres borrar " + name.substring(name.lastIndexOf('/')+1) + "?");
 
 					Button yes = mdialog.findViewById(R.id.confirm_archive_yes);
 					Button no = mdialog.findViewById(R.id.confirm_archive_no);
@@ -103,7 +94,6 @@ public class filesGroupActivity extends AppCompatActivity {
 
 					Button yes = mdialog.findViewById(R.id.confirm_archive_yes);
 					Button no = mdialog.findViewById(R.id.confirm_archive_no);
-					Button preview = mdialog.findViewById(R.id.confirm_archive_preview);
 
 					no.setOnClickListener(new View.OnClickListener() {
 						@Override
@@ -111,34 +101,16 @@ public class filesGroupActivity extends AppCompatActivity {
 							mdialog.dismiss();
 						}
 					});
-					//aqui tenemos que ver con atencion el name sendto etc
-					preview.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View view) {
-							mdialog.dismiss();
-							Uri dato = Uri.parse("content://name/" + name);
-							Intent resultado = new Intent(null, dato);
-							resultado.putExtra("name", name);
-							resultado.putExtra("sendTo", sendTo);
-							resultado.putExtra(Utils.REQ_PREVIEW, true);
-							if (isFS)
-								resultado.putExtra("folderName", folderName);
-							setResult(RESULT_OK, resultado);
-							finish();
-						}
-					});
-					//aqui tenemos que ver con atencion  todo el funcionamiento
 					yes.setOnClickListener(new View.OnClickListener() {
 						@Override
 						public void onClick(View v) {
 							mdialog.dismiss();
-							Uri dato = Uri.parse("content://name/" + name);
-							Intent resultado = new Intent(null, dato);
+							//Uri dato = Uri.parse("content://name/" + name);
+							//Intent resultado = new Intent(null, dato);
+							Intent resultado = new Intent();
 							resultado.putExtra("name", name);
-							resultado.putExtra("sendTo", sendTo);
-							resultado.putExtra(Utils.REQ_PREVIEW, false);
-							if (isFS)
-								resultado.putExtra("folderName", folderName);
+							resultado.putExtra("owner", grupoactual.getListOwners().get(i).getNombre());
+							resultado.putExtra("download",true);
 							setResult(RESULT_OK, resultado);
 							finish();
 						}
@@ -146,7 +118,6 @@ public class filesGroupActivity extends AppCompatActivity {
 				}
 			}
 		});
-
 		FloatingActionButton addFile = findViewById(R.id.addfile);
 		// Botón para compartir un archivo o una carpeta.
 		addFile.setOnClickListener(new View.OnClickListener() {
@@ -180,26 +151,6 @@ public class filesGroupActivity extends AppCompatActivity {
 		}
 		return result;
 	}
-	private ArrayList<Friends> stringtoArrayListFriend(String friends){
-		if (friends == null){return new ArrayList<>();}
-		ArrayList<Friends> resultado= new ArrayList<>();
-		String[] friendsSeparate = friends.split(",");
-		for (int i=0; i<friendsSeparate.length; i++){
-			resultado.add(new Friends(friendsSeparate[i],R.drawable.astronaura));
-		}
-		return resultado;
-	}
-	private ArrayList stringtoArrayList(String files){
-		if (files == null){
-			return new ArrayList<>();
-		}
-		ArrayList resultado= new ArrayList();
-		String[] filesSeparate = files.split(",");
-		for (int i=0; i<filesSeparate.length; i++){
-			resultado.add(filesSeparate[i]);
-		}
-		return resultado;
-	}
 	//pasar de un array lists de amigos a un string
 	private String arrayListFriendsToString(ArrayList<Friends> listfriend) {
 		String myString =null;
@@ -217,7 +168,6 @@ public class filesGroupActivity extends AppCompatActivity {
 		}
 		return myString;
 	}
-
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data){
 		super.onActivityResult(requestCode,resultCode,data);
@@ -239,6 +189,7 @@ public class filesGroupActivity extends AppCompatActivity {
 	public void onBackPressed() {
 		Intent result = new Intent();
 		if (changeGroup) {
+			result.putExtra("download",false);
 			result.putExtra("newGroup", grupoactual);
 		}
 		setResult(Activity.RESULT_OK, result);

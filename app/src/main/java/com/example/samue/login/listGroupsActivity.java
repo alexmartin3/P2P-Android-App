@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -70,7 +71,6 @@ public class listGroupsActivity extends AppCompatActivity {
                          */
                         final ArrayList<String> files = grupoactual.getListFiles();
                         Intent intent = new Intent(listGroupsActivity.this, filesGroupActivity.class);
-                        intent.putExtra("listener", false);
                         intent.putExtra("username",username);
                         intent.putExtra("group",grupoactual);
                         startActivityForResult(intent, 6);
@@ -243,22 +243,36 @@ public class listGroupsActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case 6:
-                String groupName = null;
-                try{ // Vienes de cambiar o añadir grupo:
-                    Groups newGroup = (Groups) data.getSerializableExtra("newGroup");
-                    Groups deleteGroup = (Groups) data.getSerializableExtra("deleteGroup");
-                    new_groups.add(newGroup);
-                    delete_groups.add(deleteGroup);
+                try{
+                    boolean download = data.getBooleanExtra("download",false);
+                    if (download==true){    //vienes directamente de descargar un fichero
+                        String name = data.getStringExtra("name");
+                        String owner = data.getStringExtra("owner");
 
-                    // Si listGroups contiene el grupo i entonces es uno modificado (amigos o ficheros):
-                    //esta comprobacion se puede hacer de otra forma, un for comparando nombre del nuevo grupo, y si lo contiene, se hace la sustitucion
-                    if (listGroups.contains(newGroup)) {
-                        listGroups.remove(newGroup);
-                        listGroups.add(newGroup);
-                    }else{
-                        listGroups.add(newGroup);
+                        Intent resultado = new Intent();
+                        resultado.putExtra("name", name);
+                        resultado.putExtra("owner", owner);
+                        resultado.putExtra("download",true);
+                        setResult(RESULT_OK, resultado);
+                        finish();
+
+                    }else {                 // Vienes de cambiar o añadir grupo
+                        Groups newGroup = (Groups) data.getSerializableExtra("newGroup");
+                        Groups deleteGroup = (Groups) data.getSerializableExtra("deleteGroup");
+                        if (newGroup != null) {
+                            new_groups.add(newGroup);
+                            if (listGroups.contains(newGroup)) {
+                                listGroups.remove(newGroup);
+                                listGroups.add(newGroup);
+                            } else {
+                                listGroups.add(newGroup);
+                            }
+                            loadGroupList();
+                        }
+                        if (deleteGroup != null) {
+                            delete_groups.add(deleteGroup);
+                        }
                     }
-                    loadGroupList();
                 }catch (NullPointerException e){
                     e.printStackTrace();
                 }

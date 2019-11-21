@@ -97,12 +97,22 @@ Tras hablar con Julio:
   la base de datos la ruta completa, y cuando lo obtengamos solo mostrar el getname
 - Para tratarlo con rutas, en RA hay que añadir algun booleando de grupos, que en handleRA,
   cuando se va a obtener la path de BBDD se guarde directametne de la ruta que se le pasa
+- Ver porque ahora al crear un grupo nuevo, a los otros les aparece un archivo vacio
 
 20 Noviembre, Miercoles
 + guardado en la base de datos la ruta en lugar de solo el nombre de los archivos de grupo
   modificado en ArchiveExplorerGroups
+
+21 Noviembre, Jueves
++ Implementado el proceso de pasar desde filesGroupActivity a profile, enviando el mensaje
+  correcto de descargar fichero, y una vez se llama a RA se pasa a la vista descargas
++ Implementado el paso tanto en RA como en handleRA para detectar que es un grupo y coger 
+  el path completamente del archivo en lugar de BBDD
+- al descargar un fichero de otro usuario, falla, necesario ver donde falla y por qué
+
+
 - PASOS A REALIZAR
-  1. Guardar las rutas, y si queremos mostrar los nombres solo, pero en BBDD siempre ruta
+  1. HECHO- Guardar las rutas, y si queremos mostrar los nombres solo, pero en BBDD siempre ruta
   2. Hacer flujo desde añadir archivo a profile pasando booleano y terminando las activities,
      y en profile se llama a RA y se inicia el luego descargas
   3. En handleRA mirar en el path si en el msg hay un booleano grupo, no buscar en BBDD, sino 

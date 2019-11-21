@@ -157,6 +157,7 @@ public class friendsGroupActivity extends AppCompatActivity {
     public void onBackPressed() {
         Intent result = new Intent();
         if (changeGroup) {
+            result.putExtra("download",false);
             result.putExtra("newGroup", grupoactual);
             result.putExtra("deleteGroup",grupoeliminado);
         }
