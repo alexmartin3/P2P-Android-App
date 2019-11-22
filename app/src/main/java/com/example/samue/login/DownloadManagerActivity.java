@@ -69,7 +69,6 @@ public class DownloadManagerActivity extends AppCompatActivity {
 		bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
 	}
 
-
 	/**
 	 * Prepara la actividad para su uso.
 	 *

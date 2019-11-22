@@ -259,6 +259,8 @@ public class Profile extends AppCompatActivity {
 						NG(connectTo,nameGroup);
 					}else if(connectionType.equals("DG")){
 						DG(connectTo,nameGroup);
+					}else if(connectionType.equals("RA")){
+						RA(nameGroup,connectTo,false,true);
 					}
 				}
 			});
@@ -355,11 +357,11 @@ public class Profile extends AppCompatActivity {
 					if (download==true){
 						String name = data.getStringExtra("name");
 						String owner = data.getStringExtra("owner");
-						RA(name,owner,false,true);
+						publish(owner,"RA",name);
 
-						Intent Intent = new Intent(this, DownloadManagerActivity.class);
-						Intent.putExtra("downloadServiceIntent", this.dl_intent);
-						startActivity(Intent);
+						//Intent Intent = new Intent(this, DownloadManagerActivity.class);
+						//Intent.putExtra("downloadServiceIntent", this.dl_intent);
+						//startActivity(Intent);
 
 					}else {// Si hay grupos nuevos, modificados o con ficheros moodificados:
 						newgroups = (ArrayList<Groups>) data.getSerializableExtra("newgroups");
@@ -394,6 +396,7 @@ public class Profile extends AppCompatActivity {
 			default:
 				if(!userRecursos.equals("")){
 					cerrarConexion(userRecursos);
+					userRecursos = "";
 					userRecursos = "";
 				}
 				break;
