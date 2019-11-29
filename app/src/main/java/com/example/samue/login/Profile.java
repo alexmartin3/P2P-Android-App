@@ -357,11 +357,12 @@ public class Profile extends AppCompatActivity {
 					if (download==true){
 						String name = data.getStringExtra("name");
 						String owner = data.getStringExtra("owner");
+						userRecursos = owner;
 						publish(owner,"RA",name);
 
-						//Intent Intent = new Intent(this, DownloadManagerActivity.class);
-						//Intent.putExtra("downloadServiceIntent", this.dl_intent);
-						//startActivity(Intent);
+						Intent Intent = new Intent(this, DownloadManagerActivity.class);
+						Intent.putExtra("downloadServiceIntent", this.dl_intent);
+						startActivity(Intent);
 
 					}else {// Si hay grupos nuevos, modificados o con ficheros moodificados:
 						newgroups = (ArrayList<Groups>) data.getSerializableExtra("newgroups");
@@ -371,6 +372,7 @@ public class Profile extends AppCompatActivity {
 								Groups NGGroup = newgroups.get(i);
 								ArrayList<Friends> friendslist = NGGroup.getListFriends();
 								for (int j = 1; j < friendslist.size(); j++) {
+									userRecursos = friendslist.get(j).getNombre();
 									publish(friendslist.get(j).getNombre(), "NG", NGGroup.getNameGroup());
 								}
 							}
@@ -383,6 +385,7 @@ public class Profile extends AppCompatActivity {
 								Groups DGGroup = deletegroups.get(i);
 								ArrayList<Friends> friendslist = DGGroup.getListFriends();
 								for (int j = 1; j < friendslist.size(); j++) {
+									userRecursos = friendslist.get(j).getNombre();
 									publish(friendslist.get(j).getNombre(), "DG", DGGroup.getNameGroup());
 								}
 							}
@@ -690,6 +693,8 @@ public class Profile extends AppCompatActivity {
 						boolean group = jsonMsg.getBoolean("group");
 						if (group==true){
 							path = archive;
+							archive= archive.substring(archive.lastIndexOf('/')+1);
+
 						}else {
 							if (folder != null) {
 								path = folder + '/' + archive;
