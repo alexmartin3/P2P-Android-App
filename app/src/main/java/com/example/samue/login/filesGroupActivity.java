@@ -136,10 +136,12 @@ public class filesGroupActivity extends AppCompatActivity {
 		//else {listnamefiles = new ArrayList();}
 		listnamefiles = group.getListFiles();
 		ArrayList listfinal= new ArrayList();
-		for (int i=0; i<listnamefiles.size(); i++){
-		    String path=listnamefiles.get(i).toString();
-		    listfinal.add(path.substring(path.lastIndexOf('/')+1));
-        }
+		if(!listnamefiles.isEmpty()) {
+			for (int i = 0; i < listnamefiles.size(); i++) {
+				String path = listnamefiles.get(i).toString();
+				listfinal.add(path.substring(path.lastIndexOf('/') + 1));
+			}
+		}
 		adaptador = new AEArrayAdapter(this, android.R.layout.simple_expandable_list_item_1,listfinal);
 		listview.setAdapter(adaptador);
 	}

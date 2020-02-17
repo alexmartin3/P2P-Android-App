@@ -66,7 +66,7 @@ public class listGroupsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         /*
-                         * Se abre la actividad que permite ver, añadir y eliminar algún amigo
+                         * Se abre la actividad que permite ver, añadir y eliminar algún fichero
                          * del grupo seleccionado.
                          */
                         final ArrayList<String> files = grupoactual.getListFiles();
@@ -141,14 +141,17 @@ public class listGroupsActivity extends AppCompatActivity {
                 bf = (Button) mdialogCreate.findViewById(R.id.button_addFriends);
                 bf.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View view) {
-                        mdialogCreate.dismiss();
-                        Intent myIntent = new Intent(listGroupsActivity.this, friendsgroup.class);
-                        myIntent.putExtra("nameGroup", nameGroupText.getText().toString());
-                        myIntent.putExtra("username",username);
-                        myIntent.putExtra("valor",1); //valor=1, crear grupo, valor=2, añadir amigos nuevos
-                        startActivityForResult(myIntent, 6);
+                        if (nameGroupText.getText().toString().isEmpty()) {
+                            Toast.makeText(getApplicationContext(), "ERROR: No puede tener nombre vacio", Toast.LENGTH_SHORT).show();
+                        } else {
+                            mdialogCreate.dismiss();
+                            Intent myIntent = new Intent(listGroupsActivity.this, friendsgroup.class);
+                            myIntent.putExtra("nameGroup", nameGroupText.getText().toString());
+                            myIntent.putExtra("username", username);
+                            myIntent.putExtra("valor", 1); //valor=1, crear grupo, valor=2, añadir amigos nuevos
+                            startActivityForResult(myIntent, 6);
+                        }
                     }
-
                 });
             }
         });

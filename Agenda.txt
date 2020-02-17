@@ -110,13 +110,26 @@ Tras hablar con Julio:
   el path completamente del archivo en lugar de BBDD
 - al descargar un fichero de otro usuario, falla, necesario ver donde falla y por qué
 
-
+29 Noviembre, Viernes
++ Arreglado el problema por el cual fallaba al descargar el fichero, si era un grupo, era 
+  necesario cambiar el nombre del archivo, en lugar de usar la ruta establecida
 - PASOS A REALIZAR
   1. HECHO- Guardar las rutas, y si queremos mostrar los nombres solo, pero en BBDD siempre ruta
-  2. Hacer flujo desde añadir archivo a profile pasando booleano y terminando las activities,
+  2. HECHO- Hacer flujo desde añadir archivo a profile pasando booleano y terminando las activities,
      y en profile se llama a RA y se inicia el luego descargas
-  3. En handleRA mirar en el path si en el msg hay un booleano grupo, no buscar en BBDD, sino 
+  3. HECHO- En handleRA mirar en el path si en el msg hay un booleano grupo, no buscar en BBDD, sino 
      solo guardar el nombre que se da, que es la ruta completa
+
+10 Febrero, Martes
+- Revisión del estado del proyecto. Ver situación de grupos y como arreglarlo para amoldarlo a la 
+  petición del profesor. 
+- Ver fallos no depurados encontrados.
+- Elaborar lista de checks deseables en la app con el nuevo desarrollo.(CHECKS.txt)
+
+17 Febrero, Lunes
+- Elaboracion lista bugs encontrados en la depuracion y mejoras.
+- Arreglado bug crear grupos sin nombre
+- Arreglado bug de transmitir los nuevos grupos con fichero sin nombre
 
 
 

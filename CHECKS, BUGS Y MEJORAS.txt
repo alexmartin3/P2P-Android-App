@@ -1,0 +1,55 @@
+	1.CHECKS
+CREAR GRUPOS
+- usuario puede crear grupo
+- necesario meter nombre, no grupos en blanco
+- necesario seleccionar amigos, no grupo vacio
+- el grupo creado se transmite a los usuarios
+- al crear grupo no tiene que haber archivos
+
+BORRAR GRUPOS
+- si es admin, borra el grupo en  todos los usuarios
+- si no es admin, se borra grupo en su lista
+- si no es admin, se borra del grupo en resto de usuarios
+
+ADMINSTRACION AMIGOS
+- si es admin, añadir amigos
+- si es admin, comprobar en nuevos amigos grupo creado
+- si es admin, comprobar en viejos amigos nuevos amigos
+- si es admin, borrar amigos
+- si es admin, comprobar en amigo borrado grupo eliminado
+- si es admin, comprobar en resto amigos amigo borrado
+- si no es admin, no puede añadir ni borrar amigos
+
+ADMINISTRACION ARCHIVOS
+- usuario puede subir archivo (admin o no)
+- los archivos se actualizan en el resto de amigos
+- si eres dueño del archivo, puedes borrarlo
+- los archivos borrados se actualizan en el resto de amigos
+- si no eres dueño del archivo, puedes descargar el archivo
+
+	2. ERRORES ENCONTRADOS EN LA DEPURACION (BUGS)
++ crear grupos sin nombres						(ARREGLADO)
+- si sale mensaje "ha ocurrido un error" aun así se crea el grupo
+- si no eres admin y borras grupo, notificar salida al resto del grupo
+- si no eres admin-> no puedes borrar ni añadir amigos
+- si eres admin y borras amigo, borrarle el grupo al amigo
+- si no eres admin no dejar subir ficheros ¿?
+- si eres dueño de un archivo y lo borras-> comunicarlo al resto de grupos
++ al crear un grupo no debe tener archivos				(ARREGLADO)
+- al dar en profile al buscador, quitar boton "+"
+- al añadir varios ficheros da error
+- al borrar un fichero sale a listGroup
+
+	3. MEJORAS
+GRUPOS
+- en ver amigos-> poner boton "atras"
+- en ver archivos-> poner boton "atras"
+- en amigos -> Crear boton "guardar"
+	Hasta que no se le de, no se guarda nada, solo si se le da, se guarda 
+	la lista de amigos segun esta.
+	Al darse se va a profile, se envia lo correspondiente y se vuelve a grupos
+- en archivos -> Crear boton "guardar" e igual que amigos
+
+BUSCADORES
+- implementar el buscador en profile y en los grupos 
+

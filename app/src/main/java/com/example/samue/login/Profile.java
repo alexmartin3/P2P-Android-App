@@ -1472,10 +1472,21 @@ public class Profile extends AppCompatActivity {
 			String nameGroup =(String)grupojson.get("nameGroup");
 			ArrayList<Friends> listFriends =stringtoArrayListFriend(grupojson.getString("listFriends"));
 			int img =grupojson.getInt("imgGroup");
-			ArrayList listFiles = new ArrayList( Arrays.asList(grupojson.getString("listFiles").split(",")));
-			ArrayList<Friends> listOwners =stringtoArrayListFriend(grupojson.getString("listOwners"));
+			ArrayList listFiles = new ArrayList();
+			if (!grupojson.getString("listFiles").equals("")){
+				listFiles = new ArrayList(Arrays.asList(grupojson.getString("listFiles").split(",")));
+			}
+			ArrayList<Friends> listOwners =new ArrayList<>();
+			if(!grupojson.getString("listOwners").equals("")){
+				listOwners = stringtoArrayListFriend(grupojson.getString("listOwners"));
+			}
 			String admin =grupojson.getString("admin");
-			Groups groupnew = new Groups(nameGroup,img, listFriends,listFiles,listOwners,admin);
+			Groups groupnew;
+			if(grupojson.getString("listFiles").equals("") && grupojson.getString("listOwners").equals("")){
+				 groupnew = new Groups(nameGroup, img, listFriends, admin);
+			}else {
+				 groupnew = new Groups(nameGroup, img, listFriends, listFiles, listOwners, admin);
+			}
 
 			if (mDatabaseHelper.existGroup(groupnew.nameGroup)){
 				boolean remove = mDatabaseHelper.deleteGroup(groupnew.nameGroup,mDatabaseHelper.GROUPS_TABLE_NAME);
