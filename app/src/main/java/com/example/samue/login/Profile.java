@@ -527,10 +527,15 @@ public class Profile extends AppCompatActivity {
 					}
 				});
 				return true;
+			case R.id.action_search:
+
+
+				return true;
+
 			default:
-				// If we got here, the user's action was not recognized.
-				// Invoke the superclass to handle it.
-				return super.onOptionsItemSelected(item);
+			// If we got here, the user's action was not recognized.
+			// Invoke the superclass to handle it.
+			return super.onOptionsItemSelected(item);
 		}
 	}
 	private boolean listContains(String nombre, ArrayList<Friends> al){

@@ -131,6 +131,10 @@ Tras hablar con Julio:
 - Arreglado bug crear grupos sin nombre
 - Arreglado bug de transmitir los nuevos grupos con fichero sin nombre
 
+25 Febrero, Martes
+- Intentado solucionar el quitar boton de datos cuando se da al buscar, pero no conseguido
++ Arreglado la gestion de añadir/borrar usuarios si eres admin
+- Modificado la forma de borrar usuarios con un click en lugar de longclick
 
 
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <item android:id="@+id/see_shared_archives"
         android:title="Ver archivos compartidos"
@@ -25,26 +26,13 @@
         app:actionViewClass="android.support.v7.widget.SearchView" />
 
     <item
-        android:id="@+id/crear"
-        android:icon="@drawable/plus"
-        android:title="crear"
-        android:visible="true"
-        app:showAsAction="always">
-        <menu>
-            <item
-                android:id="@+id/add_friend"
-                android:title="add friend" />
-            <!---
-            <item
-                android:id="@+id/add_group"
-                android:title="add group" />
-                -->
-        </menu>
-    </item>
-    <item
         android:id="@+id/block_upload_mobile"
         android:icon="@drawable/data_on"
         android:title="action_block_upload_mobile"
-        app:showAsAction="always" />
+        app:showAsAction="never|ifRoom" />
 
+    <item android:id="@+id/add_friend"
+        android:icon="@drawable/plus"
+        android:title="Añadir amigo"
+        app:showAsAction="never" />
 </menu>

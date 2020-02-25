@@ -3,7 +3,9 @@ package com.example.samue.login;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -47,54 +49,67 @@ public class friendsGroupActivity extends AppCompatActivity {
         loadFriendsList(grupoactual.getListFriends());
         isadmin();
 
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                nameFriend =grupoactual.getListFriends().get(position).getNombre();
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                String user = grupoactual.getAdministrador();
+                if(!username.equals(user)){
+                    Toast.makeText(getApplicationContext(), "ERROR: No eres administrador", Toast.LENGTH_SHORT).show();
+                }else {
+                    nameFriend = grupoactual.getListFriends().get(position).getNombre();
 
-                if (!username.equals(nameFriend)) {
-                    final Dialog deletedialog = new Dialog(friendsGroupActivity.this);
-                    deletedialog.setContentView(R.layout.dialog_deletefriendgroup);
-                    deletedialog.show();
+                    if (!username.equals(nameFriend)) {
+                        final Dialog deletedialog = new Dialog(friendsGroupActivity.this);
+                        deletedialog.setContentView(R.layout.dialog_deletefriendgroup);
+                        deletedialog.show();
 
-                    Button yes = deletedialog.findViewById(R.id.delete_friend_yes);
-                    yes.setOnClickListener(new View.OnClickListener() {
+                        Button yes = deletedialog.findViewById(R.id.delete_friend_yes);
+                        yes.setOnClickListener(new View.OnClickListener() {
 
-                        @Override
-                        public void onClick(View view) {
-                            //removeGroup(nameGroup);
-                            nuevo.add(grupoactual.getListFriends().get(position));
-                            grupoeliminado = new Groups(grupoactual.getNameGroup(),R.drawable.icongroup,nuevo,grupoactual.getListFriends().get(position).getNombre());
-                            grupoactual.getListFriends().remove(position);
-                            friendsupdate = arrayListFriendsToString(grupoactual.getListFriends());
-                            friendsGroupDatabaseHelper.deleteFriendToGroup(grupoactual.getNameGroup(), friendsupdate, friendsGroupDatabaseHelper.GROUPS_TABLE_NAME);
-                            Toast.makeText(getApplicationContext(), nameFriend + " se ha eliminado", Toast.LENGTH_SHORT).show();
-                            deletedialog.dismiss();
-                            loadFriendsList(grupoactual.getListFriends());
-                            changeGroup=true;
-                        }
-                    });
-                    Button no = deletedialog.findViewById(R.id.delete_friend_no);
-                    no.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            deletedialog.dismiss();
-                        }
-                    });
+                            @Override
+                            public void onClick(View view) {
+                                //removeGroup(nameGroup);
+                                nuevo.add(grupoactual.getListFriends().get(position));
+                                grupoeliminado = new Groups(grupoactual.getNameGroup(), R.drawable.icongroup, nuevo, grupoactual.getListFriends().get(position).getNombre());
+                                grupoactual.getListFriends().remove(position);
+                                friendsupdate = arrayListFriendsToString(grupoactual.getListFriends());
+                                friendsGroupDatabaseHelper.deleteFriendToGroup(grupoactual.getNameGroup(), friendsupdate, friendsGroupDatabaseHelper.GROUPS_TABLE_NAME);
+                                Toast.makeText(getApplicationContext(), nameFriend + " se ha eliminado", Toast.LENGTH_SHORT).show();
+                                deletedialog.dismiss();
+                                loadFriendsList(grupoactual.getListFriends());
+                                changeGroup = true;
+                            }
+                        });
+                        Button no = deletedialog.findViewById(R.id.delete_friend_no);
+                        no.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                deletedialog.dismiss();
+                            }
+                        });
+                    } else {
+                        Toast.makeText(getApplicationContext(), "ERROR: Eres tú mismo", Toast.LENGTH_SHORT).show();
+                    }
                 }
-                return true;
             }
         });
+
+
         FloatingActionButton addfriendgroup = findViewById(R.id.addFriends);
         addfriendgroup.setOnClickListener(new View.OnClickListener() {
               @Override
               public void onClick(View view) {
-                  Intent myIntent = new Intent(friendsGroupActivity.this, friendsgroup.class);
-                  myIntent.putExtra("nameGroup", grupoactual.getNameGroup());
-                  myIntent.putExtra("username",username);
-                  myIntent.putExtra("valor",2); //valor=1, crear grupo, valor=2, añadir amigos nuevos
-                  myIntent.putExtra("friendsold",arrayListFriendsToString(grupoactual.getListFriends()));
-                  startActivityForResult(myIntent, 1);
+                  String user = grupoactual.getAdministrador();
+                  if(!username.equals(user)){
+                      Toast.makeText(getApplicationContext(), "ERROR: No eres administrador", Toast.LENGTH_SHORT).show();
+                  }else {
+                      Intent myIntent = new Intent(friendsGroupActivity.this, friendsgroup.class);
+                      myIntent.putExtra("nameGroup", grupoactual.getNameGroup());
+                      myIntent.putExtra("username", username);
+                      myIntent.putExtra("valor", 2); //valor=1, crear grupo, valor=2, añadir amigos nuevos
+                      myIntent.putExtra("friendsold", arrayListFriendsToString(grupoactual.getListFriends()));
+                      startActivityForResult(myIntent, 1);
+                  }
               }
         });
     }
@@ -133,7 +148,7 @@ public class friendsGroupActivity extends AppCompatActivity {
     public void isadmin(){
         String user = grupoactual.getAdministrador();
         if(!username.equals(user)){
-            addFriend.setEnabled(false);
+           addFriend.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY));
         }
     }
     @Override

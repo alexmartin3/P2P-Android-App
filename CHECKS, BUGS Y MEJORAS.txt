@@ -31,7 +31,7 @@ ADMINISTRACION ARCHIVOS
 + crear grupos sin nombres						(ARREGLADO)
 - si sale mensaje "ha ocurrido un error" aun así se crea el grupo
 - si no eres admin y borras grupo, notificar salida al resto del grupo
-- si no eres admin-> no puedes borrar ni añadir amigos
+- si no eres admin-> no puedes borrar ni añadir amigos			(ARREGLADO)
 - si eres admin y borras amigo, borrarle el grupo al amigo
 - si no eres admin no dejar subir ficheros ¿?
 - si eres dueño de un archivo y lo borras-> comunicarlo al resto de grupos
