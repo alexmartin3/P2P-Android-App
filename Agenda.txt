@@ -136,6 +136,9 @@ Tras hablar con Julio:
 + Arreglado la gestion de añadir/borrar usuarios si eres admin
 - Modificado la forma de borrar usuarios con un click en lugar de longclick
 
+26 Febrero, Miercoles
++ Arreglado la gestion de borrar un grupo siendo admin/ no admin, si no eres admin se te borra
+  el grupo, pero al resto solo desapareces de la lista de amigos, si eres admin borra a todos
 
 
 

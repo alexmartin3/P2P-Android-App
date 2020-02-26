@@ -110,13 +110,23 @@ public class listGroupsActivity extends AppCompatActivity {
                     // Si se bloquea a un amigo este se borra de la lista de amigos.
                     @Override
                     public void onClick(View view) {
-                        //removeGroup(nameGroup);
-                        delete_groups.add(grupoactual);
+                        String user = grupoactual.getAdministrador();
+                        if(!username.equals(user)){
+                            for(int i=0;i<grupoactual.getListFriends().size();i++){
+                                Friends f;
+                                f=grupoactual.getListFriends().get(i);
+                                if(f.getNombre().equals(username)){
+                                    grupoactual.getListFriends().remove(f);
+                                }
+                            }
+                           new_groups.add(grupoactual);
+                        }else {
+                            delete_groups.add(grupoactual);
+                        }
                         listGroups.remove(grupoactual);
                         groupDatabaseHelper.deleteGroup(grupoactual.getNameGroup(), groupDatabaseHelper.GROUPS_TABLE_NAME);
-                        Toast.makeText(getApplicationContext(),grupoactual.getNameGroup() + " se ha eliminado", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), grupoactual.getNameGroup() + " se ha eliminado", Toast.LENGTH_SHORT).show();
                         deletedialog.dismiss();
-
                         loadGroupList();
                     }
                 });

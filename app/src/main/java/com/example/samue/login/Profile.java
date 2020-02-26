@@ -371,7 +371,7 @@ public class Profile extends AppCompatActivity {
 							for (int i = 0; i < newgroups.size(); i++) {
 								Groups NGGroup = newgroups.get(i);
 								ArrayList<Friends> friendslist = NGGroup.getListFriends();
-								for (int j = 1; j < friendslist.size(); j++) {
+								for (int j = 0; j < friendslist.size(); j++) {
 									userRecursos = friendslist.get(j).getNombre();
 									publish(friendslist.get(j).getNombre(), "NG", NGGroup.getNameGroup());
 								}
@@ -384,12 +384,11 @@ public class Profile extends AppCompatActivity {
 							for (int i = 0; i < deletegroups.size(); i++) {
 								Groups DGGroup = deletegroups.get(i);
 								ArrayList<Friends> friendslist = DGGroup.getListFriends();
-								for (int j = 1; j < friendslist.size(); j++) {
+								for (int j = 0; j < friendslist.size(); j++) {
 									userRecursos = friendslist.get(j).getNombre();
 									publish(friendslist.get(j).getNombre(), "DG", DGGroup.getNameGroup());
 								}
 							}
-
 						}
 					}
 				}catch(Exception e) {

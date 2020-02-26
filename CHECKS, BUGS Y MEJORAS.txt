@@ -30,13 +30,13 @@ ADMINISTRACION ARCHIVOS
 	2. ERRORES ENCONTRADOS EN LA DEPURACION (BUGS)
 + crear grupos sin nombres						(ARREGLADO)
 - si sale mensaje "ha ocurrido un error" aun así se crea el grupo
-- si no eres admin y borras grupo, notificar salida al resto del grupo
+- si no eres admin y borras grupo, notificar salida al resto del grupo	(ARREGLADO)
 - si no eres admin-> no puedes borrar ni añadir amigos			(ARREGLADO)
 - si eres admin y borras amigo, borrarle el grupo al amigo
 - si no eres admin no dejar subir ficheros ¿?
 - si eres dueño de un archivo y lo borras-> comunicarlo al resto de grupos
 + al crear un grupo no debe tener archivos				(ARREGLADO)
-- al dar en profile al buscador, quitar boton "+"
+- al dar en profile al buscador, quitar boton "+"			intentado
 - al añadir varios ficheros da error
 - al borrar un fichero sale a listGroup
 
