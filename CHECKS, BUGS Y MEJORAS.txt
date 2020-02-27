@@ -48,6 +48,8 @@ A. GRUPOS
 	la lista de amigos segun esta.
 	Al darse se va a profile, se envia lo correspondiente y se vuelve a grupos
 - en archivos -> Crear boton "guardar" e igual que amigos
++ en lista de grupos, si se crea grupo, aparte de actualizar pantalla, se va a profile y
+  se vuelve a listgroup							(IMPLEMENTADO)
 
 B. BUSCADORES
 - implementar el buscador en profile y en los grupos 

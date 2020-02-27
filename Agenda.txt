@@ -140,7 +140,15 @@ Tras hablar con Julio:
 + Arreglado la gestion de borrar un grupo siendo admin/ no admin, si no eres admin se te borra
   el grupo, pero al resto solo desapareces de la lista de amigos, si eres admin borra a todos
 
-
+27 Febrero, Jueves
++ Terminado todos los bugs que habia de la administacion de grupos
++ Creada rama para la modificacion del funcionamiento de la app en referencia a los grupos
+  Vamos a intentar no tener que acceder hasta profile, para actualizar los cambios que haya 
+  al añadir/borrar grupos, amigos o ficheros
++ Implementado en envio de un nuevo grupo sin necesidad de volver a profile
+- Investigar como en el resto de usuarios ejecutar una accion de una actividad raiz
+  Esto ocurre ya que si estas en listgroup y crean un nuevo grupo, hasta que no vas a profile 
+  no se actualiza tu lista, o ver como actualizar la actividad cada X segundos
 
 
 

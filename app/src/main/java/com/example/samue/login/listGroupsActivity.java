@@ -28,7 +28,9 @@ public class listGroupsActivity extends AppCompatActivity {
     static DatabaseHelper groupDatabaseHelper;
     static ArrayList<Groups> new_groups;
     static ArrayList<Groups> delete_groups;
+    static boolean returnGroups;
 
+    Runnable refresh;
 
     Dialog mdialogCreate;
     EditText nameGroupText;
@@ -49,6 +51,7 @@ public class listGroupsActivity extends AppCompatActivity {
         username=extras.getString("username");
         new_groups= new ArrayList<Groups>();
         delete_groups = new ArrayList<Groups>();
+        returnGroups=false;
 
         loadGroupList();
 
@@ -286,6 +289,8 @@ public class listGroupsActivity extends AppCompatActivity {
                             delete_groups.add(deleteGroup);
                         }
                     }
+                    returnGroups=true;
+                    onBackPressed();
                 }catch (NullPointerException e){
                     e.printStackTrace();
                 }
@@ -297,6 +302,7 @@ public class listGroupsActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.putExtra("newgroups",new_groups);
         intent.putExtra("deletegroups",delete_groups);
+        intent.putExtra("returnGroups",returnGroups);
         setResult(Activity.RESULT_OK,intent);
         super.onBackPressed();
     }
