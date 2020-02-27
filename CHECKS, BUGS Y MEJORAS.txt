@@ -30,18 +30,17 @@ ADMINISTRACION ARCHIVOS
 	2. ERRORES ENCONTRADOS EN LA DEPURACION (BUGS)
 + crear grupos sin nombres						(ARREGLADO)
 - si sale mensaje "ha ocurrido un error" aun así se crea el grupo
-- si no eres admin y borras grupo, notificar salida al resto del grupo	(ARREGLADO)
-- si no eres admin-> no puedes borrar ni añadir amigos			(ARREGLADO)
-- si eres admin y borras amigo, borrarle el grupo al amigo
-- si no eres admin no dejar subir ficheros ¿?
-- si eres dueño de un archivo y lo borras-> comunicarlo al resto de grupos
++ si no eres admin y borras grupo, notificar salida al resto del grupo	(ARREGLADO)
++ si no eres admin-> no puedes borrar ni añadir amigos			(ARREGLADO)
++ si eres admin y borras amigo, borrarle el grupo al amigo		(ARREGLADO)
++ si eres dueño de un archivo y lo borras-> comunicarlo al resto de grupos (ARREGLADO)
 + al crear un grupo no debe tener archivos				(ARREGLADO)
 - al dar en profile al buscador, quitar boton "+"			intentado
-- al añadir varios ficheros da error
-- al borrar un fichero sale a listGroup
++ al añadir varios ficheros da error					(ARREGLADO)
++ al borrar un fichero sale a listGroup					(ARREGLADO)
 
 	3. MEJORAS
-GRUPOS
+A. GRUPOS
 - en ver amigos-> poner boton "atras"
 - en ver archivos-> poner boton "atras"
 - en amigos -> Crear boton "guardar"
@@ -50,6 +49,16 @@ GRUPOS
 	Al darse se va a profile, se envia lo correspondiente y se vuelve a grupos
 - en archivos -> Crear boton "guardar" e igual que amigos
 
-BUSCADORES
+B. BUSCADORES
 - implementar el buscador en profile y en los grupos 
+
+C. SEGURIDAD
+- generar al registrarse en la app una clave publica y otra privada
+- realizar funciones que cifren y descifren con las claves
+- unir estas funciones al flujo de envio de mensajes entre usuarios
+	1. antes de enviar mensaje pedir clave publica
+	2. al recibirla cifrar el mensaje con ella
+	3. enviar mensaje cifrado
+	4. el receptor usar su clave privada para desencriptar mensaje
+
 
