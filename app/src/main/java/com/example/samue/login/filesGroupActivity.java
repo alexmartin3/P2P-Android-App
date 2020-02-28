@@ -129,6 +129,16 @@ public class filesGroupActivity extends AppCompatActivity {
 				startActivityForResult(intent,1);
 			}
 		});
+
+
+
+		FloatingActionButton backGroups = findViewById(R.id.backToFiles);
+		backGroups.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				onBackPressed();
+			}
+		});
 	}
 
 	private void loadfilesGroup(Groups group){

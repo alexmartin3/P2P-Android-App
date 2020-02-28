@@ -391,9 +391,11 @@ public class Profile extends AppCompatActivity {
 								}
 							}
 						}
-						Intent intent = new Intent(Profile.this, listGroupsActivity.class);
-						intent.putExtra("username", username);
-						startActivityForResult(intent, 6);
+						if(returnGroups) {
+							Intent intent = new Intent(Profile.this, listGroupsActivity.class);
+							intent.putExtra("username", username);
+							startActivityForResult(intent, 6);
+						}
 					}
 				}catch(Exception e) {
 					e.printStackTrace();

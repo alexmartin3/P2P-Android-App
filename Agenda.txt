@@ -150,6 +150,14 @@ Tras hablar con Julio:
   Esto ocurre ya que si estas en listgroup y crean un nuevo grupo, hasta que no vas a profile 
   no se actualiza tu lista, o ver como actualizar la actividad cada X segundos
 
+28 Febrero, Viernes
++ En lista de grupos, si te añaden a un grupo, la pantalla se refresca y te aparece el nuevo
+  grupo sin necesidad de volver a profile
+- Aun asi invertigar como ejecutar en segundo plano
++ Cambiado iconos de grupos,crear grupo, añadir amigo y fichero
++ implementado boton atras en lista amigos y ficheros de grupo 
++ Creado boton guardar en lista amigos/ficheros grupo
++ Reestructurado la colocación de los botones añadir fichero/amigo y guardar 
 
 
 

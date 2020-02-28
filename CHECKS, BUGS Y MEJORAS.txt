@@ -41,8 +41,8 @@ ADMINISTRACION ARCHIVOS
 
 	3. MEJORAS
 A. GRUPOS
-- en ver amigos-> poner boton "atras"
-- en ver archivos-> poner boton "atras"
+- en ver amigos-> poner boton "atras"					(IMPLEMENTADO)
+- en ver archivos-> poner boton "atras"					(IMPLEMENTADO)
 - en amigos -> Crear boton "guardar"
 	Hasta que no se le de, no se guarda nada, solo si se le da, se guarda 
 	la lista de amigos segun esta.
@@ -50,6 +50,8 @@ A. GRUPOS
 - en archivos -> Crear boton "guardar" e igual que amigos
 + en lista de grupos, si se crea grupo, aparte de actualizar pantalla, se va a profile y
   se vuelve a listgroup							(IMPLEMENTADO)
++ en lista de grupos, si te añaden a un grupo, se refresca la lista y se te añade de 
+  forma automatica, sin tener que retroceder a profile 			(IMPLEMENTADO)
 
 B. BUSCADORES
 - implementar el buscador en profile y en los grupos 

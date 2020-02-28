@@ -112,6 +112,17 @@ public class friendsGroupActivity extends AppCompatActivity {
                   }
               }
         });
+
+
+
+
+        FloatingActionButton backGroups = findViewById(R.id.backToFriends);
+        backGroups.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
     }
 
     private void loadFriendsList(ArrayList<Friends> friendsreload) {
