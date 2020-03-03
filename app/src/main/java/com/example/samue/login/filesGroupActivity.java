@@ -3,7 +3,9 @@ package com.example.samue.login;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -15,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -25,6 +28,7 @@ public class filesGroupActivity extends AppCompatActivity {
 	private Groups grupoactual;
 	private String username;
 	static DatabaseHelper filesgroupDatabaseHelper;
+	FloatingActionButton saveGroup;
 
 	private Dialog mdialog;
 	private ArrayList listnamefiles;
@@ -40,11 +44,13 @@ public class filesGroupActivity extends AppCompatActivity {
 		Toolbar toolbar = findViewById(R.id.listfilesgroup_toolbar);
 		setSupportActionBar(toolbar);
 		filesgroupDatabaseHelper = new DatabaseHelper(this);
+		saveGroup = findViewById(R.id.saveFiles);
 		Bundle extras = getIntent().getExtras();
 		listview = findViewById(R.id.listfilesgroups);
 		username = extras.getString("username");
 		grupoactual =(Groups) extras.getSerializable("group");
 		listnamefiles = new ArrayList();
+		changeGroup=false;
 		loadfilesGroup(grupoactual);
 
 		listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -74,12 +80,11 @@ public class filesGroupActivity extends AppCompatActivity {
 						public void onClick(View v) {
 							grupoactual.getListFiles().remove(i);
 							grupoactual.getListOwners().remove(i);
-							filesupdate=Utils.joinStrings(",",grupoactual.getListFiles());
-							ownersupdate=arrayListFriendsToString(grupoactual.getListOwners());
-							filesgroupDatabaseHelper.deleteFileToGroup(grupoactual.getNameGroup(), filesupdate, ownersupdate, filesgroupDatabaseHelper.GROUPS_TABLE_NAME);
+							Toast.makeText(getApplicationContext(), "El fichero se ha eliminado", Toast.LENGTH_SHORT).show();
 							mdialog.dismiss();
-							loadfilesGroup(grupoactual);
 							changeGroup=true;
+							loadfilesGroup(grupoactual);
+
 						}
 					});
 
@@ -105,8 +110,6 @@ public class filesGroupActivity extends AppCompatActivity {
 						@Override
 						public void onClick(View v) {
 							mdialog.dismiss();
-							//Uri dato = Uri.parse("content://name/" + name);
-							//Intent resultado = new Intent(null, dato);
 							Intent resultado = new Intent();
 							resultado.putExtra("name", name);
 							resultado.putExtra("owner", grupoactual.getListOwners().get(i).getNombre());
@@ -129,11 +132,35 @@ public class filesGroupActivity extends AppCompatActivity {
 				startActivityForResult(intent,1);
 			}
 		});
+
+		saveGroup.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				//TODO EL PROCESO DE GUARDAR LOS CAMBIOS EN LA BBDD
+
+				if (changeGroup) {
+					final Intent result = new Intent();
+					result.putExtra("download",false);
+					result.putExtra("newGroup", grupoactual);
+					setResult(Activity.RESULT_OK, result);
+					updateGroupBBDD(grupoactual.getNameGroup(),grupoactual.getListFiles(),grupoactual.getListOwners());
+
+					finish();
+					Toast.makeText(getApplicationContext(), "Los cambios se han guardado", Toast.LENGTH_SHORT).show();
+				}
+			}
+		});
+
+		FloatingActionButton backGroups = findViewById(R.id.backToFiles);
+		backGroups.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				onBackPressed();
+			}
+		});
 	}
 
 	private void loadfilesGroup(Groups group){
-		//if (listnamefiles != null){listnamefiles.clear();}
-		//else {listnamefiles = new ArrayList();}
 		listnamefiles = group.getListFiles();
 		ArrayList listfinal= new ArrayList();
 		if(!listnamefiles.isEmpty()) {
@@ -144,6 +171,12 @@ public class filesGroupActivity extends AppCompatActivity {
 		}
 		adaptador = new AEArrayAdapter(this, android.R.layout.simple_expandable_list_item_1,listfinal);
 		listview.setAdapter(adaptador);
+
+		if (changeGroup==false){
+			saveGroup.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY));
+		}else{
+			saveGroup.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.holo_blue_light)));
+		}
 	}
 	private boolean isOwner(int position){
 		boolean result=false;
@@ -153,8 +186,16 @@ public class filesGroupActivity extends AppCompatActivity {
 		}
 		return result;
 	}
-	//pasar de un array lists de amigos a un string
-	private String arrayListFriendsToString(ArrayList<Friends> listfriend) {
+	private boolean updateGroupBBDD(String nameupdate,ArrayList filesupdate, ArrayList<Friends> ownersupdate){
+		ArrayList files=filesupdate;
+		String ownerssupdatestring = arrayListToString(ownersupdate);
+		boolean inserted = filesgroupDatabaseHelper.addFileGroup(nameupdate,Utils.joinStrings(",",files),ownerssupdatestring, filesgroupDatabaseHelper.GROUPS_TABLE_NAME);
+		if (inserted)
+			return inserted;
+		else
+			return false;
+	}    //pasar de un array lists de amigos a un string
+	private String arrayListToString(ArrayList<Friends> listfriend) {
 		String myString =null;
 
 		for (int i = 0; i<listfriend.size();i++){
@@ -189,13 +230,33 @@ public class filesGroupActivity extends AppCompatActivity {
 	}
 	@Override
 	public void onBackPressed() {
-		Intent result = new Intent();
-		if (changeGroup) {
-			result.putExtra("download",false);
-			result.putExtra("newGroup", grupoactual);
-		}
-		setResult(Activity.RESULT_OK, result);
-		super.onBackPressed();
-	}
+		final Intent result = new Intent();
 
+		if (changeGroup == true) {
+			final Dialog backdialog = new Dialog(filesGroupActivity.this);
+			backdialog.setContentView(R.layout.dialog_backgroups);
+			backdialog.show();
+
+			Button yes = backdialog.findViewById(R.id.back_groups_yes);
+			yes.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View view) {
+					setResult(Activity.RESULT_OK, result);
+					filesGroupActivity.super.onBackPressed();
+				}
+			});
+			Button no = backdialog.findViewById(R.id.back_groups_no);
+			no.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					backdialog.dismiss();
+				}
+			});
+
+		} else {
+			setResult(Activity.RESULT_OK, result);
+			super.onBackPressed();
+		}
+	}
 }

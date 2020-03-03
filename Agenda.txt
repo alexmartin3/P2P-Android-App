@@ -140,8 +140,39 @@ Tras hablar con Julio:
 + Arreglado la gestion de borrar un grupo siendo admin/ no admin, si no eres admin se te borra
   el grupo, pero al resto solo desapareces de la lista de amigos, si eres admin borra a todos
 
+27 Febrero, Jueves
++ Terminado todos los bugs que habia de la administacion de grupos
++ Creada rama para la modificacion del funcionamiento de la app en referencia a los grupos
+  Vamos a intentar no tener que acceder hasta profile, para actualizar los cambios que haya 
+  al añadir/borrar grupos, amigos o ficheros
++ Implementado en envio de un nuevo grupo sin necesidad de volver a profile
+- Investigar como en el resto de usuarios ejecutar una accion de una actividad raiz
+  Esto ocurre ya que si estas en listgroup y crean un nuevo grupo, hasta que no vas a profile 
+  no se actualiza tu lista, o ver como actualizar la actividad cada X segundos
 
+28 Febrero, Viernes
++ En lista de grupos, si te añaden a un grupo, la pantalla se refresca y te aparece el nuevo
+  grupo sin necesidad de volver a profile
+- Aun asi invertigar como ejecutar en segundo plano
++ Cambiado iconos de grupos,crear grupo, añadir amigo y fichero
++ implementado boton atras en lista amigos y ficheros de grupo 
++ Creado boton guardar en lista amigos/ficheros grupo
++ Reestructurado la colocación de los botones añadir fichero/amigo y guardar 
 
+2 Marzo, Lunes
++ Implementación del boton guardar en amigos. Se han borrado los guardados en base de datos en 
+  borrar amigo, y al añadir amigo, solo se guarda en base de datos si se da al boton.
++ Creado dialogo al volver atras confirmando que no se guardan los cambios si retrocede sin 
+  pulsar boton guardar (solo si hay cambios)
++ Mejorado el boton añadir amigos, comprobando que no hay mas amigos antes de ir al activity
+- Falta implementar los mismos pasos en ficheros del grupo, muy similar.
+
+3 Marzo, Martes
++ Implementación del boton guardar en ficheros. Se han borrado los guardados en BBDD tanto en
+  borrar fichero si es admin, como al añadir fichero desde cualquiera. Solo se guarda en BBDD 
+  la infor cuando se da al boton guardar.
++ Reutilizado el dialogo de volver atras de amigos en ficheros, tanto en boton como retroceso 
+  de android, solo si hay cambios.
 
 
 

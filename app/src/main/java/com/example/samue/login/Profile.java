@@ -354,6 +354,7 @@ public class Profile extends AppCompatActivity {
 			case 6:
 				try {
 					boolean download = data.getBooleanExtra("download",false);
+					boolean returnGroups = data.getBooleanExtra("returnGroups",false);
 					if (download==true){
 						String name = data.getStringExtra("name");
 						String owner = data.getStringExtra("owner");
@@ -389,6 +390,11 @@ public class Profile extends AppCompatActivity {
 									publish(friendslist.get(j).getNombre(), "DG", DGGroup.getNameGroup());
 								}
 							}
+						}
+						if(returnGroups) {
+							Intent intent = new Intent(Profile.this, listGroupsActivity.class);
+							intent.putExtra("username", username);
+							startActivityForResult(intent, 6);
 						}
 					}
 				}catch(Exception e) {
@@ -1281,7 +1287,6 @@ public class Profile extends AppCompatActivity {
 			}
 		}
 	}
-
 	private class myRTCListener extends PnRTCListener{
 		@Override
 		public void onPeerConnectionClosed(PnPeer peer) {
@@ -1502,6 +1507,9 @@ public class Profile extends AppCompatActivity {
 				boolean inserted = mDatabaseHelper.addGroupComplete(groupnew.getNameGroup(), arrayListFriendsToString(groupnew.getListFriends()),Utils.joinStrings(",",groupnew.getListFiles()),arrayListFriendsToString(groupnew.getListOwners()), groupnew.getAdministrador());
 				Toast.makeText(getApplicationContext(), "Has sido añadido al grupo " + nameGroup, Toast.LENGTH_SHORT).show();
 			}
+			//Intent intent = new Intent(Profile.this, listGroupsActivity.class);
+			//intent.putExtra("username", username);
+			//startActivityForResult(intent, 6);
 
 		}catch (Exception e){
 			e.printStackTrace();

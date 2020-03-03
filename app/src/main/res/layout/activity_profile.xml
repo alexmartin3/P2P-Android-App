@@ -46,7 +46,7 @@
         android:foregroundGravity="bottom"
         app:backgroundTint="@android:color/holo_blue_light"
         app:fabSize="normal"
-        app:srcCompat="@drawable/group" />
+        app:srcCompat="@drawable/groups" />
 
     <ListView
         android:id="@+id/friends_list"

@@ -377,8 +377,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(GROUPS_COL1, name);
 		contentValues.put(GROUPS_COL2, friends);
-		//contentValues.put(GROUPS_COL3, name);
-		//contentValues.put(GROUPS_COL4, name);
 		contentValues.put(GROUPS_COL5,administrator);
 		Log.d(TAG, "addData: Adding " + name + " to " + GROUPS_TABLE_NAME);
 		long result = db.insert(GROUPS_TABLE_NAME, null, contentValues);
@@ -577,9 +575,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 		String[] args = new String[]{nameGroup};
 		ContentValues cv = new ContentValues();
-		cv.put("files",filesnews);
-		cv.put ("owners",ownersnews);
-
+		if(filesnews.equals("")){
+			cv.putNull("files");
+			cv.putNull("owners");
+		}else {
+			cv.put("files", filesnews);
+			cv.put("owners", ownersnews);
+		}
 		int result = db.update(table,cv,"name_group=?",args);
 		if (result == -1)
 			return false;

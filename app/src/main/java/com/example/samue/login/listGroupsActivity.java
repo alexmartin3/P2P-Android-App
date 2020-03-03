@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -28,6 +29,9 @@ public class listGroupsActivity extends AppCompatActivity {
     static DatabaseHelper groupDatabaseHelper;
     static ArrayList<Groups> new_groups;
     static ArrayList<Groups> delete_groups;
+    static boolean returnGroups;
+    private Handler handler=new Handler();
+    private final int TIME = 2000;
 
 
     Dialog mdialogCreate;
@@ -49,8 +53,10 @@ public class listGroupsActivity extends AppCompatActivity {
         username=extras.getString("username");
         new_groups= new ArrayList<Groups>();
         delete_groups = new ArrayList<Groups>();
+        returnGroups=false;
 
         loadGroupList();
+        actualizar();
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -126,8 +132,10 @@ public class listGroupsActivity extends AppCompatActivity {
                         listGroups.remove(grupoactual);
                         groupDatabaseHelper.deleteGroup(grupoactual.getNameGroup(), groupDatabaseHelper.GROUPS_TABLE_NAME);
                         Toast.makeText(getApplicationContext(), grupoactual.getNameGroup() + " se ha eliminado", Toast.LENGTH_SHORT).show();
-                        deletedialog.dismiss();
-                        loadGroupList();
+
+                        returnGroups=true;
+                        onBackPressed();
+                        //deletedialog.dismiss();
                     }
                 });
                 Button no = deletedialog.findViewById(R.id.delete_group_no);
@@ -190,6 +198,15 @@ public class listGroupsActivity extends AppCompatActivity {
         adapter = new GroupsAdapter(this, listGroups);
         listView = findViewById(R.id.groups_list);
         listView.setAdapter(adapter);
+    }
+    private void actualizar(){
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                loadGroupList();
+                handler.postDelayed(this, TIME);
+            }
+        }, TIME);
+
     }
     private ArrayList<Friends> stringtoArrayListFriend(String friends){
         if (friends == null){return new ArrayList<>();}
@@ -286,6 +303,8 @@ public class listGroupsActivity extends AppCompatActivity {
                             delete_groups.add(deleteGroup);
                         }
                     }
+                    returnGroups=true;
+                    onBackPressed();
                 }catch (NullPointerException e){
                     e.printStackTrace();
                 }
@@ -297,6 +316,7 @@ public class listGroupsActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.putExtra("newgroups",new_groups);
         intent.putExtra("deletegroups",delete_groups);
+        intent.putExtra("returnGroups",returnGroups);
         setResult(Activity.RESULT_OK,intent);
         super.onBackPressed();
     }
