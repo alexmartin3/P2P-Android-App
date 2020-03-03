@@ -88,30 +88,13 @@ public class ArchiveExplorerGroups extends AppCompatActivity {
                             progressDialog.setIndeterminate(true);
                             progressDialog.setMessage("Subiendo " + name + "...");
                             progressDialog.show();
-                            add = updateGroupBBDD(group.getNameGroup(), path, group);
-                            //para obtener solo el nombre y mostrarlo usar esta funcion: path.substring(path.lastIndexOf('/')+1)
-                            if (add) {
-                                Toast.makeText(getApplicationContext(), "File selected has been added", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent();
-                                intent.putExtra("file",path);
-                                setResult(Activity.RESULT_OK,intent);
-                                finish();
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Ha ocurrido un error", Toast.LENGTH_SHORT).show();
-                            }
-                            /* CREO QUE ESTO PUEDE SOBRAR
-                            new android.os.Handler().postDelayed(new Runnable() {
-                                public void run() {
-                                    // On complete call either onLoginSuccess or onLoginFailed
-                                    Uri dato = Uri.parse("content://name/" + name);
-                                    Intent resultado = new Intent(null, dato);
-                                    resultado.putExtra("name", name);
-                                    resultado.putExtra("path", path);
-                                    setResult(RESULT_OK, resultado);
-                                    finish();
-                                    progressDialog.dismiss();
-                                }
-                            }, 2000);   */
+
+                            Toast.makeText(getApplicationContext(), "File selected has been added", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent();
+                            intent.putExtra("file",path);
+                            setResult(Activity.RESULT_OK,intent);
+                            finish();
+
                         }
                     });
                 } else {

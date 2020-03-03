@@ -111,16 +111,12 @@ public class friendsgroup extends AppCompatActivity {
                     } else if (valor == 2) {
                         friendsSelectedfinish.addAll(stringtoArrayListFriend(aux));
                         friendsSelectedfinish.addAll(friendsSelected);
-                        add = updateGroupBBDD(nameGroup, friendsSelectedfinish);
-                        if (add) {
-                            Toast.makeText(getApplicationContext(), "Friends selected has been added", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent();
-                            intent.putExtra("friends", friendsSelectedfinish);
-                            setResult(Activity.RESULT_OK, intent);
-                            finish();
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Ha ocurrido un error", Toast.LENGTH_SHORT).show();
-                        }
+
+                        Toast.makeText(getApplicationContext(), "Friends selected has been added", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent();
+                        intent.putExtra("friends", friendsSelectedfinish);
+                        setResult(Activity.RESULT_OK, intent);
+                        finish();
 
                     } else {
                         Toast.makeText(getApplicationContext(), "Ha ocurrido un error", Toast.LENGTH_SHORT).show();
@@ -172,14 +168,7 @@ public class friendsgroup extends AppCompatActivity {
         else
             return false;
     }
-    private boolean updateGroupBBDD(String nameupdate, ArrayList<Friends> friendsupdate){
-        String friendsupdatestring = arrayListToString(friendsupdate);
-        boolean inserted = helperGroup.addFriendsGroup(nameupdate,friendsupdatestring, helperGroup.GROUPS_TABLE_NAME);
-        if (inserted)
-            return inserted;
-        else
-            return false;
-    }
+
     // ----------------------a partir de aqui revisar que esto no sobre-------------------
     private void removeGroup(String name) {
         boolean removed = helperGroup.deleteGroup(name, helperGroup.GROUPS_TABLE_NAME);

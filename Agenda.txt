@@ -159,5 +159,20 @@ Tras hablar con Julio:
 + Creado boton guardar en lista amigos/ficheros grupo
 + Reestructurado la colocación de los botones añadir fichero/amigo y guardar 
 
+2 Marzo, Lunes
++ Implementación del boton guardar en amigos. Se han borrado los guardados en base de datos en 
+  borrar amigo, y al añadir amigo, solo se guarda en base de datos si se da al boton.
++ Creado dialogo al volver atras confirmando que no se guardan los cambios si retrocede sin 
+  pulsar boton guardar (solo si hay cambios)
++ Mejorado el boton añadir amigos, comprobando que no hay mas amigos antes de ir al activity
+- Falta implementar los mismos pasos en ficheros del grupo, muy similar.
+
+3 Marzo, Martes
++ Implementación del boton guardar en ficheros. Se han borrado los guardados en BBDD tanto en
+  borrar fichero si es admin, como al añadir fichero desde cualquiera. Solo se guarda en BBDD 
+  la infor cuando se da al boton guardar.
++ Reutilizado el dialogo de volver atras de amigos en ficheros, tanto en boton como retroceso 
+  de android, solo si hay cambios.
+
 
 

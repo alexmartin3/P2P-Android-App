@@ -48,7 +48,7 @@
         android:layout_marginBottom="168dp"
         android:src="@drawable/save"
         android:enabled="true"
-        app:backgroundTint="@android:color/holo_blue_light"
+        app:backgroundTint="@color/holo_blue_light"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

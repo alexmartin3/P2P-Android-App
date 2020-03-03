@@ -7,6 +7,7 @@ import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -27,8 +28,8 @@ public class friendsGroupActivity extends AppCompatActivity {
     static DatabaseHelper friendsGroupDatabaseHelper;
 
     FloatingActionButton addFriend;
+    FloatingActionButton saveGroup;
     String nameFriend;
-    String friendsupdate;
     private boolean changeGroup;
     ArrayList<Friends> nuevo;
 
@@ -40,14 +41,16 @@ public class friendsGroupActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         friendsGroupDatabaseHelper = new DatabaseHelper(this);
         addFriend = findViewById(R.id.addFriends);
+        saveGroup = findViewById(R.id.saveFriends);
         Bundle extras = getIntent().getExtras();
         username = extras.getString("username");
         grupoactual = (Groups) extras.get("group");
         changeGroup=false;
         nuevo=new ArrayList<>();
 
+
         loadFriendsList(grupoactual.getListFriends());
-        isadmin();
+        isAdmin();
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -68,16 +71,13 @@ public class friendsGroupActivity extends AppCompatActivity {
 
                             @Override
                             public void onClick(View view) {
-                                //removeGroup(nameGroup);
                                 nuevo.add(grupoactual.getListFriends().get(position));
                                 grupoeliminado = new Groups(grupoactual.getNameGroup(), R.drawable.icongroup, nuevo, grupoactual.getListFriends().get(position).getNombre());
                                 grupoactual.getListFriends().remove(position);
-                                friendsupdate = arrayListFriendsToString(grupoactual.getListFriends());
-                                friendsGroupDatabaseHelper.deleteFriendToGroup(grupoactual.getNameGroup(), friendsupdate, friendsGroupDatabaseHelper.GROUPS_TABLE_NAME);
                                 Toast.makeText(getApplicationContext(), nameFriend + " se ha eliminado", Toast.LENGTH_SHORT).show();
                                 deletedialog.dismiss();
-                                loadFriendsList(grupoactual.getListFriends());
                                 changeGroup = true;
+                                loadFriendsList(grupoactual.getListFriends());
                             }
                         });
                         Button no = deletedialog.findViewById(R.id.delete_friend_no);
@@ -94,27 +94,44 @@ public class friendsGroupActivity extends AppCompatActivity {
             }
         });
 
-
-        FloatingActionButton addfriendgroup = findViewById(R.id.addFriends);
-        addfriendgroup.setOnClickListener(new View.OnClickListener() {
+        addFriend.setOnClickListener(new View.OnClickListener() {
               @Override
               public void onClick(View view) {
                   String user = grupoactual.getAdministrador();
                   if(!username.equals(user)){
                       Toast.makeText(getApplicationContext(), "ERROR: No eres administrador", Toast.LENGTH_SHORT).show();
                   }else {
-                      Intent myIntent = new Intent(friendsGroupActivity.this, friendsgroup.class);
-                      myIntent.putExtra("nameGroup", grupoactual.getNameGroup());
-                      myIntent.putExtra("username", username);
-                      myIntent.putExtra("valor", 2); //valor=1, crear grupo, valor=2, añadir amigos nuevos
-                      myIntent.putExtra("friendsold", arrayListFriendsToString(grupoactual.getListFriends()));
-                      startActivityForResult(myIntent, 1);
+                      if(haveMoreFriends()) {
+                          Intent myIntent = new Intent(friendsGroupActivity.this, friendsgroup.class);
+                          myIntent.putExtra("nameGroup", grupoactual.getNameGroup());
+                          myIntent.putExtra("username", username);
+                          myIntent.putExtra("valor", 2); //valor=1, crear grupo, valor=2, añadir amigos nuevos
+                          myIntent.putExtra("friendsold", arrayListFriendsToString(grupoactual.getListFriends()));
+                          startActivityForResult(myIntent, 1);
+                      }else{
+                          Toast.makeText(getApplicationContext(), "Lo siento, no tienes más amigos", Toast.LENGTH_SHORT).show();
+                      }
                   }
               }
         });
 
+        saveGroup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO EL PROCESO DE GUARDAR LOS CAMBIOS EN LA BBDD
 
-
+                if (changeGroup) {
+                    final Intent result = new Intent();
+                    result.putExtra("download",false);
+                    result.putExtra("newGroup", grupoactual);
+                    result.putExtra("deleteGroup",grupoeliminado);
+                    setResult(Activity.RESULT_OK, result);
+                    updateGroupBBDD(grupoactual.getNameGroup(),grupoactual.getListFriends());
+                }
+                finish();
+                Toast.makeText(getApplicationContext(), "Los cambios se han guardado", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         FloatingActionButton backGroups = findViewById(R.id.backToFriends);
         backGroups.setOnClickListener(new View.OnClickListener() {
@@ -129,6 +146,11 @@ public class friendsGroupActivity extends AppCompatActivity {
         adapter = new FriendsAdapter(this, friendsreload);
         listView = findViewById(R.id.listfriendgroups);
         listView.setAdapter(adapter);
+        if (changeGroup==false){
+            saveGroup.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY));
+        }else{
+            saveGroup.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.holo_blue_light)));
+        }
     }
     private ArrayList<Friends> stringtoArrayListFriend(String friends){
         if (friends == null){return new ArrayList<>();}
@@ -156,11 +178,47 @@ public class friendsGroupActivity extends AppCompatActivity {
         }
         return myString;
     }
-    public void isadmin(){
+    public void isAdmin(){
         String user = grupoactual.getAdministrador();
         if(!username.equals(user)){
-           addFriend.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY));
+           addFriend.hide();
+           saveGroup.hide();
         }
+    }
+    public boolean haveMoreFriends(){
+        boolean result=false;
+        int friendsGroup = grupoactual.listFriends.size()-1;
+        Cursor data = friendsGroupDatabaseHelper.getData(DatabaseHelper.FRIENDS_TABLE_NAME);
+        int friendsUser = data.getCount();
+
+        if(friendsUser > friendsGroup) result = true;
+
+        return result;
+    }
+    private boolean updateGroupBBDD(String nameupdate, ArrayList<Friends> friendsupdate){
+        String friendsupdatestring = arrayListToString(friendsupdate);
+        boolean inserted = friendsGroupDatabaseHelper.addFriendsGroup(nameupdate,friendsupdatestring, friendsGroupDatabaseHelper.GROUPS_TABLE_NAME);
+        if (inserted)
+            return inserted;
+        else
+            return false;
+    }
+    //pasar de un array lists de amigos a un string
+    private String arrayListToString(ArrayList<Friends> listfriend) {
+        String myString =null;
+
+        for (int i = 0; i<listfriend.size();i++){
+            if (myString==null){
+                myString=listfriend.get(i).getNombre();
+                if (i < (listfriend.size() - 1)){myString = myString + ",";}
+            }else {
+                myString = myString + listfriend.get(i).getNombre();
+                if (i < (listfriend.size() - 1)) {
+                    myString = myString + ",";
+                }
+            }
+        }
+        return myString;
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
@@ -181,13 +239,33 @@ public class friendsGroupActivity extends AppCompatActivity {
     }
     @Override
     public void onBackPressed() {
-        Intent result = new Intent();
-        if (changeGroup) {
-            result.putExtra("download",false);
-            result.putExtra("newGroup", grupoactual);
-            result.putExtra("deleteGroup",grupoeliminado);
+        final Intent result = new Intent();
+
+        if(changeGroup==true){
+            final Dialog backdialog = new Dialog(friendsGroupActivity.this);
+            backdialog.setContentView(R.layout.dialog_backgroups);
+            backdialog.show();
+
+            Button yes = backdialog.findViewById(R.id.back_groups_yes);
+            yes.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View view) {
+                    setResult(Activity.RESULT_OK, result);
+                    friendsGroupActivity.super.onBackPressed();
+                }
+            });
+            Button no = backdialog.findViewById(R.id.back_groups_no);
+            no.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    backdialog.dismiss();
+                }
+            });
+
+        }else{
+            setResult(Activity.RESULT_OK, result);
+            super.onBackPressed();
         }
-        setResult(Activity.RESULT_OK, result);
-        super.onBackPressed();
     }
 }
