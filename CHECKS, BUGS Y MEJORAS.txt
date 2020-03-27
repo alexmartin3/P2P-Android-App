@@ -55,6 +55,9 @@ A. GRUPOS
 
 B. BUSCADORES
 - implementar el buscador en profile y en los grupos 
++ creado e implementado buscador en grupos				(IMPLEMENTADO)
+- intentar ajustarlo a la derecha, ver como poder encajarlo	
+- crear e implementar buscador en profile
 
 C. SEGURIDAD
 - generar al registrarse en la app una clave publica y otra privada
@@ -67,6 +70,7 @@ C. SEGURIDAD
 
 D. OTROS
 - si no tiene mas amigos, no dejar entrar en añadir amigos en grupos  	(IMPLEMENTADO)
-
+- pasar herramienta de calidad o seguridad del codigo (kiwan o sonar7)
+- realizar MEMORIA
 
 
