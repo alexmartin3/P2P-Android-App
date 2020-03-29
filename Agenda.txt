@@ -1,7 +1,8 @@
-PLANIFICACION ENTREGA ENERO
-- 9 Enero: Entrega borrador proyecto
-- 16 Enero: Apto/no apto profesor
-- 23 Enero: Entrega memoria final
+PLANIFICACION ENTREGA MAYO
+- 18 Mayo, Lunes: Entrega borrador proyecto
+- 25 Mayo, Lunes: Apto/no apto profesor
+- 29 Mayo, Viernes: Entrega memoria final
+- 9 Junio, Martes: Exposición pública
 
 1 Octubre, Martes
 + creado nuevo repositorio
@@ -174,5 +175,23 @@ Tras hablar con Julio:
 + Reutilizado el dialogo de volver atras de amigos en ficheros, tanto en boton como retroceso 
   de android, solo si hay cambios.
 
+26 Marzo, Jueves
++ Planificacion fin de semana cuarentena, ver puntos y organizarlos:
+	1. Buscador en grupos (y profile¿?)
+	2. Crear cifrado (solo antes y despues de enviar mensaje) usar pass¿?
+		- Ver si crear password al usuario para cifrar la informacion¿?
+	3. (OPCIONAL) Pasar herramienta de analisis de calidad del codigo. (kiwan,sonar7)
+	4. Realizar memoria. Ver fechas
++ Creacion estructura SearchView: localizado cuando escribes y cuando envias busqueda
 
+27 Marzo, Viernes
++ Creado funcion para actualizar adapter en funcion de lo escrito en SearchView
++ Modificado funcion actualizar para tener en cuenta si esta activo buscador
++ Probado combinaciones para ver todos los puntos posibles de conflicto
+
+29 Marzo, Domingo
++ Creación estructura SearchView en profile usando version vieja y libreria support, no SearchView
++ Dentro de la estructura, funcion para buscar amigos que contienen texto excrito
++ Probados todas las combinaciones para su funcionamiento
++ Añadido checks para funcionamiento de buscadores
 

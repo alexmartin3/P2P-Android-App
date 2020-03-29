@@ -15,11 +15,13 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Locale;
 
 public class listGroupsActivity extends AppCompatActivity {
     private GroupsAdapter adapter;
@@ -32,7 +34,8 @@ public class listGroupsActivity extends AppCompatActivity {
     static boolean returnGroups;
     private Handler handler=new Handler();
     private final int TIME = 2000;
-
+    private boolean buscador;
+    private SearchView searchGroup;
 
     Dialog mdialogCreate;
     EditText nameGroupText;
@@ -54,6 +57,7 @@ public class listGroupsActivity extends AppCompatActivity {
         new_groups= new ArrayList<Groups>();
         delete_groups = new ArrayList<Groups>();
         returnGroups=false;
+        buscador=false;
 
         loadGroupList();
         actualizar();
@@ -147,6 +151,27 @@ public class listGroupsActivity extends AppCompatActivity {
             }
         });
 
+        searchGroup = findViewById(R.id.search_group);
+        searchGroup.setQueryHint(getText(R.string. search_group));
+        searchGroup.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+           @Override
+           public boolean onQueryTextSubmit(String query) {
+               return false;
+           }
+
+           @Override
+           public boolean onQueryTextChange(String newText) {
+               if(newText.equals("")){
+                   buscador=false;
+               }else{
+                   buscador = true;
+               }
+               listGroupsSearch(newText);
+               return true;
+           }
+
+       });
+
         FloatingActionButton createGroup = findViewById(R.id.createGroup);
         createGroup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -202,11 +227,27 @@ public class listGroupsActivity extends AppCompatActivity {
     private void actualizar(){
         handler.postDelayed(new Runnable() {
             public void run() {
-                loadGroupList();
+                if(!buscador && searchGroup.isIconified() ) {
+                    loadGroupList();
+                }
                 handler.postDelayed(this, TIME);
             }
         }, TIME);
-
+    }
+    private void listGroupsSearch(String text){
+        ArrayList<Groups> groupsSearch = new ArrayList<>();
+        if (text.length()== 0){
+            groupsSearch.addAll(listGroups);
+        }else{
+            for(Groups temp : listGroups){
+                if(temp.getNameGroup().toLowerCase(Locale.getDefault()).contains(text)) {
+                    groupsSearch.add(temp);
+                }
+            }
+        }
+        adapter = new GroupsAdapter(this, groupsSearch);
+        listView = findViewById(R.id.groups_list);
+        listView.setAdapter(adapter);
     }
     private ArrayList<Friends> stringtoArrayListFriend(String friends){
         if (friends == null){return new ArrayList<>();}

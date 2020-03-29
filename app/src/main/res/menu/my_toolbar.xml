@@ -18,7 +18,13 @@
     <item android:id="@+id/see_downloads"
         android:title="Descargas"
         app:showAsAction="never"/>
-
+<!---
+    <SearchView
+        android:id="@+id/action_search"
+        android:title="action_search"
+        android:icon="@drawable/magnify"
+        app:showAsAction="always"></SearchView>
+        -->
     <item android:id="@+id/action_search"
         android:title="action_search"
         android:icon="@drawable/magnify"

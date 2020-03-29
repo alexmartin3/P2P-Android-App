@@ -20,6 +20,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
@@ -32,6 +33,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+//import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,6 +60,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import me.kevingleason.pnwebrtc.PnPeer;
@@ -105,6 +108,7 @@ public class Profile extends AppCompatActivity {
 	static ArrayList<Groups> listgroups;
 	private ArrayList<Groups> newgroups;
 	private ArrayList<Groups> deletegroups;
+	private SearchView searchFriend;
 
 	private ServiceConnection serviceConnection = new ServiceConnection(){
 		@Override
@@ -436,7 +440,38 @@ public class Profile extends AppCompatActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.my_toolbar, menu);
+		MenuItem myActionMenuItem = menu.findItem( R.id.action_search);
+		searchFriend = (SearchView) myActionMenuItem.getActionView();
+		searchFriend.setQueryHint(getText(R.string.search_friend));
+		searchFriend.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+			@Override
+			public boolean onQueryTextSubmit(String query) {
+				return false;
+			}
+			@Override
+			public boolean onQueryTextChange(String newText) {
+				Toast.makeText(getApplicationContext(), newText, Toast.LENGTH_SHORT).show();
+				listFriendsSearch(newText);
+
+				return true;
+			}
+		});
 		return true;
+	}
+	private void listFriendsSearch(String text){
+		ArrayList<Friends> friendsSearch = new ArrayList<>();
+		if (text.length()== 0){
+			friendsSearch.addAll(al_friends);
+		}else{
+			for(Friends temp : al_friends){
+				if(temp.getNombre().toLowerCase(Locale.getDefault()).contains(text)) {
+					friendsSearch.add(temp);
+				}
+			}
+		}
+		adapter = new FriendsAdapter(this, friendsSearch);
+		friends_list.setAdapter(adapter);
+
 	}
 
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -532,11 +567,6 @@ public class Profile extends AppCompatActivity {
 					}
 				});
 				return true;
-			case R.id.action_search:
-
-
-				return true;
-
 			default:
 			// If we got here, the user's action was not recognized.
 			// Invoke the superclass to handle it.
