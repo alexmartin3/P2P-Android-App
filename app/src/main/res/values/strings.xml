@@ -28,7 +28,7 @@
     <string name="friends_button">Ver amigos</string>
     <string name="ask_exit">¿Deseas salir?</string>
     <string name="search_group">Buscar grupo...</string>
-    <string name="submitted">Buscado grupo...</string>
+    <string name="search_friend">Buscar amigo...</string>
 
 
 </resources>

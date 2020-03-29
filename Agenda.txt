@@ -189,3 +189,9 @@ Tras hablar con Julio:
 + Modificado funcion actualizar para tener en cuenta si esta activo buscador
 + Probado combinaciones para ver todos los puntos posibles de conflicto
 
+29 Marzo, Domingo
++ Creación estructura SearchView en profile usando version vieja y libreria support, no SearchView
++ Dentro de la estructura, funcion para buscar amigos que contienen texto excrito
++ Probados todas las combinaciones para su funcionamiento
++ Añadido checks para funcionamiento de buscadores
+

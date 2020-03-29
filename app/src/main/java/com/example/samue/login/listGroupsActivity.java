@@ -154,23 +154,23 @@ public class listGroupsActivity extends AppCompatActivity {
         searchGroup = findViewById(R.id.search_group);
         searchGroup.setQueryHint(getText(R.string. search_group));
         searchGroup.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                                               @Override
-                                               public boolean onQueryTextSubmit(String query) {
-                                                   return false;
-                                               }
+           @Override
+           public boolean onQueryTextSubmit(String query) {
+               return false;
+           }
 
-                                               @Override
-                                               public boolean onQueryTextChange(String newText) {
-                                                   if(newText.equals("")){
-                                                       buscador=false;
-                                                   }else{
-                                                       buscador = true;
-                                                   }
-                                                   listGroupsSearch(newText);
-                                                   return true;
-                                               }
+           @Override
+           public boolean onQueryTextChange(String newText) {
+               if(newText.equals("")){
+                   buscador=false;
+               }else{
+                   buscador = true;
+               }
+               listGroupsSearch(newText);
+               return true;
+           }
 
-                                           });
+       });
 
         FloatingActionButton createGroup = findViewById(R.id.createGroup);
         createGroup.setOnClickListener(new View.OnClickListener() {

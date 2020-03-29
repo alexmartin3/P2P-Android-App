@@ -27,6 +27,12 @@ ADMINISTRACION ARCHIVOS
 - los archivos borrados se actualizan en el resto de amigos
 - si no eres dueño del archivo, puedes descargar el archivo
 
+BUSCADORES (GRUPOS Y AMIGOS)
+- Escribir texto, ver que se muestran los que los contienen
+- Si pulsamos lupa, desaparece teclado
+- Si cerramos busqueda (despues de lupa o no) volvemos al inicio de busqueda
+- si borramos texto, se muestran todos de nuevo
+
 	2. ERRORES ENCONTRADOS EN LA DEPURACION (BUGS)
 + crear grupos sin nombres						(ARREGLADO)
 - si sale mensaje "ha ocurrido un error" aun así se crea el grupo
@@ -54,10 +60,10 @@ A. GRUPOS
   forma automatica, sin tener que retroceder a profile 			(IMPLEMENTADO)
 
 B. BUSCADORES
-- implementar el buscador en profile y en los grupos 
++ implementar el buscador en profile y en los grupos			(IMPLEMENTADO) 
 + creado e implementado buscador en grupos				(IMPLEMENTADO)
-- intentar ajustarlo a la derecha, ver como poder encajarlo	
-- crear e implementar buscador en profile
+- intentar ajustarlo a la derecha, ver como poder encajarlo, toolbar	
++ crear e implementar buscador en profile				(IMPLEMENTADO)
 
 C. SEGURIDAD
 - generar al registrarse en la app una clave publica y otra privada
