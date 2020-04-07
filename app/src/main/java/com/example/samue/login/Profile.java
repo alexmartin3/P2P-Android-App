@@ -46,6 +46,7 @@ import com.tom_roush.pdfbox.pdmodel.PDDocument;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.spongycastle.jcajce.provider.asymmetric.RSA;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnectionFactory;
 import org.webrtc.VideoRendererGui;
@@ -213,9 +214,37 @@ public class Profile extends AppCompatActivity {
 		groups.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+
+				//PRUEBA PARA  CIFRAR INFORMACION
+				try{
+					String prueba = "prueba de cifrado";
+					Cryptography rsa = new Cryptography();
+					//mostrar mensaje sin cifrar
+					Log.i("CIFRADO1",prueba);
+					String pruebaCifrada = rsa.cipher(prueba);
+					//mostrar mensaje cifrado (pruebaCifrada)
+					Log.i("CIFRADO2",new String(pruebaCifrada));
+					Cryptography rsa2 = new Cryptography();
+					rsa2.setPrivateKey(rsa.getPrivateKey());
+					String pruebaDescifrada = rsa2.decipher(pruebaCifrada);
+					//mostar mensaje descifrado (pruebaDescrifrada)
+					Log.i("CIFRADO3",pruebaDescifrada);
+					Log.i("CIFRADO4","HASTA AQUI LLEGA");
+
+
+
+
+
+				}catch (Exception e){
+					e.printStackTrace();
+				}
+
+				/*
 				Intent intent = new Intent(Profile.this, listGroupsActivity.class);
 				intent.putExtra("username", username);
 				startActivityForResult(intent, 6);
+
+				 */
 			}
 		});
 		fab = (FloatingActionButton) findViewById(R.id.addFriendsFAB);

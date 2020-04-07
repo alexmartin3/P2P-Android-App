@@ -195,3 +195,9 @@ Tras hablar con Julio:
 + Probados todas las combinaciones para su funcionamiento
 + Añadido checks para funcionamiento de buscadores
 
+7 Abril, Martes
++ Creado clase Cryptography, donde va el cifrado y descifrado de los mensajes
++ clase con generacion de clave publica y privada, funcion cifrar y descifrar
++ probado que el mismo mensaje se cifra y descifra usando las 2 funciones
+- acoplar en la parte de codigo necesaria
+- enviar clave publica al otro lado

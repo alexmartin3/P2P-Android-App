@@ -66,8 +66,8 @@ B. BUSCADORES
 + crear e implementar buscador en profile				(IMPLEMENTADO)
 
 C. SEGURIDAD
-- generar al registrarse en la app una clave publica y otra privada
-- realizar funciones que cifren y descifren con las claves
+- generar al registrarse en la app una clave publica y otra privada	(IMPLEMENTADO)
+- realizar funciones que cifren y descifren con las claves		(IMPLEMENTADO)
 - unir estas funciones al flujo de envio de mensajes entre usuarios
 	1. antes de enviar mensaje pedir clave publica
 	2. al recibirla cifrar el mensaje con ella
