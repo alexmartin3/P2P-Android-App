@@ -68,11 +68,13 @@ B. BUSCADORES
 C. SEGURIDAD
 - generar al registrarse en la app una clave publica y otra privada	(IMPLEMENTADO)
 - realizar funciones que cifren y descifren con las claves		(IMPLEMENTADO)
-- unir estas funciones al flujo de envio de mensajes entre usuarios
-	1. antes de enviar mensaje pedir clave publica
-	2. al recibirla cifrar el mensaje con ella
-	3. enviar mensaje cifrado
-	4. el receptor usar su clave privada para desencriptar mensaje
+- unir estas funciones al flujo de envio de mensajes entre usuarios	(IMPLEMENTADO)
+	1. antes de enviar mensaje pedir clave publica			(IMPLEMENTADO)
+	2. generar clave secreta y cifrala con la publica y enviarla	(IMPLEMENTADO)
+	2. cifrar el mensaje con clave secreta				(IMPLEMENTADO)
+	3. enviar mensaje cifrado					(IMPLEMENTADO)
+	4. receptor usar clave privada para desencriptar clave secreta	(IMPLEMENTADO)
+	5. usa la clave secreta para descifrar mensaje			(IMPLEMENTADO)
 
 D. OTROS
 - si no tiene mas amigos, no dejar entrar en añadir amigos en grupos  	(IMPLEMENTADO)

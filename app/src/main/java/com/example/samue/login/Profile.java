@@ -56,6 +56,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -111,6 +115,8 @@ public class Profile extends AppCompatActivity {
 	private ArrayList<Groups> deletegroups;
 	private SearchView searchFriend;
 
+	private Cryptography rsaUser;
+
 	private ServiceConnection serviceConnection = new ServiceConnection(){
 		@Override
 		public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -140,6 +146,13 @@ public class Profile extends AppCompatActivity {
 		friends_list = (ListView) findViewById(R.id.friends_list);
 		sendersManager = SendersManager.getSingleton();
 		sendersManager.start();
+
+		try {
+			rsaUser = new Cryptography();
+			rsaUser.genKeyPair();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
 
 		loadGroupList();
 		populateListView();
@@ -214,37 +227,71 @@ public class Profile extends AppCompatActivity {
 		groups.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-
+/*
 				//PRUEBA PARA  CIFRAR INFORMACION
 				try{
-					String prueba = "prueba de cifrado";
+					String prueba = "prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifrado prueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoalfdskjqpewiKHGFJHGFJHGFJfjñlaskj  prueba de cifrado alfdskjqpewifjñlaskj ñlwfLJHGKJHGKJGKJGasdfj ñ";
 					Cryptography rsa = new Cryptography();
-					//mostrar mensaje sin cifrar
-					Log.i("CIFRADO1",prueba);
-					String pruebaCifrada = rsa.cipher(prueba);
-					//mostrar mensaje cifrado (pruebaCifrada)
-					Log.i("CIFRADO2",new String(pruebaCifrada));
+					rsa.genKeyPair();
 					Cryptography rsa2 = new Cryptography();
-					rsa2.setPrivateKey(rsa.getPrivateKey());
-					String pruebaDescifrada = rsa2.decipher(pruebaCifrada);
-					//mostar mensaje descifrado (pruebaDescrifrada)
-					Log.i("CIFRADO3",pruebaDescifrada);
-					Log.i("CIFRADO4","HASTA AQUI LLEGA");
+					rsa2.genKeyPair();
+
+					//SIMULACRO DE ENVIO DE CLAVE PUBLICA, GENERACION DE CLAVE SECRETA, CIFRADO CON CLAVE SECRETA
+					// ENVIADO DE CLAVE SECRETA CIFRADA CON PUBLICA Y TEXTO CIFRADO, DESCIFRADO DE CALVE SECRETA Y MENSAJE
+					//primero sacamos publica de user 1 a string y enviamos a user 2 que guarda
+					//ciframos con publica de 1, desciframos con privada de 1 y vemos resultado
+					String pubkey =rsa.getPublicKeyString();
+					Log.i("TEST PUBLIC-1",pubkey); 		//muestro clave publica string
+					String pubkeysended = pubkey;		//recibe clave publica string
+					rsa2.setPublicKeyString(pubkeysended);		//añaddo la publica recibida y que usare
+					Log.i("TEST PUBLIC-2",rsa2.getPublicKeyString());//igual 1
+					rsa2.generateKey();	//genero en user2 clave secreta
+					String secretKey = rsa2.getSecretKeyString();	//guardo la clave secreta para enviarla y usarla
+					Log.i("TEST PUBLIC-3",secretKey); 			//muesto la clave secreta
+					Log.i("TEST PUBLIC-3", String.valueOf(secretKey.length())); //muestro tamaño clave secreta
+					String secretKeyCifrada = rsa2.cipherRSA(secretKey); 	//cifro la clave secreta con la publica para enviarla
+					Log.i("TEST PUBLIC-4",secretKeyCifrada); 			//muesto la clave secreta cifrada con la publica
+					Log.i("TEST PUBLIC-4", String.valueOf(secretKeyCifrada.length())); //muestro tamaño clave secreta cifrada
+					Log.i("TEST CIFRADO0",prueba);		//muestro mensaje original
+					Log.i("TEST CIFRADO0", String.valueOf(prueba.length())); //muestro tamaño mensaje
+					String pruebaCifrada = rsa2.cipherSimetric(prueba); 	//cifro el mensaje con la clave secreta
+					Log.i("TEST CIFRADO1",pruebaCifrada);				//muestro el mensaje cifrado
+					Log.i("TEST CIFRADO1", String.valueOf(pruebaCifrada.length()));//muestro tamaño mensaje cifrado
+					String pruebaRecibida = pruebaCifrada;			//envio mensaje cifrado a user 1 y guarda
+					String secretKeyDescifrada = rsa.decipherRSAToString(secretKeyCifrada); //recibe la clave secreta encriptada, la descifro
+					Log.i("TEST CIFRADO2",secretKeyDescifrada);			//muestro la clave secreta desencriptada -- igual PUBLIC-3
+					rsa.setSecretKeyString(secretKeyDescifrada);			//guardo la clave secreta en el user- lista para usar
+					String pruebaDescifrada = rsa.decipherSimetricToString(pruebaRecibida); //descifro el mensaje con la clave secreta
+					Log.i("TEST CIFRADO3",pruebaRecibida);		//igual que CIFRADO 1
+					Log.i("TEST CIFRADO4",pruebaDescifrada);		//igual que CIFRADO 0
+					Log.i("TEST CIFRADO4", String.valueOf(pruebaDescifrada.length())); //muestro tamaño mensaje
 
 
+
+					//PASOS REALES
+					//1. ENVIAR PUBLIC KEY A USER 2
+					//2. USER 2 GUARDAR PUBLIC KEY DE USER 1
+					//3. CIFRAR MENSAJES CON PUBLIC KEY ANTES DE ENVIAR A USER 1
+					//4. AL RECIBIR INFO DE USER 2 DESCIFRAR CON PRIVATE KEY
+
+
+
+
+
+					Log.i("CIFRADOFIN","HASTA AQUI LLEGA");
 
 
 
 				}catch (Exception e){
 					e.printStackTrace();
 				}
+*/
 
-				/*
 				Intent intent = new Intent(Profile.this, listGroupsActivity.class);
 				intent.putExtra("username", username);
 				startActivityForResult(intent, 6);
 
-				 */
+
 			}
 		});
 		fab = (FloatingActionButton) findViewById(R.id.addFriendsFAB);
@@ -680,6 +727,9 @@ public class Profile extends AppCompatActivity {
 			msg.put(Utils.NAME, name);
 			msg.put(Utils.REQ_PREVIEW, isPreview);
 			msg.put("group", group);
+			//CIFRADO Paso1. Envio de la clave publica
+			msg.put("publicKey",rsaUser.getPublicKeyString());
+			Log.i("paso1",rsaUser.getPublicKeyString());
 			// Útil para la descarga desde una carpeta compartida:
 			if (selectedFolder != null){
 				msg.put("selectedFolder", selectedFolder);
@@ -729,6 +779,17 @@ public class Profile extends AppCompatActivity {
 	}
 
 	private void handleSA(JSONObject jsonMsg){
+		//CIFRADO Paso4. Se recibe el mensaje la secretKey encriptada y con la info cifrada y se la pasa a dowloadService
+		//vamos a añadir en el mensaje la secretKey descifrada para que pueda descodificar el mensaje
+		try {
+			String secretKeyCipher = jsonMsg.getString("secretKey");
+			Log.i("paso4-secretkeyCipher",secretKeyCipher);
+			String secretKey = rsaUser.decipherRSAToString(secretKeyCipher);
+			jsonMsg.put("secretKey",secretKey);
+			Log.i("paso4-secretkey",secretKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		this.downloadService.handleMsg(jsonMsg);
 	}
 
@@ -806,19 +867,33 @@ public class Profile extends AppCompatActivity {
 						msg.put(Utils.FILE_LENGTH, fileLength);
 						msg.put(Utils.NEW_DL, true);
 
+						//CIFRADO Paso2. Obtengo el string de la clave publica
+						// Genero SecretKey para cifrar en activeFileSender
+						// encripto la secreKey con la clave publica y guardo en mensaje
+						String pubkeyString = jsonMsg.getString("publicKey");
+						Log.i("paso2-clave publica",pubkeyString);
+						Cryptography rsaTemp = new Cryptography();
+						rsaTemp.setPublicKeyString(pubkeyString);
+						rsaTemp.generateKey();
+						String secretKey = rsaTemp.getSecretKeyString();
+						Log.i("paso2-secretkey",secretKey);
+						String secretKeyCipher = rsaTemp.cipherRSA(secretKey);
+						Log.i("paso2-secretkeyCifrada",secretKeyCipher);
+						msg.put("secretKey",secretKeyCipher);
+
 						// Si no se está enviando ningún archivo y no hay ningún hilo en cola se lanza el hilo de subida.
 						if (!sendingFile && sendersManager.isQueueEmpty()) {
 							sendingFile = true;
 							activeFileSender = new FileSender();
 							activeFileSender.setName("fileSender");
-							activeFileSender.setVariables(previewSize, msg, sendTo, file, fis, isPreview);
+							activeFileSender.setVariables(previewSize, msg, sendTo, file, fis, isPreview, secretKey);
 							activeFileSender.start();
 						}
 						// Si hay un hilo enviando un fichero y la cola no está llena se pone en cola.
 						else if (sendingFile && !sendersManager.queueFull()) {
 							FileSender fs = new FileSender();
 							fs.setName("fileSenderQueued");
-							fs.setVariables(previewSize, msg, sendTo, file, fis, isPreview);
+							fs.setVariables(previewSize, msg, sendTo, file, fis, isPreview, secretKey);
 							sendersManager.addSender(archive, fs);
 						}
 					}
@@ -1226,11 +1301,12 @@ public class Profile extends AppCompatActivity {
 		private File file2;
 		private FileInputStream fis;
 		private boolean isPreview;
+		private String secretKey;
 		@Override
 		public void run() {
 			boolean lastPiece = false;
 			boolean firstPiece = true;
-			// Voy a enviar 16 KB de datos en cada mensaje, codificado aumentará.
+			// Voy a enviar 16 KB (16384) de datos en cada mensaje, codificado aumentará.
 			byte[] bFile = new byte[16384];
 			int bytesRead;
 			int totalBytesRead = 0;
@@ -1238,7 +1314,12 @@ public class Profile extends AppCompatActivity {
 			activeFileSender = this;
 			pnRTCClient.closeConnection(sendTo2);
 			prepareSenderClient(sendTo2);
+			//CIFRADO Paso3. Genero clase donde guardo la secretKey y con la que cifro los mensajes
 			try {
+				Cryptography rsaTemp = new Cryptography();
+				rsaTemp.setSecretKeyString(secretKey);
+				Log.i("paso3-secretkey",rsaTemp.getSecretKeyString());
+
 				while (!lastPiece) {
 					bytesRead = fis.read(bFile);
 					totalBytesRead += bytesRead;
@@ -1255,14 +1336,34 @@ public class Profile extends AppCompatActivity {
 					if (lastPiece){
 						// Si bytesRead == -1 no hay que enviar nada más.
 						byte[] finalbFile;
-						if (bytesRead != -1)
+						if (bytesRead != -1) {
 							finalbFile = Arrays.copyOf(bFile, bytesRead);
-						else
+						}
+						else {
 							finalbFile = new byte[]{0};
-						s = Base64.encodeToString(finalbFile, Base64.URL_SAFE);
+						}
+						//CIFRADO Paso3. Uso la secretKey para cifrar el string con la parte del fichero enviado
+						Log.i("paso3-nocifrado",rsaTemp.bytesToString(finalbFile));
+						Log.i("paso3-nocifradosize", String.valueOf(rsaTemp.bytesToString(finalbFile).length()));
+						s = rsaTemp.cipherSimetric(finalbFile);
+						Log.i("paso3-cifrado",s);
+						Log.i("paso3-cifradosize", String.valueOf(s.length()));
+						//como estaba antes
+						// s = Base64.encodeToString(finalbFile, Base64.URL_SAFE);
 					}
-					else
-						s = Base64.encodeToString(bFile, Base64.URL_SAFE);
+					else {
+						//CIFRADO Paso3. Uso la secretKey para cifrar el string con la parte del fichero enviado
+						Log.i("paso3-nocifrado",rsaTemp.bytesToString(bFile));
+						Log.i("paso3-nocifradosize", String.valueOf(rsaTemp.bytesToString(bFile).length()));
+
+						s = rsaTemp.cipherSimetric(bFile);
+						Log.i("paso3-cifrado",s);
+						Log.i("paso3-cifradosize", String.valueOf(s.length()));
+
+						//como estaba antes
+						// s = Base64.encodeToString(bFile, Base64.URL_SAFE);
+
+					}
 					msg.put(Utils.DATA, s);
 					senderClient.transmit(sendTo2, msg);
 					msg.remove(Utils.DATA);
@@ -1318,13 +1419,14 @@ public class Profile extends AppCompatActivity {
 		 * @param fiss Canal de transmisión de los datos del fichero para su lectura.
 		 * @param prev Determina si es un fichero de previsualización o no.
 		 */
-		public void setVariables(long p, JSONObject j, String s, File f, FileInputStream fiss, boolean prev){
+		public void setVariables(long p, JSONObject j, String s, File f, FileInputStream fiss, boolean prev, String pk){
 			previewLength = p;
 			msg = j;
 			sendTo2 = s;
 			file2 = f;
 			fis = fiss;
 			isPreview = prev;
+			secretKey = pk;
 		}
 		/**
 		 * Devuelve el nombre del fichero que se está descargando.
