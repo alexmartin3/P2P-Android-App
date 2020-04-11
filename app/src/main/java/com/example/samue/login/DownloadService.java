@@ -8,12 +8,14 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.util.Pair;
 import android.util.Base64;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.math.BigInteger;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -310,6 +312,14 @@ public class DownloadService extends Service{
 					File file = new File(path);
 					bytesWritten = 0;
 
+					//CIFRADO Paso5. Obtenemos el string con la secretkey para crear el objeto
+					//con el cual vamos a ir descifrando los mensajes
+					String secretKey = jsonMsg.getString("secretKey");
+					Log.i("paso5-secretkey",secretKey);
+					Cryptography rsaTemp = new Cryptography();
+					rsaTemp.setSecretKeyString(secretKey);
+
+
 					// Actualiza el estado de la descarga en el último segundo para que se muestre más tarde en la interfaz gráfica.
 					dl_timer = new Timer();
 					dl_timer.schedule(new TimerTask() {
@@ -325,8 +335,16 @@ public class DownloadService extends Service{
 							while (!newJson)
 								dl_monitor.wait();
 
-							codedData.replace(0, codedData.length(), json.getString(Utils.DATA));
-							decodedData = Base64.decode(codedData.toString(), Base64.URL_SAFE);
+							//CIFRADO Paso5.Se recibe la info cifrada, se descifra con la secretKey
+							//se recibe string se usa byte[]
+							Log.i("paso5-cifrado",json.getString(Utils.DATA));
+							decodedData=rsaTemp.decipherSimetric(json.getString(Utils.DATA));
+							Log.i("paso5-descifrado",new String(decodedData));
+
+							//como estaba antes
+							//codedData.replace(0, codedData.length(), json.getString(Utils.DATA));
+							//decodedData = Base64.decode(codedData.toString(), Base64.URL_SAFE);
+
 							fos.write(decodedData);
 							bytesWritten += decodedData.length;
 							storedLastSecond += decodedData.length;

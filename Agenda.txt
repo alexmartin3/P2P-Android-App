@@ -195,3 +195,31 @@ Tras hablar con Julio:
 + Probados todas las combinaciones para su funcionamiento
 + Añadido checks para funcionamiento de buscadores
 
+7 Abril, Martes
++ Creado clase Cryptography, donde va el cifrado y descifrado de los mensajes
++ clase con generacion de clave publica y privada, funcion cifrar y descifrar
++ probado que el mismo mensaje se cifra y descifra usando las 2 funciones
+- acoplar en la parte de codigo necesaria
+- enviar clave publica al otro lado
+
+8 Abril, Miercoles
++ Repasado estructura de la descarga de ficheros, tanto desde un amigo como desde grupos
+  para encontrar punto clave donde se envie la informacion del mensaje
++ Creado mensajes para ver el texto enviado (tanto string como byte[] del fichero) y asi
+  compararlo con lo que se recibe en el destino-coinciden
+- falta probar a cifrar con clave publica y descifrar en destino con privada
+- pensar como pasar las claves y mantener la info
+
+9 Abril, Jueves
++ Incorporado el envio de la clave publica al usuario que envia, y lugar donde cifra mensaje
++ Descifrado del mensaje en el receptor
+- Encontrado problema al cifrar con clave publica, bloque demasiado pequeño para la info.
+- Buscar solucion con AES
+
+10 Abril, Viernes
++ Reenfocado como implementar la seguridad
++ La parte de RSA se mantiene, al querer descargar un archivo, se envia clave publica
++ Usuario que recibe publica, genera secretKey AES que encripta con la publica y pasa al user1
++ A su vez con esa secretKey cifra la informacion del archivo que se envia
++ User1 recibe secretKey encriptada, desencripta con clave publica y descifra mensaje
++ Debugeado proceso en plano (un usuario), probado de forma real en usuarios y en grupo

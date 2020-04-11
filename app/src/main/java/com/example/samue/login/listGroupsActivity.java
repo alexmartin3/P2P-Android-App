@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Locale;
 
+import javax.crypto.KeyGenerator;
+
 public class listGroupsActivity extends AppCompatActivity {
     private GroupsAdapter adapter;
     private ListView listView;
