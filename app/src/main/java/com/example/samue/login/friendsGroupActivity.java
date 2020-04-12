@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class friendsGroupActivity extends AppCompatActivity {
     private FriendsAdapter adapter;
@@ -57,7 +58,7 @@ public class friendsGroupActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 String user = grupoactual.getAdministrador();
                 if(!username.equals(user)){
-                    Toast.makeText(getApplicationContext(), "ERROR: No eres administrador", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "No eres administrador", Toast.LENGTH_SHORT).show();
                 }else {
                     nameFriend = grupoactual.getListFriends().get(position).getNombre();
 
@@ -72,7 +73,7 @@ public class friendsGroupActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View view) {
                                 nuevo.add(grupoactual.getListFriends().get(position));
-                                grupoeliminado = new Groups(grupoactual.getNameGroup(), R.drawable.icongroup, nuevo, grupoactual.getListFriends().get(position).getNombre());
+                                grupoeliminado = new Groups(grupoactual.getNameGroup(), R.drawable.cohete, nuevo, grupoactual.getListFriends().get(position).getNombre());
                                 grupoactual.getListFriends().remove(position);
                                 Toast.makeText(getApplicationContext(), nameFriend + " se ha eliminado", Toast.LENGTH_SHORT).show();
                                 deletedialog.dismiss();
@@ -88,7 +89,7 @@ public class friendsGroupActivity extends AppCompatActivity {
                             }
                         });
                     } else {
-                        Toast.makeText(getApplicationContext(), "ERROR: Eres tú mismo", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Eres tú mismo", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -99,7 +100,7 @@ public class friendsGroupActivity extends AppCompatActivity {
               public void onClick(View view) {
                   String user = grupoactual.getAdministrador();
                   if(!username.equals(user)){
-                      Toast.makeText(getApplicationContext(), "ERROR: No eres administrador", Toast.LENGTH_SHORT).show();
+                      Toast.makeText(getApplicationContext(), "No eres administrador", Toast.LENGTH_SHORT).show();
                   }else {
                       if(haveMoreFriends()) {
                           Intent myIntent = new Intent(friendsGroupActivity.this, friendsgroup.class);
@@ -143,7 +144,22 @@ public class friendsGroupActivity extends AppCompatActivity {
     }
 
     private void loadFriendsList(ArrayList<Friends> friendsreload) {
-        adapter = new FriendsAdapter(this, friendsreload);
+        ArrayList<Friends> friendsEdited = new ArrayList<>();
+        for (Friends f: friendsreload){
+            friendsEdited.add(new Friends(f.getNombre(),f.getImg()));
+        }
+        for (Friends f : friendsEdited){
+            if(f.getNombre().equals(username) && f.getNombre().equals(grupoactual.getAdministrador())){
+                f.setNombre("Tú (Admin)");
+            }
+            else if (f.getNombre().equals(username)){
+                f.setNombre("Tú");
+            }
+            else if(f.getNombre().equals(grupoactual.getAdministrador())){
+                f.setNombre(f.getNombre() + " (Admin)");
+            }
+        }
+        adapter = new FriendsAdapter(this, friendsEdited);
         listView = findViewById(R.id.listfriendgroups);
         listView.setAdapter(adapter);
         if (changeGroup==false){

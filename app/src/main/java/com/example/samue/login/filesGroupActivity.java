@@ -95,10 +95,13 @@ public class filesGroupActivity extends AppCompatActivity {
 					mdialog.show();
 
 					TextView tv = mdialog.findViewById(R.id.confirm_archive_tv);
-					tv.setText("¿Quieres descargar " + name + "?");
+					tv.setText("¿Quieres descargar " + name.substring(name.lastIndexOf('/')+1) + "?");
 
 					Button yes = mdialog.findViewById(R.id.confirm_archive_yes);
 					Button no = mdialog.findViewById(R.id.confirm_archive_no);
+					//lo mantenemos oculto por no implementarse en grupos
+					Button preview = mdialog.findViewById(R.id.confirm_archive_preview);
+					preview.setVisibility(view.INVISIBLE);
 
 					no.setOnClickListener(new View.OnClickListener() {
 						@Override

@@ -97,7 +97,7 @@ public class friendsgroup extends AppCompatActivity {
                         friendsSelectedfinish.add(new Friends(username, R.drawable.ic_launcher_foreground));
                         friendsSelectedfinish.addAll(friendsSelected);
 
-                        newGroup = new Groups(nameGroup, R.drawable.icongroup, friendsSelectedfinish, administrator);
+                        newGroup = new Groups(nameGroup, R.drawable.cohete, friendsSelectedfinish, administrator);
                         add = addGroupBBDD(nameGroup, friendsSelectedfinish, administrator);
                         if (add) {
                             Toast.makeText(getApplicationContext(), "Group " + nameGroup + " has been created", Toast.LENGTH_SHORT).show();

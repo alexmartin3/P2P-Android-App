@@ -42,7 +42,7 @@ public class GroupsAdapter extends BaseAdapter {
         ImageView img = (ImageView) convertView.findViewById(R.id.img_user);
         TextView fn = (TextView) convertView.findViewById(R.id.friend_name);
 
-        // img.setImageResource(friend.getImg());
+        img.setImageResource(groups.getImgGroup());
         fn.setText(groups.getNameGroup());
 
         return convertView;

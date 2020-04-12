@@ -29,6 +29,8 @@
     <string name="ask_exit">¿Deseas salir?</string>
     <string name="search_group">Buscar grupo...</string>
     <string name="search_friend">Buscar amigo...</string>
+    <string name="delete_group">¿Desea borrar el grupo?</string>
+    <string name="exit_group">¿Desea salir del grupo?</string>
 
 
 </resources>

@@ -540,7 +540,7 @@ public class Profile extends AppCompatActivity {
 			friendsSearch.addAll(al_friends);
 		}else{
 			for(Friends temp : al_friends){
-				if(temp.getNombre().toLowerCase(Locale.getDefault()).contains(text)) {
+				if(temp.getNombre().toLowerCase(Locale.getDefault()).contains(text.toLowerCase())) {
 					friendsSearch.add(temp);
 				}
 			}
@@ -718,7 +718,7 @@ public class Profile extends AppCompatActivity {
 		this.pnRTCClient.closeConnection(userTo);
 	}
 
-	private void RA(String name, String sendTo, boolean isPreview, boolean group){ //Request Archive
+	private void RA(String name, String sendTo, boolean isPreview, final boolean group){ //Request Archive
 		try{
 			JSONObject msg = new JSONObject();
 			final String finalName = name;
@@ -743,7 +743,10 @@ public class Profile extends AppCompatActivity {
 				Profile.this.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						Toast.makeText(getApplicationContext(), "Descargando " + finalName, Toast.LENGTH_LONG).show();
+						if(group)
+							Toast.makeText(getApplicationContext(), "Descargando " + finalName.substring(finalName.lastIndexOf('/')+1), Toast.LENGTH_LONG).show();
+						else
+							Toast.makeText(getApplicationContext(), "Descargando " + finalName, Toast.LENGTH_LONG).show();
 					}
 				});
 				prepareDownloaderClient(sendTo);

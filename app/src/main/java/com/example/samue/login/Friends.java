@@ -14,6 +14,9 @@ public class Friends implements Serializable {
 
     public String getNombre(){return this.nombre;}
 
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
     public int getImg(){return this.img;}
 
 

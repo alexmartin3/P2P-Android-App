@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.security.acl.Group;
@@ -115,6 +116,10 @@ public class listGroupsActivity extends AppCompatActivity {
                 final Groups grupoactual = listGroups.get(position);
                 final Dialog deletedialog = new Dialog(listGroupsActivity.this);
                 deletedialog.setContentView(R.layout.dialog_deletegroup);
+                TextView  t = deletedialog.findViewById(R.id.delete_group_title);
+                if(!username.equals(grupoactual.getAdministrador())) {
+                    t.setText("¿Desea salir del grupo?");
+                }
                 deletedialog.show();
 
                 Button yes = deletedialog.findViewById(R.id.delete_group_yes);
@@ -242,7 +247,7 @@ public class listGroupsActivity extends AppCompatActivity {
             groupsSearch.addAll(listGroups);
         }else{
             for(Groups temp : listGroups){
-                if(temp.getNameGroup().toLowerCase(Locale.getDefault()).contains(text)) {
+                if(temp.getNameGroup().toLowerCase(Locale.getDefault()).contains(text.toLowerCase())) {
                     groupsSearch.add(temp);
                 }
             }
