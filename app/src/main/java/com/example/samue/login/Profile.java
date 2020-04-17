@@ -57,6 +57,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.math.BigInteger;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
@@ -67,6 +68,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import me.kevingleason.pnwebrtc.PnPeer;
 import me.kevingleason.pnwebrtc.PnRTCClient;
@@ -102,6 +107,7 @@ public class Profile extends AppCompatActivity {
 	static PnRTCClient downloaderClient;
 	private int senderCount = 0;
 	private Pubnub mPubNub;
+	private Cryptography userPubNub;
 	public String username;
 	private FileSender activeFileSender;
 	private SendersManager sendersManager;
@@ -146,13 +152,7 @@ public class Profile extends AppCompatActivity {
 		friends_list = (ListView) findViewById(R.id.friends_list);
 		sendersManager = SendersManager.getSingleton();
 		sendersManager.start();
-
-		try {
-			rsaUser = new Cryptography();
-			rsaUser.genKeyPair();
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
+		initUser();
 
 		loadGroupList();
 		populateListView();
@@ -219,7 +219,7 @@ public class Profile extends AppCompatActivity {
 		});
 		Toolbar myToolbar = findViewById(R.id.my_toolbar);
 		setSupportActionBar(myToolbar);
-		getSupportActionBar().setTitle("Amigos");
+		getSupportActionBar().setTitle(username + " - Amigos");
 		//getSupportActionBar().setTitle("Hola, " + getIntent().getExtras().getString("user"));
 		comprobarPermisos();
 		// Botón para ir a la activity de grupos.
@@ -266,6 +266,21 @@ public class Profile extends AppCompatActivity {
 					Log.i("TEST CIFRADO4",pruebaDescifrada);		//igual que CIFRADO 0
 					Log.i("TEST CIFRADO4", String.valueOf(pruebaDescifrada.length())); //muestro tamaño mensaje
 
+				//cifrar API KEYS de pubnub
+				Cryptography rsa = new Cryptography();
+				try {
+					rsa.generateKey();
+					String clave1Cifrada = rsa.cipherSimetric(Constants.PUB_KEY);
+					Log.i("PUB_KEY-CLAVECIFRADA",clave1Cifrada);
+					Log.i("PUB_KEY-CLAVESECRETA",rsa.getSecretKeyString());
+					String clave2Cifrada = rsa.cipherSimetric(Constants.SUB_KEY);
+					Log.i("PUB_SUB-CLAVECIFRADA",clave2Cifrada);
+					Log.i("PUB_SUB-CLAVESECRETA",rsa.getSecretKeyString());
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
 
 
 					//PASOS REALES
@@ -287,6 +302,7 @@ public class Profile extends AppCompatActivity {
 				}
 */
 
+
 				Intent intent = new Intent(Profile.this, listGroupsActivity.class);
 				intent.putExtra("username", username);
 				startActivityForResult(intent, 6);
@@ -304,7 +320,11 @@ public class Profile extends AppCompatActivity {
 				startActivityForResult(intent, 1);
 			}
 		});
-		initPubNub();
+		try {
+			initPubNub();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		// Arranque del servicio de descargas.
 		dl_intent = new Intent(this, DownloadService.class);
 		startService(dl_intent);
@@ -320,14 +340,16 @@ public class Profile extends AppCompatActivity {
 				@Override
 				public void successCallback(String channel, Object message) { //conectamos nosotros al otro
 					Log.d("MA-dCall", "SUCCESS: " + message.toString());
-					connectPeer(connectTo, true); //conectamos con el peer
+					try {
+						connectPeer(connectTo, true); //conectamos con el peer
 					/* Parada necesaria para asegurar que se realiza bien la conexión, ya sea para esperar
 					 * el tráfico en caso de estar la red congestionada o bien para esperar la respuesta desde
 					 * un dispositivo lento.
 					 */
-					try {
 						Thread.sleep(1500);
-					} catch (InterruptedException e) {}
+					}
+					catch (InterruptedException e) {}
+					catch (Exception e) {}
 
 					if(connectionType.equals("VAR")){ //buscamos que tipo de mensaje debemos enviar
 						VAR(connectTo);
@@ -353,9 +375,9 @@ public class Profile extends AppCompatActivity {
 			ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
 		}
 	}
-	public void initPubNub(){
+	public void initPubNub() throws Exception {
 		String stdbyChannel = this.username + Constants.STDBY_SUFFIX;
-		this.mPubNub = new Pubnub(Constants.PUB_KEY, Constants.SUB_KEY);
+		this.mPubNub = new Pubnub(userPubNub.pubnub(Constants.PUB_KEY), userPubNub.pubnub(Constants.SUB_KEY));
 		this.mPubNub.setUUID(this.username);
 		try {
 			this.mPubNub.subscribe(stdbyChannel, new Callback(){ //creamos nuestro canal y nos quedamos en stand-by esperando alguna conexión
@@ -517,20 +539,38 @@ public class Profile extends AppCompatActivity {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.my_toolbar, menu);
 		MenuItem myActionMenuItem = menu.findItem( R.id.action_search);
+		final MenuItem addFriendMenuItem = menu.findItem( R.id.add_friend);
+		final MenuItem blockMenuItem = menu.findItem( R.id.block_upload_mobile);
 		searchFriend = (SearchView) myActionMenuItem.getActionView();
 		searchFriend.setQueryHint(getText(R.string.search_friend));
+		searchFriend.setOnSearchClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				addFriendMenuItem.setVisible(false);
+				blockMenuItem.setVisible(false);
+			}
+		});
+		searchFriend.setOnCloseListener(new SearchView.OnCloseListener() {
+			@Override
+			public boolean onClose() {
+				addFriendMenuItem.setVisible(true);
+				blockMenuItem.setVisible(true);
+				return false;
+			}
+		});
 		searchFriend.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 			@Override
 			public boolean onQueryTextSubmit(String query) {
+
 				return false;
 			}
 			@Override
 			public boolean onQueryTextChange(String newText) {
 				Toast.makeText(getApplicationContext(), newText, Toast.LENGTH_SHORT).show();
 				listFriendsSearch(newText);
-
 				return true;
 			}
+
 		});
 		return true;
 	}
@@ -667,10 +707,11 @@ public class Profile extends AppCompatActivity {
 		Cursor data = mDatabaseHelper.getData(DatabaseHelper.FRIENDS_TABLE_NAME);
 		al_friends = new ArrayList<>();
 		while(data.moveToNext()){
-			al_friends.add(new Friends(data.getString(1), R.drawable.ic_launcher_foreground));
+			al_friends.add(new Friends(data.getString(1), R.drawable.astronaura));
 		}
 		adapter = new FriendsAdapter(this, al_friends);
 		friends_list.setAdapter(adapter);
+		data.close();
 	}
 	private ArrayList<String> getArchivesList(){
 		ArrayList<String> al = new ArrayList<String>();
@@ -678,10 +719,11 @@ public class Profile extends AppCompatActivity {
 		while(data.moveToNext()){
 			al.add(data.getString(1));
 		}
+		data.close();
 		return al;
 	}
 
-	private void connectPeer(String connectTo, boolean call){
+	private void connectPeer(String connectTo, boolean call)throws Exception{
 		if(this.pnRTCClient == null) {
 			PeerConnectionFactory.initializeAndroidGlobals(
 					getApplicationContext(),  // Context
@@ -691,7 +733,7 @@ public class Profile extends AppCompatActivity {
 					VideoRendererGui.getEGLContext()); // Render EGL Context
 
 			PeerConnectionFactory pcFactory = new PeerConnectionFactory();
-			this.pnRTCClient = new PnRTCClient(Constants.PUB_KEY, Constants.SUB_KEY, this.username);
+			this.pnRTCClient = new PnRTCClient(userPubNub.pubnub(Constants.PUB_KEY), userPubNub.pubnub(Constants.SUB_KEY), this.username);
 
 			MediaStream mediaStream = pcFactory.createLocalMediaStream(LOCAL_MEDIA_STREAM_ID);
 
@@ -770,10 +812,10 @@ public class Profile extends AppCompatActivity {
 	 * Inicializa el cliente que va a recibir los datos de ficheros.
 	 * @param user Usuario con el que se establece la conexión.
 	 */
-	private void prepareDownloaderClient(String user){
+	private void prepareDownloaderClient(String user) throws Exception{
 		PeerConnectionFactory pcFactory = new PeerConnectionFactory();
 		String uuid = "downloader_" + username;
-		downloaderClient = new PnRTCClient(Constants.PUB_KEY, Constants.SUB_KEY, uuid);
+		downloaderClient = new PnRTCClient(userPubNub.pubnub(Constants.PUB_KEY), userPubNub.pubnub(Constants.SUB_KEY), uuid);
 		MediaStream mediaStream = pcFactory.createLocalMediaStream(LOCAL_MEDIA_STREAM_ID_DOWNLOADER);
 		downloaderClient.attachLocalMediaStream(mediaStream);
 		downloaderClient.attachRTCListener(new myRTCListener());
@@ -1316,9 +1358,10 @@ public class Profile extends AppCompatActivity {
 			String s;
 			activeFileSender = this;
 			pnRTCClient.closeConnection(sendTo2);
-			prepareSenderClient(sendTo2);
-			//CIFRADO Paso3. Genero clase donde guardo la secretKey y con la que cifro los mensajes
 			try {
+				prepareSenderClient(sendTo2);
+				//CIFRADO Paso3. Genero clase donde guardo la secretKey y con la que cifro los mensajes
+				int count=0;
 				Cryptography rsaTemp = new Cryptography();
 				rsaTemp.setSecretKeyString(secretKey);
 				Log.i("paso3-secretkey",rsaTemp.getSecretKeyString());
@@ -1368,6 +1411,8 @@ public class Profile extends AppCompatActivity {
 
 					}
 					msg.put(Utils.DATA, s);
+					msg.put("count",count);
+					Log.i("count", String.valueOf(count));
 					senderClient.transmit(sendTo2, msg);
 					msg.remove(Utils.DATA);
 					msg.remove(Utils.LAST_PIECE);
@@ -1378,6 +1423,7 @@ public class Profile extends AppCompatActivity {
 						msg.put(Utils.NEW_DL, false);
 						firstPiece = false;
 					}
+					count++;
 				}
 				// Si ha sido necesario crear un archivo nuevo hay que borrarlo.
 				if (file2.getName().contains("_preview"))
@@ -1400,11 +1446,11 @@ public class Profile extends AppCompatActivity {
 		 * Inicializa el cliente que va a enviar los datos de ficheros.
 		 * @param user Usuario con el que se establece la conexión.
 		 */
-		private void prepareSenderClient(String user){
+		private void prepareSenderClient(String user) throws Exception{
 			PeerConnectionFactory pcFactory = new PeerConnectionFactory();
 			String uuid = "sender_" + username;
 			//String uuid = "sender_" + (++senderCount) + '_' + username;
-			senderClient = new PnRTCClient(Constants.PUB_KEY, Constants.SUB_KEY, uuid);
+			senderClient = new PnRTCClient(userPubNub.pubnub(Constants.PUB_KEY), userPubNub.pubnub(Constants.SUB_KEY), uuid);
 			MediaStream mediaStream = pcFactory.createLocalMediaStream(LOCAL_MEDIA_STREAM_ID_SENDER);
 			//MediaStream mediaStream = pcFactory.createLocalMediaStream(LOCAL_MEDIA_STREAM_ID_2+senderCount);
 			senderClient.attachLocalMediaStream(mediaStream);
@@ -1525,9 +1571,10 @@ public class Profile extends AppCompatActivity {
 		else
 			al_blocked_users = new ArrayList<>();
 		while (c.moveToNext()){
-			Friends f = new Friends(c.getString(1), R.drawable.ic_launcher_foreground);
+			Friends f = new Friends(c.getString(1), R.drawable.astronaura);
 			al_blocked_users.add(f);
 		}
+		c.close();
 	}
 	/**
 	 * Carga de las carpetas compartidas.
@@ -1544,6 +1591,7 @@ public class Profile extends AppCompatActivity {
 			ArrayList<String> al_files = new ArrayList<>(Arrays.asList(files.split(",")));
 			sharedFolders.put(folder, al_files);
 		}
+		c.close();
 	}
 	/**
 	 * Carga de la lista de acceso de los amigos a las carpetas compartidas.
@@ -1572,6 +1620,7 @@ public class Profile extends AppCompatActivity {
 			}
 			catch (CursorIndexOutOfBoundsException e){ e.printStackTrace();}
 		}
+		c.close();
 	}
 	private void loadGroupList() {
 		Cursor c = mDatabaseHelper.getData(DatabaseHelper.GROUPS_TABLE_NAME);
@@ -1581,9 +1630,10 @@ public class Profile extends AppCompatActivity {
 			ArrayList<Friends> friends = stringtoArrayListFriend(c.getString(1));
 			ArrayList files = stringtoArrayList(c.getString(2));
 			ArrayList<Friends> owners = stringtoArrayListFriend(c.getString(3));
-			Groups g = new Groups(c.getString(0), R.drawable.icongroup, friends, files, owners, c.getString(4));
+			Groups g = new Groups(c.getString(0), R.drawable.cohete, friends, files, owners, c.getString(4));
 			listgroups.add(g);
 		}
+		c.close();
 	}
 	//pasar un String con los amigos a ArrayList de Amigos
 	private ArrayList<Friends> stringtoArrayListFriend(String friends){
@@ -1594,6 +1644,16 @@ public class Profile extends AppCompatActivity {
 			resultado.add(new Friends(friendsSeparate[i],R.drawable.astronaura));
 		}
 		return resultado;
+	}
+	//iniciar usuarios de cifrar
+	private void initUser(){
+		try {
+			rsaUser = new Cryptography();
+			rsaUser.genKeyPair();
+			userPubNub = new Cryptography();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
 	}
 	//pasar un String con los archivos a ArrayList
 	private ArrayList stringtoArrayList(String files){

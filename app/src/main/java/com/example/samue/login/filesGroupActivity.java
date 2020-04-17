@@ -49,6 +49,7 @@ public class filesGroupActivity extends AppCompatActivity {
 		listview = findViewById(R.id.listfilesgroups);
 		username = extras.getString("username");
 		grupoactual =(Groups) extras.getSerializable("group");
+		getSupportActionBar().setTitle(grupoactual.getNameGroup() + " - Ficheros");
 		listnamefiles = new ArrayList();
 		changeGroup=false;
 		loadfilesGroup(grupoactual);
@@ -151,6 +152,7 @@ public class filesGroupActivity extends AppCompatActivity {
 					finish();
 					Toast.makeText(getApplicationContext(), "Los cambios se han guardado", Toast.LENGTH_SHORT).show();
 				}
+				saveGroup.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.holo_blue_light)));
 			}
 		});
 
@@ -178,7 +180,7 @@ public class filesGroupActivity extends AppCompatActivity {
 		if (changeGroup==false){
 			saveGroup.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY));
 		}else{
-			saveGroup.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.holo_blue_light)));
+			saveGroup.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.red)));
 		}
 	}
 	private boolean isOwner(int position){

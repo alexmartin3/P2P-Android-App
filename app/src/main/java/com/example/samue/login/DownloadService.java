@@ -311,6 +311,7 @@ public class DownloadService extends Service{
 					fos = new FileOutputStream(path);
 					File file = new File(path);
 					bytesWritten = 0;
+					int count = 0;
 
 					//CIFRADO Paso5. Obtenemos el string con la secretkey para crear el objeto
 					//con el cual vamos a ir descifrando los mensajes
@@ -339,6 +340,8 @@ public class DownloadService extends Service{
 							//se recibe string se usa byte[]
 							Log.i("paso5-cifrado",json.getString(Utils.DATA));
 							decodedData=rsaTemp.decipherSimetric(json.getString(Utils.DATA));
+							count=json.getInt("count");
+							Log.i("count", String.valueOf(count));
 							Log.i("paso5-descifrado",new String(decodedData));
 
 							//como estaba antes

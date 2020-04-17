@@ -131,8 +131,8 @@ public class friendsgroup extends AppCompatActivity {
         friends = new ArrayList<>();
         friendsviews= new ArrayList<>();
         while(data.moveToNext()){
-            friends.add(new Friends(data.getString(1), R.drawable.ic_launcher_foreground));
-            friendsviews.add(new Friends(data.getString(1), R.drawable.ic_launcher_foreground));
+            friends.add(new Friends(data.getString(1), R.drawable.astronaura));
+            friendsviews.add(new Friends(data.getString(1), R.drawable.astronaura));
         }
     }
     public void friendslist2(String friendsold) {
@@ -144,9 +144,9 @@ public class friendsgroup extends AppCompatActivity {
         while(data.moveToNext()){
             if (stringisfriend(friendsaux,data.getString(1))){}
             else {
-                friendsviews.add(new Friends(data.getString(1), R.drawable.ic_launcher_foreground));
+                friendsviews.add(new Friends(data.getString(1), R.drawable.astronaura));
             }
-            friends.add(new Friends(data.getString(1), R.drawable.ic_launcher_foreground));
+            friends.add(new Friends(data.getString(1), R.drawable.astronaura));
         }
     }
     public boolean stringisfriend(ArrayList<Friends> friendsold, String nuevo){
@@ -180,7 +180,7 @@ public class friendsgroup extends AppCompatActivity {
         friends.clear();
 
         while (c.moveToNext())
-            friends.add(new Friends(c.getString(1), R.drawable.ic_launcher_foreground));
+            friends.add(new Friends(c.getString(1), R.drawable.astronaura));
         rvadapter = new RVadapter(friends);
         recyclerView.setAdapter(rvadapter);
     }

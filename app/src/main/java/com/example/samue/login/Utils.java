@@ -30,6 +30,7 @@ public class Utils {
 	public static final String REQ_PREVIEW = "requestPreview";
 	public static final String PREVIEW_SENT = "previewSent";
 	public static final String CANCEL_DL = "cancelDl";
+	public static final String PUBNUB = "ce8eb3q4sfjooou5xgbvgf9v3wbdn0v2n8sezi6tnyhnjccfzl";
 	/*
 	 * Caracteres especiales para poder enviar el hashMap de las carpetas compartidas a las que tiene
 	 * acceso un usuario, junto a los identificadores habituales que estoy enviando en el json ('type',

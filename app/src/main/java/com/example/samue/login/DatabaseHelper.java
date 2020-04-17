@@ -118,6 +118,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		}
 		Log.d(TAG, "addData: Adding " + item + " to " + table);
 		long result = db.insert(table, null, contentValues);
+		db.close();
 		if (result == -1)
 			return false;
 		else
@@ -137,6 +138,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		contentValues.put(SHARED_FOLDERS_COL2, files);
 		Log.d(TAG, "addData: Adding " + folder + " to " + SHARED_FOLDERS_TABLE);
 		long result = db.insert(SHARED_FOLDERS_TABLE, null, contentValues);
+		db.close();
 		if (result == -1)
 			return false;
 		else
@@ -166,6 +168,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			result = db.insert(FOLDER_ACCESS_TABLE, null, contentValues);
 		}
 		Log.d(TAG, "addData: Adding to " + FOLDER_ACCESS_TABLE + " rows:\n" + friendsNames);
+		ids.close();
+		db.close();
 		if (result == -1)
 			return false;
 		else
@@ -220,6 +224,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		// y finalmente el borrado:
 		int result = db.delete(FOLDER_ACCESS_TABLE, where.toString(), null);
+		db.close();
 
 		if (result == -1)
 			return false;
@@ -238,6 +243,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		String[] args = new String[]{folder};
 
 		int result = db.delete(SHARED_FOLDERS_TABLE, "folder=?", args);
+		db.close();
 
 		if (result == -1)
 			return false;
@@ -257,6 +263,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		String[] args = new String[]{name};
 
 		int result = db.delete(table, "name=?", args);
+		db.close();
 
 		if (result == -1)
 			return false;
@@ -288,7 +295,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		String q = "SELECT "+ FRIENDS_COL2 +" FROM " + FRIENDS_TABLE_NAME + " WHERE " + FRIENDS_COL1 + " = " + id;
 		Cursor data = db.rawQuery(q, null);
 		data.moveToNext();
-		return data.getString(0);
+		String result=data.getString(0);
+		data.close();
+		db.close();
+		return result;
 	}
 
 
@@ -308,6 +318,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			ArrayList<String> al_files = new ArrayList<>(Arrays.asList(files.split(",")));
 			result.put(folder, al_files);
 		}
+		data.close();
+		db.close();
 		return result;
 	}
 
@@ -340,6 +352,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			}
 			catch (CursorIndexOutOfBoundsException e){ e.printStackTrace();}
 		}
+		data.close();
+		db.close();
 		return result;
 	}
 	/**
@@ -354,6 +368,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		user.moveToNext();
 		String where = FOLDER_ACCESS_COL2+'='+user.getInt(0);
 		int result = db.delete(FOLDER_ACCESS_TABLE, where, null);
+		user.close();
+		db.close();
 
 		if (result == -1)
 			return false;
@@ -380,6 +396,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		contentValues.put(GROUPS_COL5,administrator);
 		Log.d(TAG, "addData: Adding " + name + " to " + GROUPS_TABLE_NAME);
 		long result = db.insert(GROUPS_TABLE_NAME, null, contentValues);
+		db.close();
 
 		if (result == -1)
 			return false;
@@ -402,6 +419,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		contentValues.put(GROUPS_COL5,administrator);
 		Log.d(TAG, "addData: Adding " + name + " to " + GROUPS_TABLE_NAME);
 		long result = db.insert(GROUPS_TABLE_NAME, null, contentValues);
+		db.close();
 
 		if (result == -1)
 			return false;
@@ -431,6 +449,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			result = db.insert(FOLDER_ACCESS_TABLE, null, contentValues);
 		}
 		Log.d(TAG, "addData: Adding to " + FOLDER_ACCESS_TABLE + " rows:\n" + friendsNames);
+		ids.close();
+		db.close();
 		if (result == -1)
 			return false;
 		else
@@ -458,6 +478,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			result = db.insert(GROUPS_TABLE_NAME, null, contentValues);
 		}
 		Log.d(TAG, "addData: Adding to " + GROUPS_TABLE_NAME + " rows:\n" + friendsNames);
+		ids.close();
+		db.close();
 		if (result == -1)
 			return false;
 		else
@@ -491,6 +513,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		// y finalmente el borrado:
 		int result = db.delete(GROUPS_TABLE_NAME, where.toString(), null);
+		db.close();
 
 		if (result == -1)
 			return false;
@@ -509,6 +532,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		String[] args = new String[]{nameGroup};
 
 		int result = db.delete(GROUPS_TABLE_NAME, "name_group=?", args);
+		db.close();
 
 		if (result == -1)
 			return false;
@@ -526,6 +550,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         String[] args = new String[]{name};
         int result = db.delete(table, "name_Group=?", args);
+        db.close();
 
         if (result == -1)
             return false;
@@ -545,6 +570,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		ContentValues cv = new ContentValues();
 		cv.put("friends",friendsnews);
 		int result = db.update(table,cv,"name_group=?",args);
+		db.close();
 
 		if (result == -1)
 			return false;
@@ -564,6 +590,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		cv.put("files",filesnews);
 		cv.put("owners",ownersnews);
 		int result = db.update(table,cv,"name_group=?",args);
+		db.close();
 
 		if (result == -1)
 			return false;
@@ -583,6 +610,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			cv.put("owners", ownersnews);
 		}
 		int result = db.update(table,cv,"name_group=?",args);
+		db.close();
 		if (result == -1)
 			return false;
 		else
@@ -596,6 +624,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		cv.put("friends",friendsupdate);
 
 		int result = db.update(table,cv,"name_group=?",args);
+		db.close();
 		if (result == -1)
 			return false;
 		else
@@ -607,8 +636,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		String q = "SELECT * FROM " + GROUPS_TABLE_NAME;
 		Cursor data = db.rawQuery(q, null);
 		while (data.moveToNext()){
-			if (data.getString(0).equals(nameGroup)) return true;
+			if (data.getString(0).equals(nameGroup)){
+				data.close();
+				db.close();
+				return true;
+			}
 		}
+		data.close();
+		db.close();
 		return false;
 	}
 

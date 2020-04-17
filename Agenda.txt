@@ -223,3 +223,22 @@ Tras hablar con Julio:
 + A su vez con esa secretKey cifra la informacion del archivo que se envia
 + User1 recibe secretKey encriptada, desencripta con clave publica y descifra mensaje
 + Debugeado proceso en plano (un usuario), probado de forma real en usuarios y en grupo
+
+11 Abril, Sabado
++ Diferenciar en lista de amigos de un grupo quien es el admin y el usuario
+
+12 Abril, Domingo
++ Mejoras y bugs: quitar previsualizacion de grupos, mostrar solo archivo y no ruta en grupos,
+  evitar admin se borre a si mismo de lista de grupos, cambiar mensaje al borrar grupo, 
+  en buscador ignorar mayus, mostrar imagenes de usuarios y grupos
+
+13 Abril, Lunes
++ Realizado cambios para que se muestren las imagenes de amigos y grupos, logo cambiado
++ Completado lista de checks por las diferentes funcionalidades
++ Solucionado implementacion SearchView en profile mostarnado siempre el addFriend
++ Modificado nombre de las tools para saber donde estoy
+
+17 Abril, Viernes
++ Mejorado eliminacion de grupos, tambien se borran los ficheros del usuario que se sale
++ Cifrado de las APIs KEYs de PubNub para que no esten en texto claro y puedan usarlas
++ Mejorado la gestion de las bases de datos y cursores (nose cerraban en ningun lado, y rebosaban)

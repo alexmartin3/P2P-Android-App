@@ -50,13 +50,14 @@ public class listGroupsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list_groups);
         Toolbar toolbar = findViewById(R.id.listGroups_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Grupos");
+
         groupDatabaseHelper = new DatabaseHelper(this);
 
         ArrayList<Friends> listFriends= new ArrayList<>();
         listGroups= new ArrayList<Groups>();
         Bundle extras = getIntent().getExtras();
         username=extras.getString("username");
+        getSupportActionBar().setTitle(username + " - Grupos");
         new_groups= new ArrayList<Groups>();
         delete_groups = new ArrayList<Groups>();
         returnGroups=false;
@@ -116,11 +117,11 @@ public class listGroupsActivity extends AppCompatActivity {
                 final Groups grupoactual = listGroups.get(position);
                 final Dialog deletedialog = new Dialog(listGroupsActivity.this);
                 deletedialog.setContentView(R.layout.dialog_deletegroup);
+                deletedialog.show();
                 TextView  t = deletedialog.findViewById(R.id.delete_group_title);
                 if(!username.equals(grupoactual.getAdministrador())) {
                     t.setText("¿Desea salir del grupo?");
                 }
-                deletedialog.show();
 
                 Button yes = deletedialog.findViewById(R.id.delete_group_yes);
                 yes.setOnClickListener(new View.OnClickListener() {
@@ -129,14 +130,8 @@ public class listGroupsActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         String user = grupoactual.getAdministrador();
                         if(!username.equals(user)){
-                            for(int i=0;i<grupoactual.getListFriends().size();i++){
-                                Friends f;
-                                f=grupoactual.getListFriends().get(i);
-                                if(f.getNombre().equals(username)){
-                                    grupoactual.getListFriends().remove(f);
-                                }
-                            }
-                           new_groups.add(grupoactual);
+                            Groups g = exitToGroup(grupoactual);
+                            new_groups.add(g);
                         }else {
                             delete_groups.add(grupoactual);
                         }
@@ -224,12 +219,13 @@ public class listGroupsActivity extends AppCompatActivity {
             ArrayList<Friends> friends = stringtoArrayListFriend(c.getString(1));
             ArrayList files = stringtoArrayList(c.getString(2));
             ArrayList<Friends> owners = stringtoArrayListFriend(c.getString(3));
-            Groups g = new Groups(c.getString(0), R.drawable.icongroup, friends, files, owners, c.getString(4));
+            Groups g = new Groups(c.getString(0), R.drawable.cohete, friends, files, owners, c.getString(4));
             listGroups.add(g);
         }
         adapter = new GroupsAdapter(this, listGroups);
         listView = findViewById(R.id.groups_list);
         listView.setAdapter(adapter);
+        c.close();
     }
     private void actualizar(){
         handler.postDelayed(new Runnable() {
@@ -315,6 +311,27 @@ public class listGroupsActivity extends AppCompatActivity {
             }
         }
         return myString;
+    }
+    //borrar la informacion del usuario en el grupo
+    private Groups exitToGroup(Groups g){
+        for(int i=0;i<g.getListFriends().size();i++){
+            Friends f;
+            f=g.getListFriends().get(i);
+            if(f.getNombre().equals(username)){
+                g.getListFriends().remove(f);
+            }
+        }
+        int i = 0;
+        while(i<g.getListFiles().size()){
+            Friends f;
+            if (g.getListOwners().get(i).getNombre().equals(username)) {
+                g.getListOwners().remove(i);
+                g.getListFiles().remove(i);
+            }else{
+                i++;
+            }
+        }
+        return g;
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

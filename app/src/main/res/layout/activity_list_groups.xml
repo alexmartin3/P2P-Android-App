@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
+    app:layout_constraintGuide_percent="0.33"
     tools:context=".listGroupsActivity">
 
     <ListView
@@ -20,6 +21,25 @@
         app:layout_constraintTop_toBottomOf="@id/listGroups_toolbar"
         app:layout_constraintVertical_bias="0.0" />
 
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="20dp" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/createGroup"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="168dp"
+        android:src="@drawable/addgroup"
+        app:backgroundTint="@android:color/holo_blue_light"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/backFriends"
         android:layout_width="0dp"
@@ -34,38 +54,17 @@
         app:rippleColor="#FFFFFF"
         tools:visibility="visible" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/createGroup"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="168dp"
-        android:src="@drawable/addgroup"
-        app:backgroundTint="@android:color/holo_blue_light"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
     <android.support.v7.widget.Toolbar
         android:id="@+id/listGroups_toolbar"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:background="@color/colorPrimaryDark"
+        android:elevation="4dp"
+        android:gravity="end"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:contentInsetRight="10dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-
-        <SearchView
-            android:id="@+id/search_group"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:queryHint="@string/search_group"
-            android:title="@string/search_group"></SearchView>
 
         <TextView
             android:id="@+id/title_listGroup"
@@ -75,6 +74,14 @@
             tools:layout_editor_absoluteX="16dp"
             tools:layout_editor_absoluteY="16dp" />
 
+        <SearchView
+            android:id="@+id/search_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:queryHint="@string/search_group"
+            android:title="@string/search_group"
+            tools:layout_editor_absoluteX="39dp"
+            tools:layout_editor_absoluteY="4dp"></SearchView>
 
     </android.support.v7.widget.Toolbar>
 

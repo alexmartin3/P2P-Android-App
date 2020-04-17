@@ -46,6 +46,7 @@ public class friendsGroupActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         username = extras.getString("username");
         grupoactual = (Groups) extras.get("group");
+        getSupportActionBar().setTitle(grupoactual.getNameGroup() + " - Amigos");
         changeGroup=false;
         nuevo=new ArrayList<>();
 
@@ -129,6 +130,7 @@ public class friendsGroupActivity extends AppCompatActivity {
                     setResult(Activity.RESULT_OK, result);
                     updateGroupBBDD(grupoactual.getNameGroup(),grupoactual.getListFriends());
                 }
+                saveGroup.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.holo_blue_light)));
                 finish();
                 Toast.makeText(getApplicationContext(), "Los cambios se han guardado", Toast.LENGTH_SHORT).show();
             }
@@ -165,7 +167,7 @@ public class friendsGroupActivity extends AppCompatActivity {
         if (changeGroup==false){
             saveGroup.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY));
         }else{
-            saveGroup.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.holo_blue_light)));
+            saveGroup.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.red)));
         }
     }
     private ArrayList<Friends> stringtoArrayListFriend(String friends){

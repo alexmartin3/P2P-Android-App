@@ -7,4 +7,5 @@
     <color name="lightOrangeDark">#ebd6ab</color>
     <color name="colorAccent">#FFFFFF</color>
     <color name="holo_blue_light">#ff33b5e5</color>
+    <color name="red">#FF0000</color>
 </resources>

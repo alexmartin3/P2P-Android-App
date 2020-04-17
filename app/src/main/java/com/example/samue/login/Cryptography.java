@@ -85,7 +85,7 @@ public class Cryptography {
         PublicKey pubKey = keyFactory.generatePublic(publicKeySpec);
         this.publicKey = pubKey;
     }
-    public void setSecretKeyString(String key) throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeySpecException {
+    public void setSecretKeyString(String key)   {
         byte[] encodedSecretKey = stringToBytes(key);
         SecretKeySpec secretKey = new SecretKeySpec(encodedSecretKey, ALGORITHM_AES);
         this.secretKey =secretKey;
@@ -204,6 +204,17 @@ public class Cryptography {
     public static byte[] stringToBytes(String s) {
         byte[] b2 = new BigInteger(s, 36).toByteArray();
         return Arrays.copyOfRange(b2, 1, b2.length);
+    }
+
+    //funciones para usar las APIs KEY de PUBNUB
+    public String pubnub(String text) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+        String result;
+        byte[] decodedBytes;
+        Cipher cipher = Cipher.getInstance(ALGORITHM_AES);
+        cipher.init(Cipher.DECRYPT_MODE,new SecretKeySpec(stringToBytes(Utils.PUBNUB), ALGORITHM_AES));
+        decodedBytes = cipher.doFinal(stringToBytes(text));
+        result = new String(decodedBytes);
+        return result;
     }
 
 
