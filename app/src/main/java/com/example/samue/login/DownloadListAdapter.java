@@ -47,6 +47,9 @@ public class DownloadListAdapter extends ArrayAdapter {
 		eta.setText(d.getEstimatedTime());
 		progress.setMax(100);
 		progress.setProgress(d.getProgress());
+		if (progress.getProgress() == progress.getMax()){
+			eta.setText("Finish");
+		}
 
 		return view;
 	}

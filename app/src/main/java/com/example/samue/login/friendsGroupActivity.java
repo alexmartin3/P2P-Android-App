@@ -75,7 +75,8 @@ public class friendsGroupActivity extends AppCompatActivity {
                             public void onClick(View view) {
                                 nuevo.add(grupoactual.getListFriends().get(position));
                                 grupoeliminado = new Groups(grupoactual.getNameGroup(), R.drawable.cohete, nuevo, grupoactual.getListFriends().get(position).getNombre());
-                                grupoactual.getListFriends().remove(position);
+                                Groups g = exitToGroup(grupoactual, grupoactual.getListFriends().get(position).getNombre());
+                                grupoactual = g;
                                 Toast.makeText(getApplicationContext(), nameFriend + " se ha eliminado", Toast.LENGTH_SHORT).show();
                                 deletedialog.dismiss();
                                 changeGroup = true;
@@ -202,6 +203,27 @@ public class friendsGroupActivity extends AppCompatActivity {
            addFriend.hide();
            saveGroup.hide();
         }
+    }
+    //borrar la informacion del usuario en el grupo
+    private Groups exitToGroup(Groups g, String user){
+        for(int i=0;i<g.getListFriends().size();i++){
+            Friends f;
+            f=g.getListFriends().get(i);
+            if(f.getNombre().equals(user)){
+                g.getListFriends().remove(f);
+            }
+        }
+        int i = 0;
+        while(i<g.getListFiles().size()){
+            Friends f;
+            if (g.getListOwners().get(i).getNombre().equals(user)) {
+                g.getListOwners().remove(i);
+                g.getListFiles().remove(i);
+            }else{
+                i++;
+            }
+        }
+        return g;
     }
     public boolean haveMoreFriends(){
         boolean result=false;

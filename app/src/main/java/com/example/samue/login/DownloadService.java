@@ -341,7 +341,7 @@ public class DownloadService extends Service{
 							Log.i("paso5-cifrado",json.getString(Utils.DATA));
 							decodedData=rsaTemp.decipherSimetric(json.getString(Utils.DATA));
 							count=json.getInt("count");
-							Log.i("count", String.valueOf(count));
+							Log.i("counted-received", String.valueOf(count));
 							Log.i("paso5-descifrado",new String(decodedData));
 
 							//como estaba antes

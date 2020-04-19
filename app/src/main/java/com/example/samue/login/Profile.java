@@ -1360,6 +1360,11 @@ public class Profile extends AppCompatActivity {
 			pnRTCClient.closeConnection(sendTo2);
 			try {
 				prepareSenderClient(sendTo2);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			try {
+
 				//CIFRADO Paso3. Genero clase donde guardo la secretKey y con la que cifro los mensajes
 				int count=0;
 				Cryptography rsaTemp = new Cryptography();
@@ -1412,7 +1417,7 @@ public class Profile extends AppCompatActivity {
 					}
 					msg.put(Utils.DATA, s);
 					msg.put("count",count);
-					Log.i("count", String.valueOf(count));
+					Log.i("counted-send", String.valueOf(count));
 					senderClient.transmit(sendTo2, msg);
 					msg.remove(Utils.DATA);
 					msg.remove(Utils.LAST_PIECE);

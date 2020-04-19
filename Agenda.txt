@@ -242,3 +242,11 @@ Tras hablar con Julio:
 + Mejorado eliminacion de grupos, tambien se borran los ficheros del usuario que se sale
 + Cifrado de las APIs KEYs de PubNub para que no esten en texto claro y puedan usarlas
 + Mejorado la gestion de las bases de datos y cursores (nose cerraban en ningun lado, y rebosaban)
+
+19 Abril, Domingo
++ Mejorado si admin borra a un usuario, aparte de borrar grupo a usuario, y en el resto de 
+  usuarios borrar su nombre de la lista de amigos, tambien borra los ficheros que hubiese subido
++ Arreglado el mostrar dos mensajes al descargar archivos
++ Mejorado estado de la descarga, cuando se ha completado, pone "Finish"
+
+
