@@ -102,7 +102,7 @@ public class filesGroupActivity extends AppCompatActivity {
 					Button no = mdialog.findViewById(R.id.confirm_archive_no);
 					//lo mantenemos oculto por no implementarse en grupos
 					Button preview = mdialog.findViewById(R.id.confirm_archive_preview);
-					preview.setVisibility(view.INVISIBLE);
+					//preview.setVisibility(view.INVISIBLE);
 
 					no.setOnClickListener(new View.OnClickListener() {
 						@Override
@@ -118,6 +118,20 @@ public class filesGroupActivity extends AppCompatActivity {
 							resultado.putExtra("name", name);
 							resultado.putExtra("owner", grupoactual.getListOwners().get(i).getNombre());
 							resultado.putExtra("download",true);
+							resultado.putExtra(Utils.REQ_PREVIEW, false);
+							setResult(RESULT_OK, resultado);
+							finish();
+						}
+					});
+					preview.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							mdialog.dismiss();
+							Intent resultado = new Intent();
+							resultado.putExtra("name", name);
+							resultado.putExtra("owner", grupoactual.getListOwners().get(i).getNombre());
+							resultado.putExtra("download",true);
+							resultado.putExtra(Utils.REQ_PREVIEW, true);
 							setResult(RESULT_OK, resultado);
 							finish();
 						}

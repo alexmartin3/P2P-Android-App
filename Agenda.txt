@@ -249,4 +249,7 @@ Tras hablar con Julio:
 + Arreglado el mostrar dos mensajes al descargar archivos
 + Mejorado estado de la descarga, cuando se ha completado, pone "Finish"
 
+20 Abril, Lunes
++ Añadido la implementacion de previsualizacion de los archivos de un usuario en grupo, enviando
+  la info necesaria por todo el proceso para visualizar y mostrando el boton visualizar.
 

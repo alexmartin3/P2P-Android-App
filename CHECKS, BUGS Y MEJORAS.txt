@@ -35,13 +35,12 @@ BUSCADORES (GRUPOS Y AMIGOS)
 
 	2. ERRORES ENCONTRADOS EN LA DEPURACION (BUGS)
 + crear grupos sin nombres						(ARREGLADO)
-- si sale mensaje "ha ocurrido un error" aun así se crea el grupo
 + si no eres admin y borras grupo, notificar salida al resto del grupo	(ARREGLADO)
 + si no eres admin-> no puedes borrar ni añadir amigos			(ARREGLADO)
 + si eres admin y borras amigo, borrarle el grupo al amigo		(ARREGLADO)
 + si eres dueño de un archivo y lo borras-> comunicarlo al resto de grupos (ARREGLADO)
 + al crear un grupo no debe tener archivos				(ARREGLADO)
-- al dar en profile al buscador, quitar boton "+"			intentado
+- al dar en profile al buscador, quitar boton "+"			(ARRREGLADO)
 + al añadir varios ficheros da error					(ARREGLADO)
 + al borrar un fichero sale a listGroup					(ARREGLADO)
 
@@ -62,7 +61,7 @@ A. GRUPOS
 B. BUSCADORES
 + implementar el buscador en profile y en los grupos			(IMPLEMENTADO) 
 + creado e implementado buscador en grupos				(IMPLEMENTADO)
-- intentar ajustarlo a la derecha, ver como poder encajarlo, toolbar	
+- intentar ajustarlo a la derecha, ver como poder encajarlo, toolbar	(no conseguido)
 + crear e implementar buscador en profile				(IMPLEMENTADO)
 
 C. SEGURIDAD
@@ -75,10 +74,5 @@ C. SEGURIDAD
 	3. enviar mensaje cifrado					(IMPLEMENTADO)
 	4. receptor usar clave privada para desencriptar clave secreta	(IMPLEMENTADO)
 	5. usa la clave secreta para descifrar mensaje			(IMPLEMENTADO)
-
-D. OTROS
-- si no tiene mas amigos, no dejar entrar en añadir amigos en grupos  	(IMPLEMENTADO)
-- pasar herramienta de calidad o seguridad del codigo (kiwan o sonar7)
-- realizar MEMORIA
 
 

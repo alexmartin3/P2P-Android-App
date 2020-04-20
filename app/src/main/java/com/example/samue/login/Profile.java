@@ -176,7 +176,7 @@ public class Profile extends AppCompatActivity {
 						mdialog.dismiss();
 						userRecursos = connectTo;
 						Toast.makeText(getApplicationContext(), "Conectando con "+connectTo, Toast.LENGTH_LONG).show();
-						publish(connectTo,"VAR","");
+						publish(connectTo,"VAR","",false);
 					}
 				});
 				// Borrar amigo.
@@ -197,7 +197,7 @@ public class Profile extends AppCompatActivity {
 						mdialog.dismiss();
 						userRecursos = connectTo;
 						Toast.makeText(getApplicationContext(), "Conectando con "+connectTo, Toast.LENGTH_LONG).show();
-						publish(connectTo, "VSF",""); //View Shared Folders
+						publish(connectTo, "VSF","",false); //View Shared Folders
 					}
 				});
 				// Bloquear amigo.
@@ -331,7 +331,7 @@ public class Profile extends AppCompatActivity {
 		serviceBound = bindService(dl_intent, serviceConnection, BIND_AUTO_CREATE);
 	}
 
-	private void publish(final String connectTo, final String connectionType, final String nameGroup){
+	private void publish(final String connectTo, final String connectionType, final String nameGroup, final Boolean preview){
 		String userCall = connectTo + Constants.STDBY_SUFFIX;
 		JSONObject jsonCall = new JSONObject();
 		try {
@@ -362,7 +362,7 @@ public class Profile extends AppCompatActivity {
 					}else if(connectionType.equals("DG")){
 						DG(connectTo,nameGroup);
 					}else if(connectionType.equals("RA")){
-						RA(nameGroup,connectTo,false,true);
+						RA(nameGroup,connectTo,preview,true);
 					}
 				}
 			});
@@ -460,8 +460,9 @@ public class Profile extends AppCompatActivity {
 					if (download==true){
 						String name = data.getStringExtra("name");
 						String owner = data.getStringExtra("owner");
+						Boolean preview = data.getBooleanExtra(Utils.REQ_PREVIEW, false);
 						userRecursos = owner;
-						publish(owner,"RA",name);
+						publish(owner,"RA",name, preview);
 
 						Intent Intent = new Intent(this, DownloadManagerActivity.class);
 						Intent.putExtra("downloadServiceIntent", this.dl_intent);
@@ -476,7 +477,7 @@ public class Profile extends AppCompatActivity {
 								ArrayList<Friends> friendslist = NGGroup.getListFriends();
 								for (int j = 0; j < friendslist.size(); j++) {
 									userRecursos = friendslist.get(j).getNombre();
-									publish(friendslist.get(j).getNombre(), "NG", NGGroup.getNameGroup());
+									publish(friendslist.get(j).getNombre(), "NG", NGGroup.getNameGroup(),false);
 								}
 							}
 						}
@@ -489,7 +490,7 @@ public class Profile extends AppCompatActivity {
 								ArrayList<Friends> friendslist = DGGroup.getListFriends();
 								for (int j = 0; j < friendslist.size(); j++) {
 									userRecursos = friendslist.get(j).getNombre();
-									publish(friendslist.get(j).getNombre(), "DG", DGGroup.getNameGroup());
+									publish(friendslist.get(j).getNombre(), "DG", DGGroup.getNameGroup(),false);
 								}
 							}
 						}
@@ -660,7 +661,7 @@ public class Profile extends AppCompatActivity {
 								public void onClick(View view) {
 									mDatabaseHelper.removeData(fr, mDatabaseHelper.BLOCKED_TABLE_NAME);
 									loadBlockedUsersList();
-									publish(fr, "FR","");
+									publish(fr, "FR","",false);
 									Toast.makeText(getApplicationContext(), "Petición de amistad enviada", Toast.LENGTH_SHORT).show();
 									removeBlockedDialog.dismiss();
 								}
@@ -674,7 +675,7 @@ public class Profile extends AppCompatActivity {
 							});
 						}
 						else if(!listContains(fr, al_friends)) {
-							publish(fr, "FR","");
+							publish(fr, "FR","",false);
 							Toast.makeText(getApplicationContext(), "Petición de amistad enviada", Toast.LENGTH_SHORT).show();
 						}else{
 							Toast.makeText(getApplicationContext(), "Ya eres amigo de " + fr, Toast.LENGTH_SHORT).show();

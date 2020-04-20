@@ -343,11 +343,13 @@ public class listGroupsActivity extends AppCompatActivity {
                     if (download==true){    //vienes directamente de descargar un fichero
                         String name = data.getStringExtra("name");
                         String owner = data.getStringExtra("owner");
+                        Boolean preview = data.getBooleanExtra(Utils.REQ_PREVIEW,false);
 
                         Intent resultado = new Intent();
                         resultado.putExtra("name", name);
                         resultado.putExtra("owner", owner);
                         resultado.putExtra("download",true);
+                        resultado.putExtra(Utils.REQ_PREVIEW, preview);
                         setResult(RESULT_OK, resultado);
                         finish();
 
