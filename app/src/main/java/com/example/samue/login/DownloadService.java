@@ -316,7 +316,7 @@ public class DownloadService extends Service{
 					//CIFRADO Paso5. Obtenemos el string con la secretkey para crear el objeto
 					//con el cual vamos a ir descifrando los mensajes
 					String secretKey = jsonMsg.getString("secretKey");
-					Log.i("paso5-secretkey",secretKey);
+					Log.i("paso5-send:secretkey",secretKey);
 					Cryptography rsaTemp = new Cryptography();
 					rsaTemp.setSecretKeyString(secretKey);
 
@@ -338,11 +338,11 @@ public class DownloadService extends Service{
 
 							//CIFRADO Paso5.Se recibe la info cifrada, se descifra con la secretKey
 							//se recibe string se usa byte[]
-							Log.i("paso5-cifrado",json.getString(Utils.DATA));
+							Log.i("paso5-send:msgcif",json.getString(Utils.DATA));
 							decodedData=rsaTemp.decipherSimetric(json.getString(Utils.DATA));
 							count=json.getInt("count");
 							Log.i("counted-received", String.valueOf(count));
-							Log.i("paso5-descifrado",new String(decodedData));
+							Log.i("paso5-send:msgdescif",rsaTemp.bytesToString(decodedData));
 
 							//como estaba antes
 							//codedData.replace(0, codedData.length(), json.getString(Utils.DATA));

@@ -228,43 +228,59 @@ public class Profile extends AppCompatActivity {
 			@Override
 			public void onClick(View v) {
 /*
-				//PRUEBA PARA  CIFRAR INFORMACION
+				//PRUEBA PARA  CIFRAR Y FIRMAR INFORMACION
 				try{
-					String prueba = "prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de prueba de cifrado prueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifrado prueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoprueba de cifradoalfdskjqpewiKHGFJHGFJHGFJfjñlaskj  prueba de cifrado alfdskjqpewifjñlaskj ñlwfLJHGKJHGKJGKJGasdfj ñ";
-					Cryptography rsa = new Cryptography();
-					rsa.genKeyPair();
-					Cryptography rsa2 = new Cryptography();
-					rsa2.genKeyPair();
+					String prueba = "prueba de cifrado con la secretkey que se genera en user2 se cifra con public de user1 y luego se firma con privada de user2";
+					Cryptography user1 = new Cryptography();
+					user1.genKeyPair();
+					Cryptography user2 = new Cryptography();
+					user2.genKeyPair();
+					Cryptography userTemp = new Cryptography();
+
+					byte[] signature = user1.signRSA(prueba);
+					Log.i("ALEXXX-SIGN",user1.bytesToString(signature));
+					boolean verify = user1.verifyRSA(signature,prueba);
+					Log.i("ALEXXX-VERIFY", String.valueOf(verify));
 
 					//SIMULACRO DE ENVIO DE CLAVE PUBLICA, GENERACION DE CLAVE SECRETA, CIFRADO CON CLAVE SECRETA
-					// ENVIADO DE CLAVE SECRETA CIFRADA CON PUBLICA Y TEXTO CIFRADO, DESCIFRADO DE CALVE SECRETA Y MENSAJE
+					//DESPUES LA CLAVE SECRETA SE FIRMA CON CLAVE PRIVADA DE USER1 Y SE ENVIA JUNTO CON LA CLAVE SECRETA CIFRADA
+					// ENVIADO DE CLAVE SECRETA CIFRADA CON PUBLICA Y FIRMADA CON PRIVADA Y TEXTO CIFRADO, CONFIRMADO FIRMA DE
+					// CLAVE SECRETA CIFRADA CON PUBLICA DE USER2 Y DESCIFRADO DE CLAVE SECRETA Y MENSAJE
 					//primero sacamos publica de user 1 a string y enviamos a user 2 que guarda
 					//ciframos con publica de 1, desciframos con privada de 1 y vemos resultado
-					String pubkey =rsa.getPublicKeyString();
+					String pubkey =user1.getPublicKeyString();
 					Log.i("TEST PUBLIC-1",pubkey); 		//muestro clave publica string
 					String pubkeysended = pubkey;		//recibe clave publica string
-					rsa2.setPublicKeyString(pubkeysended);		//añaddo la publica recibida y que usare
-					Log.i("TEST PUBLIC-2",rsa2.getPublicKeyString());//igual 1
-					rsa2.generateKey();	//genero en user2 clave secreta
-					String secretKey = rsa2.getSecretKeyString();	//guardo la clave secreta para enviarla y usarla
+					userTemp.setPublicKeyString(pubkeysended);		//añaddo la publica recibida y que usare
+					Log.i("TEST PUBLIC-2",userTemp.getPublicKeyString());//igual 1
+					userTemp.generateKey();	//genero en user2 clave secreta
+					String secretKey = userTemp.getSecretKeyString();	//guardo la clave secreta para enviarla y usarla
 					Log.i("TEST PUBLIC-3",secretKey); 			//muesto la clave secreta
 					Log.i("TEST PUBLIC-3", String.valueOf(secretKey.length())); //muestro tamaño clave secreta
-					String secretKeyCifrada = rsa2.cipherRSA(secretKey); 	//cifro la clave secreta con la publica para enviarla
+					String secretKeyCifrada = userTemp.cipherRSA(secretKey); 	//cifro la clave secreta con la publica para enviarla
 					Log.i("TEST PUBLIC-4",secretKeyCifrada); 			//muesto la clave secreta cifrada con la publica
 					Log.i("TEST PUBLIC-4", String.valueOf(secretKeyCifrada.length())); //muestro tamaño clave secreta cifrada
+					String secretKeyCifyfirm = user2.signRSA(secretKeyCifrada);		//firmo la clave secreta cifrada con la privada de user2
+					Log.i("TEST PUBLIC-4", secretKeyCifyfirm); //muestro la calve secreta cifrada y firmanda
 					Log.i("TEST CIFRADO0",prueba);		//muestro mensaje original
 					Log.i("TEST CIFRADO0", String.valueOf(prueba.length())); //muestro tamaño mensaje
-					String pruebaCifrada = rsa2.cipherSimetric(prueba); 	//cifro el mensaje con la clave secreta
+					String pruebaCifrada = userTemp.cipherSimetric(prueba); 	//cifro el mensaje con la clave secreta
 					Log.i("TEST CIFRADO1",pruebaCifrada);				//muestro el mensaje cifrado
 					Log.i("TEST CIFRADO1", String.valueOf(pruebaCifrada.length()));//muestro tamaño mensaje cifrado
 					String pruebaRecibida = pruebaCifrada;			//envio mensaje cifrado a user 1 y guarda
-					String secretKeyDescifrada = rsa.decipherRSAToString(secretKeyCifrada); //recibe la clave secreta encriptada, la descifro
+					userTemp.setPublicKey(user2.getPublicKey());
+					String secretKeyCifradaRecibida = secretKeyCifrada;		//recibe la clave secreta encriptada
+					String secretKeyCifyfirmRecibida = secretKeyCifyfirm;	//recibe la clave secreta encriptada y firmada
+					boolean verificacion = userTemp.verifyRSA(secretKeyCifyfirmRecibida,secretKeyCifradaRecibida);//verifica que la clave cifrada ez igual que la firmada, para ver que es de la misma persona y no se ha modificado
+					Log.i("TEST CIFRADO2", String.valueOf(verificacion)); //muestro el resultado de la verificacion
+					String secretKeyDescifrada = user1.decipherRSAToString(secretKeyCifradaRecibida); //descifro clave secreta cifrada
 					Log.i("TEST CIFRADO2",secretKeyDescifrada);			//muestro la clave secreta desencriptada -- igual PUBLIC-3
-					rsa.setSecretKeyString(secretKeyDescifrada);			//guardo la clave secreta en el user- lista para usar
-					String pruebaDescifrada = rsa.decipherSimetricToString(pruebaRecibida); //descifro el mensaje con la clave secreta
+					user1.setSecretKeyString(secretKeyDescifrada);			//guardo la clave secreta en el user- lista para usar
+					String pruebaDescifrada = user1.decipherSimetricToString(pruebaRecibida); //descifro el mensaje con la clave secreta
 					Log.i("TEST CIFRADO3",pruebaRecibida);		//igual que CIFRADO 1
 					Log.i("TEST CIFRADO4",pruebaDescifrada);		//igual que CIFRADO 0
 					Log.i("TEST CIFRADO4", String.valueOf(pruebaDescifrada.length())); //muestro tamaño mensaje
+
 
 				//cifrar API KEYS de pubnub
 				Cryptography rsa = new Cryptography();
@@ -277,27 +293,8 @@ public class Profile extends AppCompatActivity {
 					Log.i("PUB_SUB-CLAVECIFRADA",clave2Cifrada);
 					Log.i("PUB_SUB-CLAVESECRETA",rsa.getSecretKeyString());
 
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
 
-
-
-					//PASOS REALES
-					//1. ENVIAR PUBLIC KEY A USER 2
-					//2. USER 2 GUARDAR PUBLIC KEY DE USER 1
-					//3. CIFRAR MENSAJES CON PUBLIC KEY ANTES DE ENVIAR A USER 1
-					//4. AL RECIBIR INFO DE USER 2 DESCIFRAR CON PRIVATE KEY
-
-
-
-
-
-					Log.i("CIFRADOFIN","HASTA AQUI LLEGA");
-
-
-
-				}catch (Exception e){
+				}catch(Exception e){
 					e.printStackTrace();
 				}
 */
@@ -772,7 +769,7 @@ public class Profile extends AppCompatActivity {
 			msg.put("group", group);
 			//CIFRADO Paso1. Envio de la clave publica
 			msg.put("publicKey",rsaUser.getPublicKeyString());
-			Log.i("paso1",rsaUser.getPublicKeyString());
+			Log.i("paso1-send:publickey",rsaUser.getPublicKeyString());
 			// Útil para la descarga desde una carpeta compartida:
 			if (selectedFolder != null){
 				msg.put("selectedFolder", selectedFolder);
@@ -827,16 +824,32 @@ public class Profile extends AppCompatActivity {
 	private void handleSA(JSONObject jsonMsg){
 		//CIFRADO Paso4. Se recibe el mensaje la secretKey encriptada y con la info cifrada y se la pasa a dowloadService
 		//vamos a añadir en el mensaje la secretKey descifrada para que pueda descodificar el mensaje
+		Boolean download=false;
 		try {
+			Cryptography rsaTemp =new Cryptography();
+			String  pubkeyString = jsonMsg.getString("publicKey");
+			Log.i("paso4-send:pubkey2",pubkeyString);
+			rsaTemp.setPublicKeyString(pubkeyString);
 			String secretKeyCipher = jsonMsg.getString("secretKey");
-			Log.i("paso4-secretkeyCipher",secretKeyCipher);
-			String secretKey = rsaUser.decipherRSAToString(secretKeyCipher);
-			jsonMsg.put("secretKey",secretKey);
-			Log.i("paso4-secretkey",secretKey);
+			Log.i("paso4-send:secretkeyCif",secretKeyCipher);
+			String secretKeySign = jsonMsg.getString("signature");
+			Log.i("paso4-send:secretkeySig",secretKeySign);
+			Boolean verify = rsaTemp.verifyRSA(secretKeySign,secretKeyCipher);
+			Log.i("paso4-send:verify", String.valueOf(verify));
+			if (verify){
+				String secretKey = rsaUser.decipherRSAToString(secretKeyCipher);
+				jsonMsg.put("secretKey",secretKey);
+				Log.i("paso4-send:secretkey",secretKey);
+				download=true;
+			}else{
+				Toast.makeText(this, "Error, la informacion recibida no es segura.", Toast.LENGTH_LONG).show();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		this.downloadService.handleMsg(jsonMsg);
+		if (download){
+			this.downloadService.handleMsg(jsonMsg);
+		}
 	}
 
 	private void handleRA(JSONObject jsonMsg){
@@ -917,15 +930,22 @@ public class Profile extends AppCompatActivity {
 						// Genero SecretKey para cifrar en activeFileSender
 						// encripto la secreKey con la clave publica y guardo en mensaje
 						String pubkeyString = jsonMsg.getString("publicKey");
-						Log.i("paso2-clave publica",pubkeyString);
+						Log.i("paso2-reci:publickey",pubkeyString);
 						Cryptography rsaTemp = new Cryptography();
 						rsaTemp.setPublicKeyString(pubkeyString);
 						rsaTemp.generateKey();
 						String secretKey = rsaTemp.getSecretKeyString();
-						Log.i("paso2-secretkey",secretKey);
+						Log.i("paso2-reci:secretkey",secretKey);
 						String secretKeyCipher = rsaTemp.cipherRSA(secretKey);
-						Log.i("paso2-secretkeyCifrada",secretKeyCipher);
+						Log.i("paso2-reci:secretkeyCif",secretKeyCipher);
 						msg.put("secretKey",secretKeyCipher);
+						String secretKeySign = rsaUser.signRSA(secretKeyCipher);
+						Log.i("paso2-reci:secretkeyFir",secretKeySign);
+						msg.put("signature",secretKeySign);
+						msg.put("publicKey",rsaUser.getPublicKeyString());
+						Log.i("paso2-reci:signature",secretKeySign);
+						Log.i("paso2-reci:publickey2",rsaUser.getPublicKeyString());
+
 
 						// Si no se está enviando ningún archivo y no hay ningún hilo en cola se lanza el hilo de subida.
 						if (!sendingFile && sendersManager.isQueueEmpty()) {
@@ -1370,7 +1390,7 @@ public class Profile extends AppCompatActivity {
 				int count=0;
 				Cryptography rsaTemp = new Cryptography();
 				rsaTemp.setSecretKeyString(secretKey);
-				Log.i("paso3-secretkey",rsaTemp.getSecretKeyString());
+				Log.i("paso3-reci:secretkey",rsaTemp.getSecretKeyString());
 
 				while (!lastPiece) {
 					bytesRead = fis.read(bFile);
@@ -1395,22 +1415,22 @@ public class Profile extends AppCompatActivity {
 							finalbFile = new byte[]{0};
 						}
 						//CIFRADO Paso3. Uso la secretKey para cifrar el string con la parte del fichero enviado
-						Log.i("paso3-nocifrado",rsaTemp.bytesToString(finalbFile));
-						Log.i("paso3-nocifradosize", String.valueOf(rsaTemp.bytesToString(finalbFile).length()));
+						Log.i("paso3-reci:nocif",rsaTemp.bytesToString(finalbFile));
+						Log.i("paso3-reci:nocifsize", String.valueOf(rsaTemp.bytesToString(finalbFile).length()));
 						s = rsaTemp.cipherSimetric(finalbFile);
-						Log.i("paso3-cifrado",s);
-						Log.i("paso3-cifradosize", String.valueOf(s.length()));
+						Log.i("paso3-reci:cif",s);
+						Log.i("paso3-reci:cifsize", String.valueOf(s.length()));
 						//como estaba antes
 						// s = Base64.encodeToString(finalbFile, Base64.URL_SAFE);
 					}
 					else {
 						//CIFRADO Paso3. Uso la secretKey para cifrar el string con la parte del fichero enviado
-						Log.i("paso3-nocifrado",rsaTemp.bytesToString(bFile));
-						Log.i("paso3-nocifradosize", String.valueOf(rsaTemp.bytesToString(bFile).length()));
+						Log.i("paso3-reci:nocifrado",rsaTemp.bytesToString(bFile));
+						Log.i("paso3-reci:nocifsize", String.valueOf(rsaTemp.bytesToString(bFile).length()));
 
 						s = rsaTemp.cipherSimetric(bFile);
-						Log.i("paso3-cifrado",s);
-						Log.i("paso3-cifradosize", String.valueOf(s.length()));
+						Log.i("paso3-reci:cifrado",s);
+						Log.i("paso3-reci:cifradosize", String.valueOf(s.length()));
 
 						//como estaba antes
 						// s = Base64.encodeToString(bFile, Base64.URL_SAFE);

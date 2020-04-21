@@ -253,3 +253,7 @@ Tras hablar con Julio:
 + Añadido la implementacion de previsualizacion de los archivos de un usuario en grupo, enviando
   la info necesaria por todo el proceso para visualizar y mostrando el boton visualizar.
 
+21 Abril, Martes
++ Implementado firma y verificacion de mensajes con RSA. Creado funciones de firma y verificar en 
+  clase Crytography e incorporado en codigo envio de clave cifrada y firmada, junto a signature 
+  y clave publica del usuario que envia

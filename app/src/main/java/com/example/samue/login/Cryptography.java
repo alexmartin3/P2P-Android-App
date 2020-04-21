@@ -8,6 +8,8 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.Signature;
+import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -28,6 +30,7 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class Cryptography {
     private static final String ALGORITHM_RSA = "RSA";
+    private static final String ALGORITHM_RSA_SIGN = "SHA256withRSA";
     private static final String ALGORITHM_AES = "AES";
     static final int SIZE_ENCRYPT = 1024;
     static final int SIZE_CIFER = 256;
@@ -132,6 +135,42 @@ public class Cryptography {
         result = bytesToString(encodedBytes);
         return result;
     }
+    public String decipherRSAToString(String text) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+        String result;
+        byte[] decodedBytes;
+        Cipher cipher = Cipher.getInstance(ALGORITHM_RSA);
+        cipher.init(Cipher.DECRYPT_MODE,this.privateKey);
+        decodedBytes = cipher.doFinal(stringToBytes(text));
+        result = new String(decodedBytes);
+        return result;
+    }
+    public byte[] decipherRSA(String text) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+        byte[] result;
+        Cipher cipher = Cipher.getInstance(ALGORITHM_RSA);
+        cipher.init(Cipher.DECRYPT_MODE,this.privateKey);
+        result = cipher.doFinal(stringToBytes(text));
+
+        return result;
+    }
+    public String signRSA(String text) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        byte[] message = text.getBytes();
+        Signature s = Signature.getInstance(ALGORITHM_RSA_SIGN);
+        s.initSign(this.privateKey);
+        s.update(message);
+        byte[] signature = s.sign();
+        String result = bytesToString(signature);
+        return result;
+    }
+    public boolean verifyRSA(String sign, String text) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        byte[] message = text.getBytes();
+        byte[] signature = stringToBytes(sign);
+        boolean valid = false;
+        Signature s = Signature.getInstance(ALGORITHM_RSA_SIGN);
+        s.initVerify(this.publicKey);
+        s.update(message);
+        valid = s.verify(signature);
+        return valid;
+    }
     public String cipherSimetric(String text) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
         String result;
         byte[] encodedBytes;
@@ -148,23 +187,6 @@ public class Cryptography {
         cipher.init(Cipher.ENCRYPT_MODE,this.secretKey);
         encodedBytes = cipher.doFinal(text);
         result = bytesToString(encodedBytes);
-        return result;
-    }
-    public String decipherRSAToString(String text) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
-        String result;
-        byte[] decodedBytes;
-        Cipher cipher = Cipher.getInstance(ALGORITHM_RSA);
-        cipher.init(Cipher.DECRYPT_MODE,this.privateKey);
-        decodedBytes = cipher.doFinal(stringToBytes(text));
-        result = new String(decodedBytes);
-        return result;
-    }
-    public byte[] decipherRSA(String text) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
-        byte[] result;
-        Cipher cipher = Cipher.getInstance(ALGORITHM_RSA);
-        cipher.init(Cipher.DECRYPT_MODE,this.privateKey);
-        result = cipher.doFinal(stringToBytes(text));
-
         return result;
     }
     public String decipherSimetricToString(String text) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
