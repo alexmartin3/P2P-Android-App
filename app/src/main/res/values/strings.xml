@@ -31,6 +31,16 @@
     <string name="search_friend">Buscar amigo...</string>
     <string name="delete_group">¿Desea borrar el grupo?</string>
     <string name="exit_group">¿Desea salir del grupo?</string>
+    <string name="estasEn">Estas en: </string>
+    <string name="TODO">TODO</string>
+    <string name="guardar_cambios">¿Quieres salir sin guardar los cambios?</string>
+    <string name="SI">Sí</string>
+    <string name="NO">No</string>
+    <string name="borrar_amigo">¿Quieres borrar este amigo?</string>
+    <string name="new_group">New Group</string>
+    <string name="name_group">NameGroup</string>
+    <string name="add_friend">Add friends</string>
+
 
 
 </resources>

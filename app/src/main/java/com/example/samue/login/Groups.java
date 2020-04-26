@@ -1,17 +1,15 @@
 package com.example.samue.login;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
-public class Groups implements Serializable {
+class Groups implements Serializable {
     String nameGroup;
-    int imgGroup;
+    private int imgGroup;
     ArrayList<Friends> listFriends;
     ArrayList listFiles;
     ArrayList<Friends> listOwners;
-    String administrator;
+    private String administrator;
 
     public Groups(){}
 

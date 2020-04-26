@@ -32,10 +32,10 @@
             android:id="@+id/addFriends"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
             android:clickable="true"
             app:backgroundTint="#0033B5E5"
-            app:srcCompat="@drawable/addfriend" />
+            app:srcCompat="@drawable/addfriend"
+            android:focusable="true" />
 
     </android.support.v7.widget.Toolbar>
 

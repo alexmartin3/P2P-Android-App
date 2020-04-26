@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -19,30 +18,27 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.security.acl.Group;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Locale;
-
-import javax.crypto.KeyGenerator;
+import java.util.Objects;
 
 public class listGroupsActivity extends AppCompatActivity {
     private GroupsAdapter adapter;
     private ListView listView;
     private ArrayList<Groups> listGroups;
     private String username;
-    static DatabaseHelper groupDatabaseHelper;
-    static ArrayList<Groups> new_groups;
-    static ArrayList<Groups> delete_groups;
-    static boolean returnGroups;
-    private Handler handler=new Handler();
+    private static DatabaseHelper groupDatabaseHelper;
+    private static ArrayList<Groups> new_groups;
+    private static ArrayList<Groups> delete_groups;
+    private static boolean returnGroups;
+    private final Handler handler=new Handler();
     private final int TIME = 2000;
     private boolean buscador;
     private SearchView searchGroup;
 
-    Dialog mdialogCreate;
-    EditText nameGroupText;
-    Button bf;
+    private Dialog mdialogCreate;
+    private EditText nameGroupText;
+    private Button bf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,13 +49,12 @@ public class listGroupsActivity extends AppCompatActivity {
 
         groupDatabaseHelper = new DatabaseHelper(this);
 
-        ArrayList<Friends> listFriends= new ArrayList<>();
-        listGroups= new ArrayList<Groups>();
+        listGroups= new ArrayList<>();
         Bundle extras = getIntent().getExtras();
-        username=extras.getString("username");
-        getSupportActionBar().setTitle(username + " - Grupos");
-        new_groups= new ArrayList<Groups>();
-        delete_groups = new ArrayList<Groups>();
+        username= Objects.requireNonNull(extras).getString("username");
+        Objects.requireNonNull(getSupportActionBar()).setTitle(username + " - Grupos");
+        new_groups= new ArrayList<>();
+        delete_groups = new ArrayList<>();
         returnGroups=false;
         buscador=false;
 
@@ -83,7 +78,6 @@ public class listGroupsActivity extends AppCompatActivity {
                          * Se abre la actividad que permite ver, añadir y eliminar algún fichero
                          * del grupo seleccionado.
                          */
-                        final ArrayList<String> files = grupoactual.getListFiles();
                         Intent intent = new Intent(listGroupsActivity.this, filesGroupActivity.class);
                         intent.putExtra("username",username);
                         intent.putExtra("group",grupoactual);
@@ -120,7 +114,8 @@ public class listGroupsActivity extends AppCompatActivity {
                 deletedialog.show();
                 TextView  t = deletedialog.findViewById(R.id.delete_group_title);
                 if(!username.equals(grupoactual.getAdministrador())) {
-                    t.setText("¿Desea salir del grupo?");
+                    String tmp="¿Desea salir del grupo?";
+                    t.setText(tmp);
                 }
 
                 Button yes = deletedialog.findViewById(R.id.delete_group_yes);
@@ -136,7 +131,7 @@ public class listGroupsActivity extends AppCompatActivity {
                             delete_groups.add(grupoactual);
                         }
                         listGroups.remove(grupoactual);
-                        groupDatabaseHelper.deleteGroup(grupoactual.getNameGroup(), groupDatabaseHelper.GROUPS_TABLE_NAME);
+                        groupDatabaseHelper.deleteGroup(grupoactual.getNameGroup(), DatabaseHelper.GROUPS_TABLE_NAME);
                         Toast.makeText(getApplicationContext(), grupoactual.getNameGroup() + " se ha eliminado", Toast.LENGTH_SHORT).show();
 
                         returnGroups=true;
@@ -163,11 +158,7 @@ public class listGroupsActivity extends AppCompatActivity {
 
            @Override
            public boolean onQueryTextChange(String newText) {
-               if(newText.equals("")){
-                   buscador=false;
-               }else{
-                   buscador = true;
-               }
+               buscador= !newText.equals("");
                listGroupsSearch(newText);
                return true;
            }
@@ -181,20 +172,25 @@ public class listGroupsActivity extends AppCompatActivity {
                 mdialogCreate = new Dialog(listGroupsActivity.this);
                 mdialogCreate.setContentView(R.layout.dialog_newgroup);
                 mdialogCreate.show();
-                nameGroupText = (EditText) mdialogCreate.findViewById(R.id.nameGroup);
+                nameGroupText = mdialogCreate.findViewById(R.id.nameGroup);
 
-                bf = (Button) mdialogCreate.findViewById(R.id.button_addFriends);
+                bf = mdialogCreate.findViewById(R.id.button_addFriends);
                 bf.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View view) {
                         if (nameGroupText.getText().toString().isEmpty()) {
                             Toast.makeText(getApplicationContext(), "ERROR: No puede tener nombre vacio", Toast.LENGTH_SHORT).show();
                         } else {
-                            mdialogCreate.dismiss();
-                            Intent myIntent = new Intent(listGroupsActivity.this, friendsgroup.class);
-                            myIntent.putExtra("nameGroup", nameGroupText.getText().toString());
-                            myIntent.putExtra("username", username);
-                            myIntent.putExtra("valor", 1); //valor=1, crear grupo, valor=2, añadir amigos nuevos
-                            startActivityForResult(myIntent, 6);
+                            if(customListContains(nameGroupText.getText().toString(),listGroups)){
+                                Toast.makeText(getApplicationContext(), "ERROR: Este nombre ya existe", Toast.LENGTH_SHORT).show();
+                                nameGroupText.getText().clear();
+                            }else {
+                                mdialogCreate.dismiss();
+                                Intent myIntent = new Intent(listGroupsActivity.this, friendsgroup.class);
+                                myIntent.putExtra("nameGroup", nameGroupText.getText().toString());
+                                myIntent.putExtra("username", username);
+                                myIntent.putExtra("valor", 1); //valor=1, crear grupo, valor=2, añadir amigos nuevos
+                                startActivityForResult(myIntent, 6);
+                            }
                         }
                     }
                 });
@@ -256,8 +252,8 @@ public class listGroupsActivity extends AppCompatActivity {
         if (friends == null){return new ArrayList<>();}
         ArrayList<Friends> resultado= new ArrayList<>();
         String[] friendsSeparate = friends.split(",");
-        for (int i=0; i<friendsSeparate.length; i++){
-            resultado.add(new Friends(friendsSeparate[i],R.drawable.astronaura));
+        for (String s : friendsSeparate) {
+            resultado.add(new Friends(s, R.drawable.astronaura));
         }
         return resultado;
     }
@@ -267,51 +263,12 @@ public class listGroupsActivity extends AppCompatActivity {
         }
         ArrayList resultado= new ArrayList();
         String[] filesSeparate = files.split(",");
-        for (int i=0; i<filesSeparate.length; i++){
-            resultado.add(filesSeparate[i]);
+        for (String s : filesSeparate) {
+            resultado.add(s);
         }
         return resultado;
     }
-    private String ArrayListToString (ArrayList list){
-        String resultado =null;
-        for (int i=0; i<list.size(); i++){
-            resultado=resultado + list.get(i).toString();
-        }
-        return resultado;
-    }
-    //pasar de un array lists de amigos a un string
-    private String arrayListFriendsToString(ArrayList<Friends> listfriend) {
-        String myString ="";
-        for (int i = 0; i<listfriend.size();i++){
-            if (myString.equals("")){
-                myString=listfriend.get(i).getNombre();
-                if (i < (listfriend.size() - 1)){myString = myString + ",";}
-            }else {
-                myString = myString + listfriend.get(i).getNombre();
-                if (i < (listfriend.size() - 1)) {
-                    myString = myString + ",";
-                }
-            }
-        }
-        return myString;
-    }
-    //pasar de un array lists de amigos a un string
-    private String arrayListToString(ArrayList list) {
-        String myString =null;
 
-        for (int i = 0; i<list.size();i++){
-            if (myString==null){
-                myString=list.get(i).toString();
-                if (i < (list.size() - 1)){myString = myString + ",";}
-            }else {
-                myString = myString + list.get(i);
-                if (i < (list.size() - 1)) {
-                    myString = myString + ",";
-                }
-            }
-        }
-        return myString;
-    }
     //borrar la informacion del usuario en el grupo
     private Groups exitToGroup(Groups g){
         for(int i=0;i<g.getListFriends().size();i++){
@@ -323,7 +280,6 @@ public class listGroupsActivity extends AppCompatActivity {
         }
         int i = 0;
         while(i<g.getListFiles().size()){
-            Friends f;
             if (g.getListOwners().get(i).getNombre().equals(username)) {
                 g.getListOwners().remove(i);
                 g.getListFiles().remove(i);
@@ -333,49 +289,57 @@ public class listGroupsActivity extends AppCompatActivity {
         }
         return g;
     }
+    //Comprobar que el nombre del nuevo grupo no existe ya
+    private boolean customListContains(String nameGroup, ArrayList<Groups> gr) {
+        Boolean result=false;
+        for (Groups g : gr) {
+            if (g.getNameGroup().equals(nameGroup)) {
+                return true;
+            }
+        }
+        return result;
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case 6:
-                try{
-                    boolean download = data.getBooleanExtra("download",false);
-                    if (download==true){    //vienes directamente de descargar un fichero
-                        String name = data.getStringExtra("name");
-                        String owner = data.getStringExtra("owner");
-                        Boolean preview = data.getBooleanExtra(Utils.REQ_PREVIEW,false);
+        if (requestCode == 6) {
+            try {
+                boolean download = data.getBooleanExtra("download", false);
+                if (download) {    //vienes directamente de descargar un fichero
+                    String name = data.getStringExtra("name");
+                    String owner = data.getStringExtra("owner");
+                    Boolean preview = data.getBooleanExtra(Utils.REQ_PREVIEW, false);
 
-                        Intent resultado = new Intent();
-                        resultado.putExtra("name", name);
-                        resultado.putExtra("owner", owner);
-                        resultado.putExtra("download",true);
-                        resultado.putExtra(Utils.REQ_PREVIEW, preview);
-                        setResult(RESULT_OK, resultado);
-                        finish();
+                    Intent resultado = new Intent();
+                    resultado.putExtra("name", name);
+                    resultado.putExtra("owner", owner);
+                    resultado.putExtra("download", true);
+                    resultado.putExtra(Utils.REQ_PREVIEW, preview);
+                    setResult(RESULT_OK, resultado);
+                    finish();
 
-                    }else {                 // Vienes de cambiar o añadir grupo
-                        Groups newGroup = (Groups) data.getSerializableExtra("newGroup");
-                        Groups deleteGroup = (Groups) data.getSerializableExtra("deleteGroup");
-                        if (newGroup != null) {
-                            new_groups.add(newGroup);
-                            if (listGroups.contains(newGroup)) {
-                                listGroups.remove(newGroup);
-                                listGroups.add(newGroup);
-                            } else {
-                                listGroups.add(newGroup);
-                            }
-                            loadGroupList();
+                } else {                 // Vienes de cambiar o añadir grupo
+                    Groups newGroup = (Groups) data.getSerializableExtra("newGroup");
+                    Groups deleteGroup = (Groups) data.getSerializableExtra("deleteGroup");
+                    if (newGroup != null) {
+                        new_groups.add(newGroup);
+                        if (listGroups.contains(newGroup)) {
+                            listGroups.remove(newGroup);
+                            listGroups.add(newGroup);
+                        } else {
+                            listGroups.add(newGroup);
                         }
-                        if (deleteGroup != null) {
-                            delete_groups.add(deleteGroup);
-                        }
+                        loadGroupList();
                     }
-                    returnGroups=true;
-                    onBackPressed();
-                }catch (NullPointerException e){
-                    e.printStackTrace();
+                    if (deleteGroup != null) {
+                        delete_groups.add(deleteGroup);
+                    }
                 }
-                break;
+                returnGroups = true;
+                onBackPressed();
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
         }
     }
     @Override

@@ -21,16 +21,17 @@
                 android:id="@+id/img_friendgroup"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:layout_marginRight="16dp" />
+                android:layout_marginEnd="16dp"
+                android:contentDescription="@string/TODO" />
 
             <TextView
                 android:id="@+id/name_friendgroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/img_friendgroup"
+                android:layout_toEndOf="@+id/img_friendgroup"
                 android:textSize="30sp" />
 
         </RelativeLayout>

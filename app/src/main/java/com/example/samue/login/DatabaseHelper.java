@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 
+@SuppressWarnings("JavaDoc")
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHelper";
     private static final String DB_NAME = "P2PDB";
@@ -119,10 +120,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Log.d(TAG, "addData: Adding " + item + " to " + table);
 		long result = db.insert(table, null, contentValues);
 		db.close();
-		if (result == -1)
-			return false;
-		else
-			return true;
+		return result != -1;
 	}
 
 	/**
@@ -139,10 +137,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Log.d(TAG, "addData: Adding " + folder + " to " + SHARED_FOLDERS_TABLE);
 		long result = db.insert(SHARED_FOLDERS_TABLE, null, contentValues);
 		db.close();
-		if (result == -1)
-			return false;
-		else
-			return true;
+		return result != -1;
 	}
 
 
@@ -170,10 +165,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Log.d(TAG, "addData: Adding to " + FOLDER_ACCESS_TABLE + " rows:\n" + friendsNames);
 		ids.close();
 		db.close();
-		if (result == -1)
-			return false;
-		else
-			return true;
+		return result != -1;
 	}
 
 
@@ -226,10 +218,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		int result = db.delete(FOLDER_ACCESS_TABLE, where.toString(), null);
 		db.close();
 
-		if (result == -1)
-			return false;
-		else
-			return true;
+		return result != -1;
 	}
 
 
@@ -245,10 +234,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		int result = db.delete(SHARED_FOLDERS_TABLE, "folder=?", args);
 		db.close();
 
-		if (result == -1)
-			return false;
-		else
-			return true;
+		return result != -1;
 	}
 
 
@@ -265,10 +251,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		int result = db.delete(table, "name=?", args);
 		db.close();
 
-		if (result == -1)
-			return false;
-		else
-			return true;
+		return result != -1;
     }
 
 
@@ -280,8 +263,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Cursor getData(String table){
         SQLiteDatabase db = this.getWritableDatabase();
         String q = "SELECT * FROM " + table;
-        Cursor data = db.rawQuery(q, null);
-        return data;
+		return db.rawQuery(q, null);
     }
 
 
@@ -359,9 +341,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	/**
 	 * Borra un amigo. Si este tenía acceso a alguna carpeta compartida se elimina de ellas.
 	 * @param name
-	 * @return
 	 */
-	public boolean deleteFriend(String name){
+	public void deleteFriend(String name){
 		SQLiteDatabase db = getWritableDatabase();
 		Cursor user = db.query(FRIENDS_TABLE_NAME, new String[]{FRIENDS_COL1}, FRIENDS_COL2+"=?", new String[]{name},
 				null, null, null);
@@ -371,11 +352,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		user.close();
 		db.close();
 
-		if (result == -1)
-			return false;
+		if (result == -1) {
+		}
 		else{
 			removeData(name, FRIENDS_TABLE_NAME);
-			return true;
 		}
 	}
 
@@ -398,18 +378,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		long result = db.insert(GROUPS_TABLE_NAME, null, contentValues);
 		db.close();
 
-		if (result == -1)
-			return false;
-		else
-			return true;
+		return result != -1;
 	}
 	/**
 	 * Añade un nuevo grupo a la base de datos junto con la lista de amigos que lo forman.
 	 * @param  name nombre del grupo
 	 * @param friends Lista de amigos del grupo en un string.
-	 * @return true si ha tenido éxito, false en caso contrario.
 	 */
-	public boolean addGroupComplete(String name, String friends, String files, String owners, String administrator){
+	public void addGroupComplete(String name, String friends, String files, String owners, String administrator){
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(GROUPS_COL1, name);
@@ -421,181 +397,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		long result = db.insert(GROUPS_TABLE_NAME, null, contentValues);
 		db.close();
 
-		if (result == -1)
-			return false;
-		else
-			return true;
-	}
-
-	/**
-	 * Añade ficheros a la lista de archivos compartidos de un grupo.
-	 * @param friendsNames Lista de nombres de los amigos a añadir.
-	 * @param nameGroup Nombre de la carpeta compartida.
-	 * @return true si la inserción ha tenido éxito. false en otro caso.
-	 */
-	public boolean addFiles2Group(ArrayList<String> friendsNames, String nameGroup){
-		SQLiteDatabase db = this.getWritableDatabase();
-		// Primero obtengo los id de los usuarios que se van a añadir:
-		String queryIDs = getUsersIDsQuery(friendsNames);
-		Cursor ids = db.rawQuery(queryIDs, null);
-
-		// Después, con un cursor a los ids voy insertando en la tabla de acceso:
-		ContentValues contentValues = new ContentValues();
-		long result = 0;
-		while (ids.moveToNext() && (result != -1)){
-			contentValues.clear();
-			contentValues.put(FOLDER_ACCESS_COL1, nameGroup);
-			contentValues.put(FOLDER_ACCESS_COL2, ids.getInt(0));
-			result = db.insert(FOLDER_ACCESS_TABLE, null, contentValues);
-		}
-		Log.d(TAG, "addData: Adding to " + FOLDER_ACCESS_TABLE + " rows:\n" + friendsNames);
-		ids.close();
-		db.close();
-		if (result == -1)
-			return false;
-		else
-			return true;
-	}
-	/**
-	 * Añade amigos al grupo.
-	 * @param friendsNames Lista de nombres de los amigos a añadir.
-	 * @param nameGroup Nombre del grupo al que se van a añadir
-	 * @return true si la inserción ha tenido éxito. false en otro caso.
-	 */
-	public boolean addFriends2Group(ArrayList<String> friendsNames, String nameGroup){
-		SQLiteDatabase db = this.getWritableDatabase();
-		// Primero obtengo los id de los usuarios que se van a añadir:
-		String queryIDs = getUsersIDsQuery(friendsNames);
-		Cursor ids = db.rawQuery(queryIDs, null);
-
-		// Después, con un cursor a los ids voy insertando en la tabla de acceso:
-		ContentValues contentValues = new ContentValues();
-		long result = 0;
-		while (ids.moveToNext() && (result != -1)){
-			contentValues.clear();
-			contentValues.put(GROUPS_COL1, nameGroup);
-			contentValues.put(GROUPS_COL2, ids.getInt(0));
-			result = db.insert(GROUPS_TABLE_NAME, null, contentValues);
-		}
-		Log.d(TAG, "addData: Adding to " + GROUPS_TABLE_NAME + " rows:\n" + friendsNames);
-		ids.close();
-		db.close();
-		if (result == -1)
-			return false;
-		else
-			return true;
 	}
 
 
 	/**
-	 * Borra amigos de la lista de acceso a un grupo.
-	 * @param nameGroup
-	 * @param friends
-	 * @return true si ha tenido éxito, false en caso contrario.
-	 */
-	public boolean removeFriendsFromGroup(String nameGroup, ArrayList<String> friends){
-		SQLiteDatabase db = this.getWritableDatabase();
-		// Primero obtengo los id de los usuarios a eliminar:
-		String queryIDs = getUsersIDsQuery(friends);
-
-		// monto subconsulta:
-		StringBuilder where = new StringBuilder();
-		where.append("\"");
-		where.append(nameGroup);
-		where.append("\"");
-		where.append(" = ");
-		where.append(FOLDER_ACCESS_COL1);
-		where.append(" AND ");
-		where.append(FOLDER_ACCESS_COL2);
-		where.append(" IN (");
-		where.append(queryIDs);
-		where.append(')');
-
-		// y finalmente el borrado:
-		int result = db.delete(GROUPS_TABLE_NAME, where.toString(), null);
-		db.close();
-
-		if (result == -1)
-			return false;
-		else
-			return true;
-	}
-
-
-	/**
-	 * Borra un grupo.
-	 * @param nameGroup Nombre del grupo.
-	 * @return true si ha tenido éxito, false en caso contrario.
-	 */
-	public boolean removeGroup(String nameGroup){
-		SQLiteDatabase db = this.getWritableDatabase();
-		String[] args = new String[]{nameGroup};
-
-		int result = db.delete(GROUPS_TABLE_NAME, "name_group=?", args);
-		db.close();
-
-		if (result == -1)
-			return false;
-		else
-			return true;
-	}
-
-    /**
      * Método para eliminar un grupo de la tabla
      * @param name String con el nombre del eliminado.
      * @param table Tabla seleccionada.
-     * @return true si ha tenido éxito, false en caso contrario.
-     */
-    public boolean deleteGroup(String name, String table){
+	 */
+    public void deleteGroup(String name, String table){
         SQLiteDatabase db = this.getWritableDatabase();
         String[] args = new String[]{name};
         int result = db.delete(table, "name_Group=?", args);
         db.close();
 
-        if (result == -1)
-            return false;
-        else
-            return true;
-    }
-
-	/**
-	 * Método para eliminar un amigo de un grupo.
-	 * @param nameGroup String con el nombre del eliminado.
-	 * @param table Tabla seleccionada.
-	 * @return true si ha tenido éxito, false en caso contrario.
-	 */
-	public boolean deleteFriendToGroup(String nameGroup,String friendsnews, String table){
-		SQLiteDatabase db = this.getWritableDatabase();
-		String[] args = new String[]{nameGroup};
-		ContentValues cv = new ContentValues();
-		cv.put("friends",friendsnews);
-		int result = db.update(table,cv,"name_group=?",args);
-		db.close();
-
-		if (result == -1)
-			return false;
-		else
-			return true;
-	}
-	/**
-	 * Método para eliminar un archivo de un grupo.
-	 * @param nameGroup String con el nombre del eliminado.
-	 * @param table Tabla seleccionada.
-	 * @return true si ha tenido éxito, false en caso contrario.
-	 */
-	public boolean deleteFileToGroup(String nameGroup,String filesnews, String ownersnews, String table){
-		SQLiteDatabase db = this.getWritableDatabase();
-		String[] args = new String[]{nameGroup};
-		ContentValues cv = new ContentValues();
-		cv.put("files",filesnews);
-		cv.put("owners",ownersnews);
-		int result = db.update(table,cv,"name_group=?",args);
-		db.close();
-
-		if (result == -1)
-			return false;
-		else
-			return true;
 	}
 
 	public boolean addFileGroup(String nameGroup,String filesnews, String ownersnews, String table) {
@@ -611,13 +426,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		}
 		int result = db.update(table,cv,"name_group=?",args);
 		db.close();
-		if (result == -1)
-			return false;
-		else
-			return true;
+		return result != -1;
 
 	}
-	public boolean addFriendsGroup(String nameGroupupdate,String friendsupdate, String table) {
+	public void addFriendsGroup(String nameGroupupdate, String friendsupdate, String table) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		String[] args = new String[]{nameGroupupdate};
 		ContentValues cv = new ContentValues();
@@ -625,10 +437,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		int result = db.update(table,cv,"name_group=?",args);
 		db.close();
-		if (result == -1)
-			return false;
-		else
-			return true;
 
 	}
 	public boolean existGroup(String nameGroup){
