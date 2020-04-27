@@ -61,9 +61,7 @@ public class filesGroupActivity extends AppCompatActivity {
 					mdialog.setContentView(R.layout.dialog_confirmsharedarchive);
 					mdialog.show();
 
-					TextView tv = mdialog.findViewById(R.id.confirm_archive_tv);
-					String tmp="¿Quieres borrar " + name.substring(name.lastIndexOf('/')+1) + "?";
-					tv.setText(tmp);
+					textDowload(name);
 
 					Button yes = mdialog.findViewById(R.id.confirm_archive_yes);
 					Button no = mdialog.findViewById(R.id.confirm_archive_no);
@@ -93,15 +91,12 @@ public class filesGroupActivity extends AppCompatActivity {
 					mdialog.setContentView(R.layout.dialog_confirmdownload);
 					mdialog.show();
 
-					TextView tv = mdialog.findViewById(R.id.confirm_archive_tv);
-					String tmp="¿Quieres descargar " + name.substring(name.lastIndexOf('/')+1) + "?";
-					tv.setText(tmp);
+					textDowload(name);
 
 					Button yes = mdialog.findViewById(R.id.confirm_archive_yes);
 					Button no = mdialog.findViewById(R.id.confirm_archive_no);
 					//lo mantenemos oculto por no implementarse en grupos
 					Button preview = mdialog.findViewById(R.id.confirm_archive_preview);
-					//preview.setVisibility(view.INVISIBLE);
 
 					no.setOnClickListener(new View.OnClickListener() {
 						@Override
@@ -153,8 +148,6 @@ public class filesGroupActivity extends AppCompatActivity {
 		saveGroup.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				//TODO EL PROCESO DE GUARDAR LOS CAMBIOS EN LA BBDD
-
 				if (changeGroup) {
 					final Intent result = new Intent();
 					result.putExtra("download",false);
@@ -177,6 +170,11 @@ public class filesGroupActivity extends AppCompatActivity {
 			}
 		});
 	}
+	private void textDowload(String nameFile){
+		TextView tv = mdialog.findViewById(R.id.confirm_archive_tv);
+		String tmp="¿Quieres descargar " + nameFile.substring(nameFile.lastIndexOf('/')+1) + "?";
+		tv.setText(tmp);
+	}
 
 	private void loadfilesGroup(Groups group){
 		listnamefiles = group.getListFiles();
@@ -198,7 +196,7 @@ public class filesGroupActivity extends AppCompatActivity {
 	}
 	private boolean isOwner(int position){
 		boolean result=false;
-		String user = grupoactual.listOwners.get(position).getNombre();
+		String user = grupoactual.getListOwners().get(position).getNombre();
 		if (username.equals(user)){
 			result = true;
 		}
@@ -206,9 +204,8 @@ public class filesGroupActivity extends AppCompatActivity {
 	}
 	private void updateGroupBBDD(String nameupdate, ArrayList filesupdate, ArrayList<Friends> ownersupdate){
 		String ownerssupdatestring = arrayListToString(ownersupdate);
-		boolean inserted = filesgroupDatabaseHelper.addFileGroup(nameupdate,Utils.joinStrings(",", filesupdate),ownerssupdatestring, DatabaseHelper.GROUPS_TABLE_NAME);
-		if (inserted) {
-		}
+		filesgroupDatabaseHelper.addFileGroup(nameupdate,Utils.joinStrings(",", filesupdate),ownerssupdatestring, DatabaseHelper.GROUPS_TABLE_NAME);
+
 	}    //pasar de un array lists de amigos a un string
 	private String arrayListToString(ArrayList<Friends> listfriend) {
 		String myString =null;
@@ -229,16 +226,14 @@ public class filesGroupActivity extends AppCompatActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data){
 		super.onActivityResult(requestCode,resultCode,data);
-		if (requestCode == 1) {
-			if (resultCode == Activity.RESULT_OK) {
-				String newFile = data.getStringExtra("file");
-				if (!listnamefiles.contains(newFile)) {
-					grupoactual.getListFiles().add(newFile);
-					grupoactual.getListOwners().add(new Friends(username, R.drawable.ic_launcher_foreground));
-					changeGroup = true;
-				}
-				loadfilesGroup(grupoactual);
+		if (resultCode == Activity.RESULT_OK) {
+			String newFile = data.getStringExtra("file");
+			if (!listnamefiles.contains(newFile)) {
+				grupoactual.getListFiles().add(newFile);
+				grupoactual.getListOwners().add(new Friends(username, R.drawable.ic_launcher_foreground));
+				changeGroup = true;
 			}
+			loadfilesGroup(grupoactual);
 		}
 	}
 	@Override

@@ -30,12 +30,12 @@ sonarqube {
         property "sonar.host.url", "http://localhost:9000"
 
         property "sonar.sources", "src/main/"
-        property "sonar.souceEncodign", "UTF-8"
         property "sonar.login", "admin"
         property "sonar.password", "admin"
+        property "sonar.inclusions", "**/ArchiveExplorerGroups** , **/Cryptography** , **/DatabaseHelper** , **/DownloadService** , **/filesGroupActivity** , **/friendsgroup** , **/friendsGroupActivity** , **/Groups** , **/GroupsAdapter** , **/listGroupsActivity** , **/Profile** , **/activity_archive_explorer_groups.xml , **/activity_friendsgroup.xml , **/activity_list_files_group.xml , **/activity_list_friends_group.xml , **/activity_list_groups.xml , **/card_friendgroup.xml , **/dialog_backgroups.xml , **/dialog_deletefriendgroup.xml , **/dialog_deletegroup.xml , **/dialog_group.xml , **/dialog_newgroup.xml"
+
     }
 }
-
 dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     implementation fileTree(include: ['*.jar'], dir: 'libs')

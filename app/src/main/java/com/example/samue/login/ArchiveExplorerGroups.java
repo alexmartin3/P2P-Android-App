@@ -29,13 +29,11 @@ public class ArchiveExplorerGroups extends AppCompatActivity {
     private TextView carpetaActual;
     private String currentFolder;
     private ListView listaItems;
-    private static DatabaseHelper filesDatabaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_archive_explorer_groups);
-        filesDatabaseHelper = new DatabaseHelper(this);
 
         carpetaActual = findViewById(R.id.rutaActual_grupos);
         listaItems = findViewById(R.id.lista_items_grupos);
@@ -148,22 +146,6 @@ public class ArchiveExplorerGroups extends AppCompatActivity {
         listaItems.setAdapter(adaptador);
     }
 
-    private String arrayListToString(ArrayList<Friends> listfriend) {
-        String myString ="";
-
-        for (int i = 0; i<listfriend.size();i++){
-            if (myString.equals("")){
-                myString=listfriend.get(i).getNombre();
-                if (i < (listfriend.size() - 1)){myString = myString + ",";}
-            }else {
-                myString = myString + listfriend.get(i).getNombre();
-                if (i < (listfriend.size() - 1)) {
-                    myString = myString + ",";
-                }
-            }
-        }
-        return myString;
-    }
     @Override
     public void onBackPressed(){
         if (!currentFolder.equalsIgnoreCase(directorioRaiz)) {

@@ -151,16 +151,16 @@ public class DownloadService extends Service{
 				timer.schedule(new TimerTask() {
 					@Override
 					public void run() {
-						if (hasFreeThreads() && !msgQueue.isEmpty()){
-							/* Si hay hilos disponibles se coge uno de los mensajes de petición de archivo
-							 * previamente preparado y se transmite la solicitud. Hago esta comprobación cada
-							 * 10 segundos para interferir lo menos posible.
-							 */
-							Pair<String,JSONObject> p = msgQueue.poll();
-							String sendTo = p.first;
-							JSONObject msg = p.second;
-							Profile.downloaderClient.transmit(sendTo, msg);
-						}
+					if (hasFreeThreads() && !msgQueue.isEmpty()){
+						/* Si hay hilos disponibles se coge uno de los mensajes de petición de archivo
+						 * previamente preparado y se transmite la solicitud. Hago esta comprobación cada
+						 * 10 segundos para interferir lo menos posible.
+						 */
+						Pair<String,JSONObject> p = msgQueue.poll();
+						String sendTo = p.first;
+						JSONObject msg = p.second;
+						Profile.downloaderClient.transmit(sendTo, msg);
+					}
 					}
 				}, 10010, 10010);
 
@@ -172,7 +172,6 @@ public class DownloadService extends Service{
 
 						name = jsonMsg.getString(Utils.NAME);
 						boolean newDownload = jsonMsg.getBoolean(Utils.NEW_DL);
-
 						// Si es una descarga nueva se añade al ArrayList.
 						if (newDownload) {
 							String friendName = jsonMsg.getString(Utils.FRIEND_NAME);
@@ -181,13 +180,11 @@ public class DownloadService extends Service{
 							dl = new Download(name, path, fileLength, friendName);
 							addDownload(dl);
 						}
-
 						// Si hay hilos disponibles...
 						if (hasFreeThreads()){
 							// Si es nueva descarga se lanza.
 							if (newDownload)
 								startDownload();
-
 							// Si no es nueva descarga el json es de la única descarga activa y hay que notificar a su monitor.
 							else
 								notifyAndSetJson();
@@ -202,15 +199,13 @@ public class DownloadService extends Service{
 								notifyAndSetJson();
 							}
 							catch (NullPointerException e){
-								e.printStackTrace();
-							}
 
+							}
 						newMsgReceived = false;
 					}
 				}
-
 			} catch(Exception e){
-				e.printStackTrace();
+
 			}
 		}
 
@@ -293,10 +288,10 @@ public class DownloadService extends Service{
 
 			@Override
 			public void run(){
-				try{
+				String path = dl.getPath();
+				try(FileOutputStream fos = new FileOutputStream(path);){
 					name = jsonMsg.getString(Utils.NAME);
-					String path = dl.getPath();
-					FileOutputStream fos = new FileOutputStream(path);
+
 					File file = new File(path);
 					bytesWritten = 0;
 					int count;
@@ -363,7 +358,7 @@ public class DownloadService extends Service{
 
 					//this.interrupt();
 				} catch(Exception e){
-					e.printStackTrace();
+
 					dl_timer.cancel();
 					this.interrupt();
 				}

@@ -25,12 +25,11 @@ public class friendsGroupActivity extends AppCompatActivity {
     private Groups grupoactual;
     private Groups grupoeliminado;
     private static DatabaseHelper friendsGroupDatabaseHelper;
-
-    private FloatingActionButton addFriend;
-    private FloatingActionButton saveGroup;
     private String nameFriend;
     private boolean changeGroup;
     private ArrayList<Friends> nuevo;
+    private FloatingActionButton saveG;
+    private FloatingActionButton addF;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,16 +37,15 @@ public class friendsGroupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list_friends_group);
         Toolbar toolbar = findViewById(R.id.listfriendsgroup_toolbar);
         setSupportActionBar(toolbar);
+        addF = findViewById(R.id.addFriends);
         friendsGroupDatabaseHelper = new DatabaseHelper(this);
-        addFriend = findViewById(R.id.addFriends);
-        saveGroup = findViewById(R.id.saveFriends);
         Bundle extras = getIntent().getExtras();
         username = Objects.requireNonNull(extras).getString("username");
         grupoactual = (Groups) extras.get("group");
         Objects.requireNonNull(getSupportActionBar()).setTitle(grupoactual.getNameGroup() + " - Amigos");
         changeGroup=false;
         nuevo=new ArrayList<>();
-
+        saveG = findViewById(R.id.saveFriends);
 
         loadFriendsList(grupoactual.getListFriends());
         isAdmin();
@@ -94,7 +92,7 @@ public class friendsGroupActivity extends AppCompatActivity {
             }
         });
 
-        addFriend.setOnClickListener(new View.OnClickListener() {
+        addF.setOnClickListener(new View.OnClickListener() {
               @Override
               public void onClick(View view) {
                   String user = grupoactual.getAdministrador();
@@ -115,11 +113,9 @@ public class friendsGroupActivity extends AppCompatActivity {
               }
         });
 
-        saveGroup.setOnClickListener(new View.OnClickListener() {
+        saveG.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO EL PROCESO DE GUARDAR LOS CAMBIOS EN LA BBDD
-
                 if (changeGroup) {
                     final Intent result = new Intent();
                     result.putExtra("download",false);
@@ -128,7 +124,7 @@ public class friendsGroupActivity extends AppCompatActivity {
                     setResult(Activity.RESULT_OK, result);
                     updateGroupBBDD(grupoactual.getNameGroup(),grupoactual.getListFriends());
                 }
-                saveGroup.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.holo_blue_light)));
+                saveG.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.holo_blue_light)));
                 finish();
                 Toast.makeText(getApplicationContext(), "Los cambios se han guardado", Toast.LENGTH_SHORT).show();
             }
@@ -163,9 +159,9 @@ public class friendsGroupActivity extends AppCompatActivity {
         listView = findViewById(R.id.listfriendgroups);
         listView.setAdapter(adapter);
         if (!changeGroup){
-            saveGroup.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY));
+            saveG.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY));
         }else{
-            saveGroup.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.red)));
+            saveG.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.red)));
         }
     }
     //pasar de un array lists de amigos a un string
@@ -188,8 +184,8 @@ public class friendsGroupActivity extends AppCompatActivity {
     private void isAdmin(){
         String user = grupoactual.getAdministrador();
         if(!username.equals(user)){
-           addFriend.hide();
-           saveGroup.hide();
+           addF.hide();
+           saveG.hide();
         }
     }
     //borrar la informacion del usuario en el grupo
@@ -214,7 +210,7 @@ public class friendsGroupActivity extends AppCompatActivity {
     }
     private boolean haveMoreFriends(){
         boolean result=false;
-        int friendsGroup = grupoactual.listFriends.size()-1;
+        int friendsGroup = grupoactual.getListFriends().size()-1;
         Cursor data = friendsGroupDatabaseHelper.getData(DatabaseHelper.FRIENDS_TABLE_NAME);
         int friendsUser = data.getCount();
 

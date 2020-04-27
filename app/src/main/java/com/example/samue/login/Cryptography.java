@@ -76,8 +76,8 @@ public class Cryptography {
 
         KeyGenerator keyGen = KeyGenerator.getInstance(ALGORITHM_AES);
         keyGen.init(SIZE_CIFER);
-        SecretKey secretKey = keyGen.generateKey();
-        byte[] bytesSecretKey = secretKey.getEncoded();
+        SecretKey secKey = keyGen.generateKey();
+        byte[] bytesSecretKey = secKey.getEncoded();
         this.secretKey = new SecretKeySpec(bytesSecretKey, ALGORITHM_AES);
     }
 

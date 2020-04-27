@@ -49,6 +49,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String GROUPS_COL4 = "owners";
 	private static final String GROUPS_COL5 = "admin";
 
+	//Strings para reutilizar literales
+	private static final String TEXT1 = "CREATE TABLE ";
+	private static final String TEXT2 = " TEXT);";
+	private static final String TEXT3 = " TEXT, ";
+	private static final String TEXT4 = "DROP TABLE IF EXISTS ";
+	private static final String TEXT5 = "addData: Adding ";
+	private static final String TEXT6 = "SELECT * FROM ";
+
+
+
 	/*
 	 * Colección de todos los nombres de las tablas de la base de datos. La finalidad de esta
 	 * estructura es asegurar complejidad constante cuando se quiera consultar si una tabla existe.
@@ -68,14 +78,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createTable1 = "CREATE TABLE " +FRIENDS_TABLE_NAME+ "(" +FRIENDS_COL1+ " INTEGER PRIMARY KEY AUTOINCREMENT, " +FRIENDS_COL2+ " TEXT);";
-		String createTable2 = "CREATE TABLE " +BLOCKED_TABLE_NAME+ "(" +BLOCKED_COL1+ " INTEGER PRIMARY KEY AUTOINCREMENT, " +BLOCKED_COL2+ " TEXT);";
-		String createTable3 = "CREATE TABLE " +SHARED_FOLDERS_TABLE+ "(" +SHARED_FOLDERS_COL1+ " TEXT PRIMARY KEY, " +SHARED_FOLDERS_COL2+ " TEXT);";
-		String createTable4 = "CREATE TABLE " +FOLDER_ACCESS_TABLE+ "(" +FOLDER_ACCESS_COL1+ " TEXT, " +FOLDER_ACCESS_COL2+ " INTEGER, " +
+        String createTable1 = TEXT1 +FRIENDS_TABLE_NAME+ "(" +FRIENDS_COL1+ " INTEGER PRIMARY KEY AUTOINCREMENT, " +FRIENDS_COL2+ TEXT2;
+		String createTable2 = TEXT1 +BLOCKED_TABLE_NAME+ "(" +BLOCKED_COL1+ " INTEGER PRIMARY KEY AUTOINCREMENT, " +BLOCKED_COL2+ TEXT2;
+		String createTable3 = TEXT1 +SHARED_FOLDERS_TABLE+ "(" +SHARED_FOLDERS_COL1+ " TEXT PRIMARY KEY, " +SHARED_FOLDERS_COL2+ TEXT2;
+		String createTable4 = TEXT1 +FOLDER_ACCESS_TABLE+ "(" +FOLDER_ACCESS_COL1+ TEXT3 +FOLDER_ACCESS_COL2+ " INTEGER, " +
 				"FOREIGN KEY (" +FOLDER_ACCESS_COL1+ ") REFERENCES " +SHARED_FOLDERS_TABLE+ " (" +SHARED_FOLDERS_COL1+ ")," +
 				"FOREIGN KEY (" +FOLDER_ACCESS_COL2+ ") REFERENCES " +FRIENDS_TABLE_NAME+" (" +FRIENDS_COL1+ "));";
-		String createTable5 = "CREATE TABLE " +GROUPS_TABLE_NAME+ "(" +GROUPS_COL1+ " TEXT PRIMARY KEY, " +GROUPS_COL2+ " TEXT, "+
-				GROUPS_COL3+ " TEXT, " +GROUPS_COL4+ " TEXT, " +GROUPS_COL5+ " TEXT);";
+		String createTable5 = TEXT1 +GROUPS_TABLE_NAME+ "(" +GROUPS_COL1+ " TEXT PRIMARY KEY, " +GROUPS_COL2+ TEXT3 +
+				GROUPS_COL3+ TEXT3 +GROUPS_COL4+ TEXT3 +GROUPS_COL5+ TEXT2;
 		db.execSQL(createTable1);
         db.execSQL(createTable2);
         db.execSQL(createTable3);
@@ -85,11 +95,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String dropTable1 = "DROP TABLE IF EXISTS " + FRIENDS_TABLE_NAME;
-		String dropTable2 = "DROP TABLE IF EXISTS " + BLOCKED_TABLE_NAME;
-		String dropTable3 = "DROP TABLE IF EXISTS " + SHARED_FOLDERS_TABLE;
-		String dropTable4 = "DROP TABLE IF EXISTS " + FOLDER_ACCESS_TABLE;
-		String dropTable5 = "DROP TABLE IF EXISTS " + GROUPS_TABLE_NAME;
+        String dropTable1 = TEXT4 + FRIENDS_TABLE_NAME;
+		String dropTable2 = TEXT4 + BLOCKED_TABLE_NAME;
+		String dropTable3 = TEXT4 + SHARED_FOLDERS_TABLE;
+		String dropTable4 = TEXT4 + FOLDER_ACCESS_TABLE;
+		String dropTable5 = TEXT4 + GROUPS_TABLE_NAME;
 
 		db.execSQL(dropTable1);
         db.execSQL(dropTable2);
@@ -116,8 +126,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			case BLOCKED_TABLE_NAME:
 				contentValues.put(BLOCKED_COL2, item);
 				break;
+			default:
+				break;
 		}
-		Log.d(TAG, "addData: Adding " + item + " to " + table);
+		Log.d(TAG, TEXT5 + item + " to " + table);
 		long result = db.insert(table, null, contentValues);
 		db.close();
 		return result != -1;
@@ -134,7 +146,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(SHARED_FOLDERS_COL1, folder);
 		contentValues.put(SHARED_FOLDERS_COL2, files);
-		Log.d(TAG, "addData: Adding " + folder + " to " + SHARED_FOLDERS_TABLE);
+		Log.d(TAG, TEXT5 + folder + " to " + SHARED_FOLDERS_TABLE);
 		long result = db.insert(SHARED_FOLDERS_TABLE, null, contentValues);
 		db.close();
 		return result != -1;
@@ -162,7 +174,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			contentValues.put(FOLDER_ACCESS_COL2, ids.getInt(0));
 			result = db.insert(FOLDER_ACCESS_TABLE, null, contentValues);
 		}
-		Log.d(TAG, "addData: Adding to " + FOLDER_ACCESS_TABLE + " rows:\n" + friendsNames);
+		Log.d(TAG, TEXT5 + " to " + FOLDER_ACCESS_TABLE + " rows:\n" + friendsNames);
 		ids.close();
 		db.close();
 		return result != -1;
@@ -262,7 +274,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 */
     public Cursor getData(String table){
         SQLiteDatabase db = this.getWritableDatabase();
-        String q = "SELECT * FROM " + table;
+        String q = TEXT6 + table;
 		return db.rawQuery(q, null);
     }
 
@@ -291,7 +303,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public HashMap<String,ArrayList<String>> getSharedFolders(){
 		HashMap<String, ArrayList<String>> result = new HashMap<>();
 		SQLiteDatabase db = this.getWritableDatabase();
-		String q = "SELECT * FROM " + SHARED_FOLDERS_TABLE;
+		String q = TEXT6 + SHARED_FOLDERS_TABLE;
 		Cursor data = db.rawQuery(q, null);
 
 		while (data.moveToNext()){
@@ -313,11 +325,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public HashMap<String,ArrayList<String>> getFoldersAccess(){
 		HashMap<String, ArrayList<String>> result = new HashMap<>();
 		SQLiteDatabase db = this.getWritableDatabase();
-		String q = "SELECT * FROM " + FOLDER_ACCESS_TABLE;
+		String q = TEXT6 + FOLDER_ACCESS_TABLE;
 		Cursor data = db.rawQuery(q, null);
 
 		String lastFolder = null;
-		ArrayList<String> al_friends = null;
+		ArrayList<String> al_friends = new ArrayList<>();
 
 		while (data.moveToNext()){
 			String folder = data.getString(0);
@@ -332,7 +344,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				al_friends.add(friend);
 				lastFolder = folder;
 			}
-			catch (CursorIndexOutOfBoundsException e){ e.printStackTrace();}
+			catch (CursorIndexOutOfBoundsException e){ }
 		}
 		data.close();
 		db.close();
@@ -374,7 +386,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		contentValues.put(GROUPS_COL1, name);
 		contentValues.put(GROUPS_COL2, friends);
 		contentValues.put(GROUPS_COL5,administrator);
-		Log.d(TAG, "addData: Adding " + name + " to " + GROUPS_TABLE_NAME);
+		Log.d(TAG, TEXT5 + name + " to " + GROUPS_TABLE_NAME);
 		long result = db.insert(GROUPS_TABLE_NAME, null, contentValues);
 		db.close();
 
@@ -393,7 +405,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		contentValues.put(GROUPS_COL3, files);
 		contentValues.put(GROUPS_COL4, owners);
 		contentValues.put(GROUPS_COL5,administrator);
-		Log.d(TAG, "addData: Adding " + name + " to " + GROUPS_TABLE_NAME);
+		Log.d(TAG, TEXT5 + name + " to " + GROUPS_TABLE_NAME);
 		long result = db.insert(GROUPS_TABLE_NAME, null, contentValues);
 		db.close();
 
@@ -414,15 +426,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public boolean addFileGroup(String nameGroup,String filesnews, String ownersnews, String table) {
-		SQLiteDatabase db = this.getWritableDatabase();
+    	SQLiteDatabase db = this.getWritableDatabase();
 		String[] args = new String[]{nameGroup};
 		ContentValues cv = new ContentValues();
 		if(filesnews.equals("")){
-			cv.putNull("files");
-			cv.putNull("owners");
+			cv.putNull(SHARED_FOLDERS_COL2);
+			cv.putNull(GROUPS_COL4);
 		}else {
-			cv.put("files", filesnews);
-			cv.put("owners", ownersnews);
+			cv.put(SHARED_FOLDERS_COL2, filesnews);
+			cv.put(GROUPS_COL4, ownersnews);
 		}
 		int result = db.update(table,cv,"name_group=?",args);
 		db.close();
@@ -430,10 +442,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	}
 	public void addFriendsGroup(String nameGroupupdate, String friendsupdate, String table) {
-		SQLiteDatabase db = this.getWritableDatabase();
+    	SQLiteDatabase db = this.getWritableDatabase();
 		String[] args = new String[]{nameGroupupdate};
 		ContentValues cv = new ContentValues();
-		cv.put("friends",friendsupdate);
+		cv.put(FRIENDS_TABLE_NAME,friendsupdate);
 
 		int result = db.update(table,cv,"name_group=?",args);
 		db.close();
@@ -441,7 +453,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 	public boolean existGroup(String nameGroup){
 		SQLiteDatabase db = this.getWritableDatabase();
-		String q = "SELECT * FROM " + GROUPS_TABLE_NAME;
+		String q = TEXT6 + GROUPS_TABLE_NAME;
 		Cursor data = db.rawQuery(q, null);
 		while (data.moveToNext()){
 			if (data.getString(0).equals(nameGroup)){

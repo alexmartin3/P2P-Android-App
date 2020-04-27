@@ -27,14 +27,15 @@ public class listGroupsActivity extends AppCompatActivity {
     private ListView listView;
     private ArrayList<Groups> listGroups;
     private String username;
-    private static DatabaseHelper groupDatabaseHelper;
-    private static ArrayList<Groups> new_groups;
-    private static ArrayList<Groups> delete_groups;
-    private static boolean returnGroups;
+    private DatabaseHelper groupDatabaseHelper ;
+    private ArrayList<Groups> new_groups;
+    private ArrayList<Groups> delete_groups;
+    private boolean returnGroups;
     private final Handler handler=new Handler();
     private final int TIME = 2000;
     private boolean buscador;
     private SearchView searchGroup;
+    private static String STRING_USERNAME = "username";
 
     private Dialog mdialogCreate;
     private EditText nameGroupText;
@@ -51,7 +52,7 @@ public class listGroupsActivity extends AppCompatActivity {
 
         listGroups= new ArrayList<>();
         Bundle extras = getIntent().getExtras();
-        username= Objects.requireNonNull(extras).getString("username");
+        username= Objects.requireNonNull(extras).getString(STRING_USERNAME);
         Objects.requireNonNull(getSupportActionBar()).setTitle(username + " - Grupos");
         new_groups= new ArrayList<>();
         delete_groups = new ArrayList<>();
@@ -79,7 +80,7 @@ public class listGroupsActivity extends AppCompatActivity {
                          * del grupo seleccionado.
                          */
                         Intent intent = new Intent(listGroupsActivity.this, filesGroupActivity.class);
-                        intent.putExtra("username",username);
+                        intent.putExtra(STRING_USERNAME,username);
                         intent.putExtra("group",grupoactual);
                         startActivityForResult(intent, 6);
                         dialog.dismiss();
@@ -97,7 +98,7 @@ public class listGroupsActivity extends AppCompatActivity {
                          */
                         dialog.dismiss();
                         Intent intent = new Intent(listGroupsActivity.this, friendsGroupActivity.class);
-                        intent.putExtra("username",username);
+                        intent.putExtra(STRING_USERNAME,username);
                         intent.putExtra("group",grupoactual);
                         startActivityForResult(intent, 6);
                         loadGroupList();
@@ -187,7 +188,7 @@ public class listGroupsActivity extends AppCompatActivity {
                                 mdialogCreate.dismiss();
                                 Intent myIntent = new Intent(listGroupsActivity.this, friendsgroup.class);
                                 myIntent.putExtra("nameGroup", nameGroupText.getText().toString());
-                                myIntent.putExtra("username", username);
+                                myIntent.putExtra(STRING_USERNAME, username);
                                 myIntent.putExtra("valor", 1); //valor=1, crear grupo, valor=2, añadir amigos nuevos
                                 startActivityForResult(myIntent, 6);
                             }
@@ -338,7 +339,7 @@ public class listGroupsActivity extends AppCompatActivity {
                 returnGroups = true;
                 onBackPressed();
             } catch (NullPointerException e) {
-                e.printStackTrace();
+
             }
         }
     }

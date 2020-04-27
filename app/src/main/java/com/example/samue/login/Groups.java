@@ -6,9 +6,9 @@ import java.util.ArrayList;
 class Groups implements Serializable {
     String nameGroup;
     private int imgGroup;
-    ArrayList<Friends> listFriends;
-    ArrayList listFiles;
-    ArrayList<Friends> listOwners;
+    private ArrayList<Friends> listFriends;
+    private ArrayList listFiles;
+    private ArrayList<Friends> listOwners;
     private String administrator;
 
     public Groups(){}
@@ -41,14 +41,6 @@ class Groups implements Serializable {
     public ArrayList<Friends> getListOwners() {return this.listOwners;}
 
     public String getAdministrador() { return this.administrator;}
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Groups group = (Groups) o;
-        return group.nameGroup.equals(this.nameGroup);
-    }
 
 
 }

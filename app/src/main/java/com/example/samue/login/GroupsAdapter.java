@@ -36,15 +36,17 @@ class GroupsAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Groups groups = (Groups) getItem(position);
+        View view = convertView;
+        if (view == null) {
+            Groups groups = (Groups) getItem(position);
 
-        convertView = LayoutInflater.from(context).inflate(R.layout.listview_row, null);
-        ImageView img = convertView.findViewById(R.id.img_user);
-        TextView fn = convertView.findViewById(R.id.friend_name);
+            view = LayoutInflater.from(context).inflate(R.layout.listview_row, null);
+            ImageView img = view.findViewById(R.id.img_user);
+            TextView fn = view.findViewById(R.id.friend_name);
 
-        img.setImageResource(groups.getImgGroup());
-        fn.setText(groups.getNameGroup());
-
-        return convertView;
+            img.setImageResource(groups.getImgGroup());
+            fn.setText(groups.getNameGroup());
+        }
+        return view;
     }
 }
