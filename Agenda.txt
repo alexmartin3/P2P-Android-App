@@ -4,6 +4,13 @@ PLANIFICACION ENTREGA MAYO
 - 29 Mayo, Viernes: Entrega memoria final
 - 9 Junio, Martes: Exposición pública
 
+PLANIFICACION ENTRAGA MODIFICADA
+- 15 Junio, Lunes: Entrega borrador proyecto
+- 22 Junio, Lunes: Apto/no apto profesor
+- 26 Junio, Viernes: Entrega memoria final
+- 6 Julio, Lunes: Exposición
+
+
 1 Octubre, Martes
 + creado nuevo repositorio
 + cambiado nombre app
@@ -257,3 +264,21 @@ Tras hablar con Julio:
 + Implementado firma y verificacion de mensajes con RSA. Creado funciones de firma y verificar en 
   clase Crytography e incorporado en codigo envio de clave cifrada y firmada, junto a signature 
   y clave publica del usuario que envia
+
+26 Abril, Domingo
++ Creado rama para analizar el codigo
++ Realizado analisis con la herramienta lint de analizador de coidgo de android studio
++ Mejorado el codigo segun las indicaciones del resultado del analisis
++ Ejecutado nuevo analisis para ver la mejoria del codigo
++ Mejorado creacion de grupos no generando 2 con el mismo nombre
+
+27 Abril, Lunes
++ Instalado Sonarqube y adaptado a Android Studio para realizar analisis de codigo enfocado a seguridad
++ Creado proyecto con scope y analizado el codigo con Sonarqube
++ Actualizado codigo mejorando los fallos y vulnerabilidades encontrados de mas riesgo
++ Ejecutado segundo analisis para comprobar las mejoras y pasar el test
+
+28 Abril, Martes 
++ Realizado test de pruebas para probar todas las funcionalidades despues de mejoras de codigo
++ Mejorado plantilla con test y checks
++ Arreglado fallos encontrados debido a la limpieza

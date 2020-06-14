@@ -32,6 +32,7 @@
             android:id="@+id/addfile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="right"
             android:clickable="true"
             app:backgroundTint="#0033B5E5"
             app:srcCompat="@drawable/addfile"

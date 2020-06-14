@@ -123,10 +123,10 @@ public class friendsGroupActivity extends AppCompatActivity {
                     result.putExtra("deleteGroup",grupoeliminado);
                     setResult(Activity.RESULT_OK, result);
                     updateGroupBBDD(grupoactual.getNameGroup(),grupoactual.getListFriends());
+                    saveG.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.holo_blue_light)));
+                    finish();
+                    Toast.makeText(getApplicationContext(), "Los cambios se han guardado", Toast.LENGTH_SHORT).show();
                 }
-                saveG.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.holo_blue_light)));
-                finish();
-                Toast.makeText(getApplicationContext(), "Los cambios se han guardado", Toast.LENGTH_SHORT).show();
             }
         });
 

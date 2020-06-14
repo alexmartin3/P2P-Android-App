@@ -129,11 +129,11 @@ public class Profile extends AppCompatActivity {
 		mobileDataBlocked = false;
 		this.username = getIntent().getExtras().getString("user");
 		al_blocked_users = new ArrayList<>();
+        mDatabaseHelper = new DatabaseHelper(this);
+        mArchivesDatabase = new ArchivesDatabase(this);
 		loadBlockedUsersList();
 		loadSharedFolders();
 		loadFoldersAccess();
-		mDatabaseHelper = new DatabaseHelper(this);
-		mArchivesDatabase = new ArchivesDatabase(this);
 		friends_list = findViewById(R.id.friends_list);
 		sendersManager = SendersManager.getSingleton();
 		sendersManager.start();
@@ -884,6 +884,7 @@ public class Profile extends AppCompatActivity {
 						msg.put(Utils.NAME, archive);
 
 						File file;
+						final FileInputStream fis;
 						long previewSize = 0;
 						final boolean isPreview;
 						isPreview = jsonMsg.getBoolean(Utils.REQ_PREVIEW);
@@ -901,50 +902,48 @@ public class Profile extends AppCompatActivity {
 							file = new File(path);
 							msg.put(Utils.PREVIEW_SENT, false);
 						}
+						fis = new FileInputStream(file);
 
-						try(final FileInputStream fis = new FileInputStream(file)) {
+						int fileLength = (int) file.length();
 
-							int fileLength = (int) file.length();
+						msg.put(Utils.FILE_LENGTH, fileLength);
+						msg.put(Utils.NEW_DL, true);
 
-							msg.put(Utils.FILE_LENGTH, fileLength);
-							msg.put(Utils.NEW_DL, true);
-
-							//CIFRADO Paso2. Obtengo el string de la clave publica
-							// Genero SecretKey para cifrar en activeFileSender
-							// encripto la secreKey con la clave publica y guardo en mensaje
-							String pubkeyString = jsonMsg.getString("publicKey");
-							Log.i("paso2-reci:publickey", pubkeyString);
-							Cryptography rsaTemp = new Cryptography();
-							rsaTemp.setPublicKeyString(pubkeyString);
-							rsaTemp.generateKey();
-							String secretKey = rsaTemp.getSecretKeyString();
-							Log.i("paso2-reci:secretkey", secretKey);
-							String secretKeyCipher = rsaTemp.cipherRSA(secretKey);
-							Log.i("paso2-reci:secretkeyCif", secretKeyCipher);
-							msg.put("secretKey", secretKeyCipher);
-							String secretKeySign = rsaUser.signRSA(secretKeyCipher);
-							Log.i("paso2-reci:secretkeyFir", secretKeySign);
-							msg.put("signature", secretKeySign);
-							msg.put("publicKey", rsaUser.getPublicKeyString());
-							Log.i("paso2-reci:signature", secretKeySign);
-							Log.i("paso2-reci:publickey2", rsaUser.getPublicKeyString());
+						//CIFRADO Paso2. Obtengo el string de la clave publica
+						// Genero SecretKey para cifrar en activeFileSender
+						// encripto la secreKey con la clave publica y guardo en mensaje
+						String pubkeyString = jsonMsg.getString("publicKey");
+						Log.i("paso2-reci:publickey", pubkeyString);
+						Cryptography rsaTemp = new Cryptography();
+						rsaTemp.setPublicKeyString(pubkeyString);
+						rsaTemp.generateKey();
+						String secretKey = rsaTemp.getSecretKeyString();
+						Log.i("paso2-reci:secretkey", secretKey);
+						String secretKeyCipher = rsaTemp.cipherRSA(secretKey);
+						Log.i("paso2-reci:secretkeyCif", secretKeyCipher);
+						msg.put("secretKey", secretKeyCipher);
+						String secretKeySign = rsaUser.signRSA(secretKeyCipher);
+						Log.i("paso2-reci:secretkeyFir", secretKeySign);
+						msg.put("signature", secretKeySign);
+						msg.put("publicKey", rsaUser.getPublicKeyString());
+						Log.i("paso2-reci:signature", secretKeySign);
+						Log.i("paso2-reci:publickey2", rsaUser.getPublicKeyString());
 
 
-							// Si no se está enviando ningún archivo y no hay ningún hilo en cola se lanza el hilo de subida.
-							if (!sendingFile && sendersManager.isQueueEmpty()) {
-								sendingFile = true;
-								activeFileSender = new FileSender();
-								activeFileSender.setName("fileSender");
-								activeFileSender.setVariables(previewSize, msg, sendTo, file, fis, isPreview, secretKey);
-								activeFileSender.start();
-							}
-							// Si hay un hilo enviando un fichero y la cola no está llena se pone en cola.
-							else if (sendingFile && !sendersManager.queueFull()) {
-								FileSender fs = new FileSender();
-								fs.setName("fileSenderQueued");
-								fs.setVariables(previewSize, msg, sendTo, file, fis, isPreview, secretKey);
-								sendersManager.addSender(archive, fs);
-							}
+						// Si no se está enviando ningún archivo y no hay ningún hilo en cola se lanza el hilo de subida.
+						if (!sendingFile && sendersManager.isQueueEmpty()) {
+							sendingFile = true;
+							activeFileSender = new FileSender();
+							activeFileSender.setName("fileSender");
+							activeFileSender.setVariables(previewSize, msg, sendTo, file, fis, isPreview, secretKey);
+							activeFileSender.start();
+						}
+						// Si hay un hilo enviando un fichero y la cola no está llena se pone en cola.
+						else if (sendingFile && !sendersManager.queueFull()) {
+							FileSender fs = new FileSender();
+							fs.setName("fileSenderQueued");
+							fs.setVariables(previewSize, msg, sendTo, file, fis, isPreview, secretKey);
+							sendersManager.addSender(archive, fs);
 						}
 					}
 				} else {

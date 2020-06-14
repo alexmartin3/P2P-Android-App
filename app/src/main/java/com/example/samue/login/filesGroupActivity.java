@@ -61,7 +61,7 @@ public class filesGroupActivity extends AppCompatActivity {
 					mdialog.setContentView(R.layout.dialog_confirmsharedarchive);
 					mdialog.show();
 
-					textDowload(name);
+					textDowload(name,true);
 
 					Button yes = mdialog.findViewById(R.id.confirm_archive_yes);
 					Button no = mdialog.findViewById(R.id.confirm_archive_no);
@@ -91,7 +91,7 @@ public class filesGroupActivity extends AppCompatActivity {
 					mdialog.setContentView(R.layout.dialog_confirmdownload);
 					mdialog.show();
 
-					textDowload(name);
+					textDowload(name,false);
 
 					Button yes = mdialog.findViewById(R.id.confirm_archive_yes);
 					Button no = mdialog.findViewById(R.id.confirm_archive_no);
@@ -157,8 +157,9 @@ public class filesGroupActivity extends AppCompatActivity {
 
 					finish();
 					Toast.makeText(getApplicationContext(), "Los cambios se han guardado", Toast.LENGTH_SHORT).show();
+					saveGroup.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.holo_blue_light)));
 				}
-				saveGroup.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.holo_blue_light)));
+
 			}
 		});
 
@@ -170,9 +171,16 @@ public class filesGroupActivity extends AppCompatActivity {
 			}
 		});
 	}
-	private void textDowload(String nameFile){
+	private void textDowload(String nameFile, boolean admin){
+		String tmp;
 		TextView tv = mdialog.findViewById(R.id.confirm_archive_tv);
-		String tmp="¿Quieres descargar " + nameFile.substring(nameFile.lastIndexOf('/')+1) + "?";
+		if(admin) {
+			tmp = "¿Quieres borrar " + nameFile.substring(nameFile.lastIndexOf('/')+1) + "?";
+		}
+		else{
+			tmp = "¿Quieres descargar " + nameFile.substring(nameFile.lastIndexOf('/') + 1) + "?";
+		}
+
 		tv.setText(tmp);
 	}
 

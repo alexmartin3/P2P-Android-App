@@ -1,37 +1,119 @@
 	1.CHECKS
+GENERAL
+- añadir / borrar amigos							
+- ver archivos compartidos							
+- añadir / borrar archivo							
+- ver archivos de un amigo							
+- descargar / previsualizar archivo de un amigo					
+- ver descargas
+
 CREAR GRUPOS
 - usuario puede crear grupo
 - necesario meter nombre, no grupos en blanco
+- no grupos repetidos
 - necesario seleccionar amigos, no grupo vacio
 - el grupo creado se transmite a los usuarios
+- si un usuario esta en grupos se actualiza lista auto
 - al crear grupo no tiene que haber archivos
 
-BORRAR GRUPOS
+
+BORRAR/SALIR GRUPOS
+- si un usuario esta en grupos se actualiza lista auto
 - si es admin, borra el grupo en  todos los usuarios
 - si no es admin, se borra grupo en su lista
-- si no es admin, se borra del grupo en resto de usuarios
+- 		  se borra del grupo en resto de usuarios
+- 		  se borran los archivos que son suyos
 
-ADMINSTRACION AMIGOS
-- si es admin, añadir amigos
-- si es admin, comprobar en nuevos amigos grupo creado
-- si es admin, comprobar en viejos amigos nuevos amigos
-- si es admin, borrar amigos
-- si es admin, comprobar en amigo borrado grupo eliminado
-- si es admin, comprobar en resto amigos amigo borrado
-- si no es admin, no puede añadir ni borrar amigos
+ADMINSTRACION AMIGOS 
+- al accededer tu usuario sale como "Tú"
+- si no es admin, sin boton añadir ni guardar
+- 		boton atras vuelve a grupos
+- 		pulsar amigos, mensaje no admin
+- si es admin, se marca entre parentesis
+- 		activo boton añadir amigos
+-		activo boton guardar (gris)
+- si es admin, pulsar sobre ti mensaje admin
+- 		pulsar sobre amigo opcion borrar
+- si es admin y borra amigo, se borra de la lista 
+- 			     se activa guardar rojo
+- si es admin, borra amigo y boton guardar,guardar azul y mensaje guardado
+					   en amigo borrado elimina grupo
+					   en resto borra amigo y archivos
+- si es admin, borra amigo y boton atras, salir sin guardar, no- vuelve atras
+							     si- a grupos sin borrar
+- si es admin, añadir amigo, seleciono, ok - actualiza lista,  guardar rojo
+-    			     boton guardar, azul, guardado buelbe a grupos
+					    en amigos añadido crea grupo
+- si es admin, añadir amigo y boton atras, salir sin guardar, no- vuelve atras
+							     si- a grupos sin borrar
 
 ADMINISTRACION ARCHIVOS
 - usuario puede subir archivo (admin o no)
-- los archivos se actualizan en el resto de amigos
-- si eres dueño del archivo, puedes borrarlo
-- los archivos borrados se actualizan en el resto de amigos
-- si no eres dueño del archivo, puedes descargar el archivo
+- usuario puede subir varios archivos
+- boton guardar inactivo (gris)
+- boton atras vuelve a grupos
+- si sube archivo, lista actualizada y guardar rojo
+- 		  y guardar rojo, guardar azul, act. ficheros amigos del grupo
+		  y guardar rojo, vuelvo a grupos
+- si sube archivo y boton atras, salir sin guardar, no- vuelve atras
+						    si- a grupos sin añadir file
+- si toco archivo, soy dueño, mensaje borrar, no- vuelvo atras
+					      si- borro lista y guardar rojo
+- si toco archivo, soy dueño, y guardar rojo, guardar azul, borro fichero en amigos
+- si toco archivo, soy dueño, borro, y boton atras, no- vuelvo atras
+						    si- a grupos sin borrar file
+- si toco archivo, no dueño, no- vuelve atras
+			     si- va a descargas, descarga- finish (abrir)
+			     previsualizar- va a descargas, descarga y abre auto
+
 
 BUSCADORES (GRUPOS Y AMIGOS)
-- Escribir texto, ver que se muestran los que los contienen
-- Si pulsamos lupa, desaparece teclado
-- Si cerramos busqueda (despues de lupa o no) volvemos al inicio de busqueda
-- si borramos texto, se muestran todos de nuevo
+- pulsar lupa, despliega cuadro texto busqueda
+- escribe texto, busca y seleciona los que contengan texto sin distinguir mayus
+- borro texto, sigue actualizando la busqueda
+- borro todo el texto, vuelve a mostrar todos los items
+- escribo texto y pulso lupa, quita teclado y muestra items
+- escribo texto y cierro texto, vuelve a cuadro texto vacio
+- la funcionalidad de los items sigue funcionando
+
+SEGURIDAD
+- necesario descargar/previsualizar archivo
+	- desde amigo, archivos compartidos
+	- desde grupo, lista archivos
+- comprobar todos los pasos y su descripcion 
+
+	- primero en quien quiere descargar
+envio de clave publica
+
+	- segundo en quien envia archivo
+recibo de clave publica
+generacion clave secreta
+cifrado archivo con clave secreta generada
+encriptacion clave secreta con clave publica
+firma de clave secreta encriptada con clave privada
+
+envio clave publica
+envio clave secreta encriptada firmada (signature)
+envio clave secreta encriptada
+envio archivo cifrado
+
+	- tercero en quien esta descargando
+recibe clave publica
+recibe clave secreta encriptada firmada (signature)
+recibe calve secreta encriptada
+recibe archivo cifrado
+
+verifica clave secreta encriptada (con clave publica y signature)
+desencripta clave secreta encriptada con clave privada
+descifra archivo cifrado con clave secreta
+
+
+
+
+
+
+
+
 
 	2. ERRORES ENCONTRADOS EN LA DEPURACION (BUGS)
 + crear grupos sin nombres						(ARREGLADO)
