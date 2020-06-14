@@ -31,16 +31,14 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         android:layout_marginBottom="15dp"
         android:layout_marginEnd="15dp"
-        android:layout_marginRight="15dp"
         android:foregroundGravity="bottom"
         android:src="@drawable/create_group"
         android:clickable="true"
         app:backgroundTint="@android:color/holo_blue_light"
         app:fabSize="normal"
-        />
+        android:focusable="true" />
 
 
 </RelativeLayout>

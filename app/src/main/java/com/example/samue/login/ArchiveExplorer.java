@@ -35,6 +35,7 @@ public class ArchiveExplorer extends AppCompatActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		final DatabaseHelper mDatabaseHelper = new DatabaseHelper(this);;
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_archive_explorer);
 
@@ -156,7 +157,7 @@ public class ArchiveExplorer extends AppCompatActivity {
 												if (fAdapter.getCountSelected() > 0) {
 													// Se añade la carpeta con los nombres de los archivos que contiene a la BD, excluyendo '../':
 													ArrayList<String> sublist = new ArrayList<String>(listaNombresArchivos.subList(1,listaNombresArchivos.size()));
-													Profile.mDatabaseHelper.addSharedFolder(currentFolder, Utils.joinStrings(",",sublist));
+													mDatabaseHelper.addSharedFolder(currentFolder, Utils.joinStrings(",",sublist));
 													// Se añaden los amigos seleccionados a la tabla de acceso:
 													boolean selected[] = fAdapter.getSelected();
 													ArrayList<String> friendsSelected = new ArrayList<>();
@@ -164,7 +165,7 @@ public class ArchiveExplorer extends AppCompatActivity {
 														if (selected[i])
 															friendsSelected.add(friendsNames.get(i));
 													}
-													Profile.mDatabaseHelper.addFriends2Folder(friendsSelected, currentFolder);
+													mDatabaseHelper.addFriends2Folder(friendsSelected, currentFolder);
 													Intent result = new Intent();
 													result.putExtra("folder_sharing", true);
 													setResult(RESULT_OK, result);

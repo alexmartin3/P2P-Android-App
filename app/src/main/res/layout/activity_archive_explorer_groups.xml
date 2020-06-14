@@ -14,7 +14,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@color/colorPrimaryDark"
         android:elevation="4dp"
-        android:text="Estas en: "
+        android:text="@string/estasEn"
         android:textSize="20sp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
@@ -23,7 +23,7 @@
         android:id="@+id/lista_items_grupos"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/rutaActual_grupos"></ListView>
+        android:layout_below="@id/rutaActual_grupos" />
 <!---
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_folder_share_grupos"

@@ -4,9 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.database.Cursor;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -20,21 +18,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
+@SuppressWarnings("unchecked")
 public class filesGroupActivity extends AppCompatActivity {
-	private ArrayAdapter<String> adaptador;
 	private ListView listview;
 	private Groups grupoactual;
 	private String username;
-	static DatabaseHelper filesgroupDatabaseHelper;
-	FloatingActionButton saveGroup;
+	private static DatabaseHelper filesgroupDatabaseHelper;
+	private FloatingActionButton saveGroup;
 
 	private Dialog mdialog;
 	private ArrayList listnamefiles;
 
-	private String filesupdate;
-	private String ownersupdate;
 	private boolean changeGroup;
 
 	@Override
@@ -47,9 +44,9 @@ public class filesGroupActivity extends AppCompatActivity {
 		saveGroup = findViewById(R.id.saveFiles);
 		Bundle extras = getIntent().getExtras();
 		listview = findViewById(R.id.listfilesgroups);
-		username = extras.getString("username");
+		username = Objects.requireNonNull(extras).getString("username");
 		grupoactual =(Groups) extras.getSerializable("group");
-		getSupportActionBar().setTitle(grupoactual.getNameGroup() + " - Ficheros");
+		Objects.requireNonNull(getSupportActionBar()).setTitle(grupoactual.getNameGroup() + " - Ficheros");
 		listnamefiles = new ArrayList();
 		changeGroup=false;
 		loadfilesGroup(grupoactual);
@@ -64,8 +61,7 @@ public class filesGroupActivity extends AppCompatActivity {
 					mdialog.setContentView(R.layout.dialog_confirmsharedarchive);
 					mdialog.show();
 
-					TextView tv = (TextView) mdialog.findViewById(R.id.confirm_archive_tv);
-					tv.setText("¿Quieres borrar " + name.substring(name.lastIndexOf('/')+1) + "?");
+					textDowload(name);
 
 					Button yes = mdialog.findViewById(R.id.confirm_archive_yes);
 					Button no = mdialog.findViewById(R.id.confirm_archive_no);
@@ -95,14 +91,12 @@ public class filesGroupActivity extends AppCompatActivity {
 					mdialog.setContentView(R.layout.dialog_confirmdownload);
 					mdialog.show();
 
-					TextView tv = mdialog.findViewById(R.id.confirm_archive_tv);
-					tv.setText("¿Quieres descargar " + name.substring(name.lastIndexOf('/')+1) + "?");
+					textDowload(name);
 
 					Button yes = mdialog.findViewById(R.id.confirm_archive_yes);
 					Button no = mdialog.findViewById(R.id.confirm_archive_no);
 					//lo mantenemos oculto por no implementarse en grupos
 					Button preview = mdialog.findViewById(R.id.confirm_archive_preview);
-					//preview.setVisibility(view.INVISIBLE);
 
 					no.setOnClickListener(new View.OnClickListener() {
 						@Override
@@ -154,8 +148,6 @@ public class filesGroupActivity extends AppCompatActivity {
 		saveGroup.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				//TODO EL PROCESO DE GUARDAR LOS CAMBIOS EN LA BBDD
-
 				if (changeGroup) {
 					final Intent result = new Intent();
 					result.putExtra("download",false);
@@ -178,6 +170,11 @@ public class filesGroupActivity extends AppCompatActivity {
 			}
 		});
 	}
+	private void textDowload(String nameFile){
+		TextView tv = mdialog.findViewById(R.id.confirm_archive_tv);
+		String tmp="¿Quieres descargar " + nameFile.substring(nameFile.lastIndexOf('/')+1) + "?";
+		tv.setText(tmp);
+	}
 
 	private void loadfilesGroup(Groups group){
 		listnamefiles = group.getListFiles();
@@ -188,10 +185,10 @@ public class filesGroupActivity extends AppCompatActivity {
 				listfinal.add(path.substring(path.lastIndexOf('/') + 1));
 			}
 		}
-		adaptador = new AEArrayAdapter(this, android.R.layout.simple_expandable_list_item_1,listfinal);
+		ArrayAdapter<String> adaptador = new AEArrayAdapter(this, android.R.layout.simple_expandable_list_item_1, listfinal);
 		listview.setAdapter(adaptador);
 
-		if (changeGroup==false){
+		if (!changeGroup){
 			saveGroup.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY));
 		}else{
 			saveGroup.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.red)));
@@ -199,20 +196,16 @@ public class filesGroupActivity extends AppCompatActivity {
 	}
 	private boolean isOwner(int position){
 		boolean result=false;
-		String user = grupoactual.listOwners.get(position).getNombre();
+		String user = grupoactual.getListOwners().get(position).getNombre();
 		if (username.equals(user)){
 			result = true;
 		}
 		return result;
 	}
-	private boolean updateGroupBBDD(String nameupdate,ArrayList filesupdate, ArrayList<Friends> ownersupdate){
-		ArrayList files=filesupdate;
+	private void updateGroupBBDD(String nameupdate, ArrayList filesupdate, ArrayList<Friends> ownersupdate){
 		String ownerssupdatestring = arrayListToString(ownersupdate);
-		boolean inserted = filesgroupDatabaseHelper.addFileGroup(nameupdate,Utils.joinStrings(",",files),ownerssupdatestring, filesgroupDatabaseHelper.GROUPS_TABLE_NAME);
-		if (inserted)
-			return inserted;
-		else
-			return false;
+		filesgroupDatabaseHelper.addFileGroup(nameupdate,Utils.joinStrings(",", filesupdate),ownerssupdatestring, DatabaseHelper.GROUPS_TABLE_NAME);
+
 	}    //pasar de un array lists de amigos a un string
 	private String arrayListToString(ArrayList<Friends> listfriend) {
 		String myString =null;
@@ -233,25 +226,21 @@ public class filesGroupActivity extends AppCompatActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data){
 		super.onActivityResult(requestCode,resultCode,data);
-		switch(requestCode){
-			case 1:
-				if(resultCode == Activity.RESULT_OK){
-					String newFile = data.getStringExtra("file");
-						if (!listnamefiles.contains(newFile)){
-							grupoactual.getListFiles().add(newFile);
-							grupoactual.getListOwners().add(new Friends(username,R.drawable.ic_launcher_foreground));
-							changeGroup=true;
-						}
-					loadfilesGroup(grupoactual);
-					break;
-				}
+		if (resultCode == Activity.RESULT_OK) {
+			String newFile = data.getStringExtra("file");
+			if (!listnamefiles.contains(newFile)) {
+				grupoactual.getListFiles().add(newFile);
+				grupoactual.getListOwners().add(new Friends(username, R.drawable.ic_launcher_foreground));
+				changeGroup = true;
+			}
+			loadfilesGroup(grupoactual);
 		}
 	}
 	@Override
 	public void onBackPressed() {
 		final Intent result = new Intent();
 
-		if (changeGroup == true) {
+		if (changeGroup) {
 			final Dialog backdialog = new Dialog(filesGroupActivity.this);
 			backdialog.setContentView(R.layout.dialog_backgroups);
 			backdialog.show();

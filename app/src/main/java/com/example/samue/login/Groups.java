@@ -1,17 +1,15 @@
 package com.example.samue.login;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
-public class Groups implements Serializable {
+class Groups implements Serializable {
     String nameGroup;
-    int imgGroup;
-    ArrayList<Friends> listFriends;
-    ArrayList listFiles;
-    ArrayList<Friends> listOwners;
-    String administrator;
+    private int imgGroup;
+    private ArrayList<Friends> listFriends;
+    private ArrayList listFiles;
+    private ArrayList<Friends> listOwners;
+    private String administrator;
 
     public Groups(){}
 
@@ -43,14 +41,6 @@ public class Groups implements Serializable {
     public ArrayList<Friends> getListOwners() {return this.listOwners;}
 
     public String getAdministrador() { return this.administrator;}
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Groups group = (Groups) o;
-        return group.nameGroup.equals(this.nameGroup);
-    }
 
 
 }

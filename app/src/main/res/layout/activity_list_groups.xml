@@ -81,7 +81,7 @@
             android:queryHint="@string/search_group"
             android:title="@string/search_group"
             tools:layout_editor_absoluteX="39dp"
-            tools:layout_editor_absoluteY="4dp"></SearchView>
+            tools:layout_editor_absoluteY="4dp" />
 
     </android.support.v7.widget.Toolbar>
 

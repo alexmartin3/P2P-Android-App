@@ -1,21 +1,16 @@
 package com.example.samue.login;
 
 import android.app.Service;
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.util.Pair;
-import android.util.Base64;
 import android.util.Log;
-import android.webkit.MimeTypeMap;
 import android.widget.Toast;
-import org.json.JSONException;
+
 import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.math.BigInteger;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,7 +32,6 @@ public class DownloadService extends Service{
 	private boolean newMsgReceived = false;
 	private final Object serviceMonitor = new Object();
 	private byte threadsRunning;
-	private final byte MAX_DL_THREADS = 2;
 	// HashMap con clave nombre del fichero y valor el par monitor del hilo y el hilo.
 	// Útil para el paso de los JSON entrantes al hilo que corresponda y controlar qué descargas están activas.
 	private HashMap<String, Pair<Object, ManagerThread.DownloadThread>> hm_downloads;
@@ -75,6 +69,7 @@ public class DownloadService extends Service{
 	 * @return true si hay menos de 2 hilos funcionando, false en otro caso.
 	 */
 	public boolean hasFreeThreads(){
+		byte MAX_DL_THREADS = 2;
 		return (threadsRunning < MAX_DL_THREADS);
 	}
 
@@ -145,30 +140,27 @@ public class DownloadService extends Service{
 	 * Administrador de los hilos en los que se ejecutan las descargas según los mensajes que se van recibiendo.
 	 */
 	private class ManagerThread extends Thread{
-		private long fileLength;
 		private String name;
-		private boolean newDownload = false;
 		private Download dl;
-		private Timer timer;
 
 
 		@Override
 		public void run(){
 			try{
-				timer = new Timer();
+				Timer timer = new Timer();
 				timer.schedule(new TimerTask() {
 					@Override
 					public void run() {
-						if (hasFreeThreads() && !msgQueue.isEmpty()){
-							/* Si hay hilos disponibles se coge uno de los mensajes de petición de archivo
-							 * previamente preparado y se transmite la solicitud. Hago esta comprobación cada
-							 * 10 segundos para interferir lo menos posible.
-							 */
-							Pair<String,JSONObject> p = msgQueue.poll();
-							String sendTo = p.first;
-							JSONObject msg = p.second;
-							Profile.downloaderClient.transmit(sendTo, msg);
-						}
+					if (hasFreeThreads() && !msgQueue.isEmpty()){
+						/* Si hay hilos disponibles se coge uno de los mensajes de petición de archivo
+						 * previamente preparado y se transmite la solicitud. Hago esta comprobación cada
+						 * 10 segundos para interferir lo menos posible.
+						 */
+						Pair<String,JSONObject> p = msgQueue.poll();
+						String sendTo = p.first;
+						JSONObject msg = p.second;
+						Profile.downloaderClient.transmit(sendTo, msg);
+					}
 					}
 				}, 10010, 10010);
 
@@ -179,23 +171,20 @@ public class DownloadService extends Service{
 							serviceMonitor.wait();
 
 						name = jsonMsg.getString(Utils.NAME);
-						newDownload = jsonMsg.getBoolean(Utils.NEW_DL);
-
+						boolean newDownload = jsonMsg.getBoolean(Utils.NEW_DL);
 						// Si es una descarga nueva se añade al ArrayList.
 						if (newDownload) {
 							String friendName = jsonMsg.getString(Utils.FRIEND_NAME);
-							fileLength = jsonMsg.getLong(Utils.FILE_LENGTH);
+							long fileLength = jsonMsg.getLong(Utils.FILE_LENGTH);
 							String path = MainActivity.downloadsFolder + name;
 							dl = new Download(name, path, fileLength, friendName);
 							addDownload(dl);
 						}
-
 						// Si hay hilos disponibles...
 						if (hasFreeThreads()){
 							// Si es nueva descarga se lanza.
 							if (newDownload)
 								startDownload();
-
 							// Si no es nueva descarga el json es de la única descarga activa y hay que notificar a su monitor.
 							else
 								notifyAndSetJson();
@@ -210,16 +199,13 @@ public class DownloadService extends Service{
 								notifyAndSetJson();
 							}
 							catch (NullPointerException e){
-								e.printStackTrace();
-							}
 
-						newDownload = false;
+							}
 						newMsgReceived = false;
 					}
 				}
-
 			} catch(Exception e){
-				e.printStackTrace();
+
 			}
 		}
 
@@ -266,17 +252,16 @@ public class DownloadService extends Service{
 		 * @param dl_fileName Nombre del archivo.
 		 * @return
 		 */
-		public boolean stopDownload(String dl_path, String dl_fileName){
+		boolean stopDownload(String dl_path, String dl_fileName){
 			Pair<Object,ManagerThread.DownloadThread> dl_Pair = hm_downloads.get(dl_fileName);
-			boolean success = false;
 			DownloadThread th = dl_Pair.second;
 			hm_downloads.remove(dl_fileName);
 			th.interrupt();
 			--threadsRunning;
 			File f = new File(dl_path);
+			//noinspection ResultOfMethodCallIgnored
 			f.delete();
-			success = true;
-			return success;
+			return true;
 		}
 
 
@@ -287,16 +272,14 @@ public class DownloadService extends Service{
 		private class DownloadThread extends Thread{
 			private JSONObject json;
 			private Timer dl_timer;
-			private int storedLastSecond, bps, bytesWritten;
-			private StringBuilder codedData = new StringBuilder();
-			private byte[] decodedData;
-			private FileOutputStream fos;
+			private int storedLastSecond;
+			private int bytesWritten;
 			private Download dl;
 			private final Object dl_monitor;
 			private boolean lastPiece, newJson;
 
 
-			public DownloadThread(Object m, Download d){
+			DownloadThread(Object m, Download d){
 				dl_monitor = m;
 				dl = d;
 				lastPiece = false;
@@ -305,13 +288,13 @@ public class DownloadService extends Service{
 
 			@Override
 			public void run(){
-				try{
+				String path = dl.getPath();
+				try(FileOutputStream fos = new FileOutputStream(path);){
 					name = jsonMsg.getString(Utils.NAME);
-					String path = dl.getPath();
-					fos = new FileOutputStream(path);
+
 					File file = new File(path);
 					bytesWritten = 0;
-					int count = 0;
+					int count;
 
 					//CIFRADO Paso5. Obtenemos el string con la secretkey para crear el objeto
 					//con el cual vamos a ir descifrando los mensajes
@@ -339,10 +322,10 @@ public class DownloadService extends Service{
 							//CIFRADO Paso5.Se recibe la info cifrada, se descifra con la secretKey
 							//se recibe string se usa byte[]
 							Log.i("paso5-send:msgcif",json.getString(Utils.DATA));
-							decodedData=rsaTemp.decipherSimetric(json.getString(Utils.DATA));
+							byte[] decodedData = rsaTemp.decipherSimetric(json.getString(Utils.DATA));
 							count=json.getInt("count");
 							Log.i("counted-received", String.valueOf(count));
-							Log.i("paso5-send:msgdescif",rsaTemp.bytesToString(decodedData));
+							Log.i("paso5-send:msgdescif", Cryptography.bytesToString(decodedData));
 
 							//como estaba antes
 							//codedData.replace(0, codedData.length(), json.getString(Utils.DATA));
@@ -375,7 +358,7 @@ public class DownloadService extends Service{
 
 					//this.interrupt();
 				} catch(Exception e){
-					e.printStackTrace();
+
 					dl_timer.cancel();
 					this.interrupt();
 				}
@@ -389,7 +372,7 @@ public class DownloadService extends Service{
 				if (dl != null){
 					int prog = (int) ((bytesWritten * 100L) / dl.getSize());
 					dl.updateProgress(prog);
-					bps = storedLastSecond;
+					int bps = storedLastSecond;
 					dl.updateSpeed(bps);
 					dl.updateETA(bps);
 					storedLastSecond = 0;
@@ -401,7 +384,7 @@ public class DownloadService extends Service{
 			 * Actualiza el mensaje JSON y señaliza que lo ha recibido.
 			 * @param j
 			 */
-			public void setJSON(JSONObject j){
+			void setJSON(JSONObject j){
 				json = j;
 				newJson = true;
 			}

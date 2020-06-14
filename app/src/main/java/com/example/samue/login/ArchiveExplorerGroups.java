@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -21,27 +20,20 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class ArchiveExplorerGroups extends AppCompatActivity {
     private Dialog mdialog;
-    private ArrayList listaNombresArchivos;
     private List listaRutasArchivos;
-    private ArrayAdapter adaptador;
     private String directorioRaiz;
     private TextView carpetaActual;
     private String currentFolder;
     private ListView listaItems;
-    private FloatingActionButton fab;
-    private File[] listaArchivos;
-    static DatabaseHelper filesDatabaseHelper;
-    String username;
-    Groups group;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_archive_explorer_groups);
-        filesDatabaseHelper = new DatabaseHelper(this);
 
         carpetaActual = findViewById(R.id.rutaActual_grupos);
         listaItems = findViewById(R.id.lista_items_grupos);
@@ -49,8 +41,7 @@ public class ArchiveExplorerGroups extends AppCompatActivity {
         verArchivosDirectorio(directorioRaiz);
 
         Bundle extras = getIntent().getExtras();
-        username= extras.getString("username");
-        group = (Groups) extras.getSerializable("group");
+        String username = Objects.requireNonNull(extras).getString("username");
 
         // Compartir un archivo:
         listaItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -69,7 +60,8 @@ public class ArchiveExplorerGroups extends AppCompatActivity {
                     mdialog.show();
 
                     TextView tv = mdialog.findViewById(R.id.confirm_archive_tv);
-                    tv.setText("¿Quieres compartir " + archivo.getName() + " con tus amigos?");
+                    String tmp="¿Quieres compartir " + archivo.getName() + " con tus amigos?";
+                    tv.setText(tmp);
 
                     Button yes = mdialog.findViewById(R.id.confirm_archive_yes);
                     Button no = mdialog.findViewById(R.id.confirm_archive_no);
@@ -82,7 +74,6 @@ public class ArchiveExplorerGroups extends AppCompatActivity {
                     yes.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            boolean add;
                             mdialog.dismiss();
                             final ProgressDialog progressDialog = new ProgressDialog(ArchiveExplorerGroups.this);
                             progressDialog.setIndeterminate(true);
@@ -105,15 +96,16 @@ public class ArchiveExplorerGroups extends AppCompatActivity {
         });
     }
     private void verArchivosDirectorio(String rutaDirectorio) {
-        carpetaActual.setText("Estas en: " + rutaDirectorio);
+        String tmp="Estas en: " + rutaDirectorio;
+        carpetaActual.setText(tmp);
         currentFolder = rutaDirectorio;
-        listaNombresArchivos = new ArrayList();
+        ArrayList listaNombresArchivos = new ArrayList();
         listaRutasArchivos = new ArrayList();
         File directorioActual = new File(rutaDirectorio);
         if(!directorioActual.exists()){
             return;
         }
-        listaArchivos = directorioActual.listFiles();
+        File[] listaArchivos = directorioActual.listFiles();
 
         int x = 0;
         if (listaArchivos == null) {
@@ -150,38 +142,10 @@ public class ArchiveExplorerGroups extends AppCompatActivity {
         }
         // Creamos el adaptador y le asignamos la lista de los nombres de los
         // archivos y el layout para los elementos de la lista
-        adaptador = new AEArrayAdapter(this, android.R.layout.simple_list_item_1, listaNombresArchivos);
+        ArrayAdapter adaptador = new AEArrayAdapter(this, android.R.layout.simple_list_item_1, listaNombresArchivos);
         listaItems.setAdapter(adaptador);
     }
-    private boolean updateGroupBBDD(String nameupdate,String namefile, Groups group){
-        ArrayList files = group.listFiles;
-        ArrayList<Friends> owners = group.listOwners;
-        files.add(namefile);
-        owners.add(new Friends(username,R.drawable.ic_launcher_foreground));
 
-        boolean inserted = filesDatabaseHelper.addFileGroup(nameupdate,Utils.joinStrings(",",files),arrayListToString(owners),filesDatabaseHelper.GROUPS_TABLE_NAME);
-        if (inserted)
-
-            return inserted;
-        else
-            return false;
-    }
-    private String arrayListToString(ArrayList<Friends> listfriend) {
-        String myString ="";
-
-        for (int i = 0; i<listfriend.size();i++){
-            if (myString.equals("")){
-                myString=listfriend.get(i).getNombre();
-                if (i < (listfriend.size() - 1)){myString = myString + ",";}
-            }else {
-                myString = myString + listfriend.get(i).getNombre();
-                if (i < (listfriend.size() - 1)) {
-                    myString = myString + ",";
-                }
-            }
-        }
-        return myString;
-    }
     @Override
     public void onBackPressed(){
         if (!currentFolder.equalsIgnoreCase(directorioRaiz)) {

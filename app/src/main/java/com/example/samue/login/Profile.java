@@ -13,7 +13,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 import android.net.ConnectivityManager;
-import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -23,7 +22,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -46,7 +44,6 @@ import com.tom_roush.pdfbox.pdmodel.PDDocument;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.spongycastle.jcajce.provider.asymmetric.RSA;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnectionFactory;
 import org.webrtc.VideoRendererGui;
@@ -55,12 +52,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.math.BigInteger;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -68,58 +60,53 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
+import java.util.Objects;
 
 import me.kevingleason.pnwebrtc.PnPeer;
 import me.kevingleason.pnwebrtc.PnRTCClient;
 import me.kevingleason.pnwebrtc.PnRTCListener;
 import util.Constants;
 
+@SuppressWarnings("unchecked")
 public class Profile extends AppCompatActivity {
-	Dialog mdialog;
-	FloatingActionButton fab;
-	FloatingActionButton groups;
-	EditText name;
-	Button bf;
-	ListView friends_list;
-	FriendsAdapter adapter;
-	ArrayList<Friends> al_friends;
-	ArrayList<Friends> al_blocked_users;
+	public static DatabaseHelper mDatabaseHelper;
+	private Dialog mdialog;
+	private EditText name;
+	private ListView friends_list;
+	private FriendsAdapter adapter;
+	private ArrayList<Friends> al_friends;
+	private ArrayList<Friends> al_blocked_users;
 	private String selectedFolder = null;
-	static DatabaseHelper mDatabaseHelper;
-	static final int BLOCKED_USERS_REQUEST = 4;
-	static final int SEE_SHARED_FOLDERS_REQUEST = 5;
+	private static final int BLOCKED_USERS_REQUEST = 4;
+	private static final int SEE_SHARED_FOLDERS_REQUEST = 5;
 	// Nombre de las carpetas, lista de archivos de cada una.
 	private HashMap<String,ArrayList<String>> sharedFolders;
 	// Nombre de las carpetas, lista de amigos que tienen acceso a cada una.
 	private HashMap<String,ArrayList<String>> foldersAccess;
-	ArchivesDatabase mArchivesDatabase;
+	private ArchivesDatabase mArchivesDatabase;
 	private String userRecursos;
 
-	public static final String LOCAL_MEDIA_STREAM_ID = "localStreamPN";
-	public static final String LOCAL_MEDIA_STREAM_ID_SENDER = "localStreamPNsender";
-	public static final String LOCAL_MEDIA_STREAM_ID_DOWNLOADER = "localStreamPNdownloader";
-	static PnRTCClient pnRTCClient;
+	private static final String LOCAL_MEDIA_STREAM_ID = "localStreamPN";
+	private static final String LOCAL_MEDIA_STREAM_ID_SENDER = "localStreamPNsender";
+	private static final String LOCAL_MEDIA_STREAM_ID_DOWNLOADER = "localStreamPNdownloader";
+	private static PnRTCClient pnRTCClient;
 	private PnRTCClient senderClient;
 	static PnRTCClient downloaderClient;
-	private int senderCount = 0;
 	private Pubnub mPubNub;
 	private Cryptography userPubNub;
-	public String username;
+	private String username;
 	private FileSender activeFileSender;
 	private SendersManager sendersManager;
-	boolean sendingFile;
+	private boolean sendingFile;
 	private DownloadService downloadService;
 	private Intent dl_intent;
-	private boolean serviceBound = false;
 	private boolean mobileDataBlocked;
-	static ArrayList<Groups> listgroups;
+	private static ArrayList<Groups> listgroups;
 	private ArrayList<Groups> newgroups;
-	private ArrayList<Groups> deletegroups;
-	private SearchView searchFriend;
+	private static final String SENDTO = "sendTo";
+	private static final String NAMEGROUP = "nameGroup";
+	private static final String LISTFILES = "listFiles";
+	private static final String LISTOWNERS = "listOwners";
 
 	private Cryptography rsaUser;
 
@@ -128,11 +115,9 @@ public class Profile extends AppCompatActivity {
 		public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
 			DownloadService.DownloadBinder binder = (DownloadService.DownloadBinder) iBinder;
 			downloadService = binder.getService();
-			serviceBound = true;
 		}
 		@Override
 		public void onServiceDisconnected(ComponentName componentName) {
-			serviceBound = false;
 			Log.e("ERROR EN DESCARGA", "SERVICIO DESCONECTADO INESPERADAMENTE");
 		}
 	};
@@ -144,12 +129,12 @@ public class Profile extends AppCompatActivity {
 		mobileDataBlocked = false;
 		this.username = getIntent().getExtras().getString("user");
 		al_blocked_users = new ArrayList<>();
-		mDatabaseHelper = new DatabaseHelper(this);
 		loadBlockedUsersList();
 		loadSharedFolders();
 		loadFoldersAccess();
+		mDatabaseHelper = new DatabaseHelper(this);
 		mArchivesDatabase = new ArchivesDatabase(this);
-		friends_list = (ListView) findViewById(R.id.friends_list);
+		friends_list = findViewById(R.id.friends_list);
 		sendersManager = SendersManager.getSingleton();
 		sendersManager.start();
 		initUser();
@@ -205,7 +190,7 @@ public class Profile extends AppCompatActivity {
 					@Override
 					public void onClick(View view) {
 						mdialog.dismiss();
-						boolean inserted = mDatabaseHelper.addData(connectTo, mDatabaseHelper.BLOCKED_TABLE_NAME);
+						boolean inserted = mDatabaseHelper.addData(connectTo, DatabaseHelper.BLOCKED_TABLE_NAME);
 						if (inserted) {
 							mDatabaseHelper.deleteFriend(connectTo);
 							loadFoldersAccess();
@@ -219,11 +204,11 @@ public class Profile extends AppCompatActivity {
 		});
 		Toolbar myToolbar = findViewById(R.id.my_toolbar);
 		setSupportActionBar(myToolbar);
-		getSupportActionBar().setTitle(username + " - Amigos");
+		Objects.requireNonNull(getSupportActionBar()).setTitle(username + " - Amigos");
 		//getSupportActionBar().setTitle("Hola, " + getIntent().getExtras().getString("user"));
 		comprobarPermisos();
 		// Botón para ir a la activity de grupos.
-		groups = (FloatingActionButton) findViewById(R.id.groupsButton);
+		FloatingActionButton groups = findViewById(R.id.groupsButton);
 		groups.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -307,7 +292,7 @@ public class Profile extends AppCompatActivity {
 
 			}
 		});
-		fab = (FloatingActionButton) findViewById(R.id.addFriendsFAB);
+		FloatingActionButton fab = findViewById(R.id.addFriendsFAB);
 		// Botón para compartir un archivo o una carpeta.
 		fab.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -320,12 +305,12 @@ public class Profile extends AppCompatActivity {
 		try {
 			initPubNub();
 		} catch (Exception e) {
-			e.printStackTrace();
+
 		}
 		// Arranque del servicio de descargas.
 		dl_intent = new Intent(this, DownloadService.class);
 		startService(dl_intent);
-		serviceBound = bindService(dl_intent, serviceConnection, BIND_AUTO_CREATE);
+		boolean serviceBound = bindService(dl_intent, serviceConnection, BIND_AUTO_CREATE);
 	}
 
 	private void publish(final String connectTo, final String connectionType, final String nameGroup, final Boolean preview){
@@ -345,7 +330,6 @@ public class Profile extends AppCompatActivity {
 					 */
 						Thread.sleep(1500);
 					}
-					catch (InterruptedException e) {}
 					catch (Exception e) {}
 
 					if(connectionType.equals("VAR")){ //buscamos que tipo de mensaje debemos enviar
@@ -364,7 +348,7 @@ public class Profile extends AppCompatActivity {
 				}
 			});
 		} catch (JSONException e) {
-			e.printStackTrace();
+
 		}
 	}
 	private void comprobarPermisos(){
@@ -372,7 +356,7 @@ public class Profile extends AppCompatActivity {
 			ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
 		}
 	}
-	public void initPubNub() throws Exception {
+	private void initPubNub() throws Exception {
 		String stdbyChannel = this.username + Constants.STDBY_SUFFIX;
 		this.mPubNub = new Pubnub(userPubNub.pubnub(Constants.PUB_KEY), userPubNub.pubnub(Constants.SUB_KEY));
 		this.mPubNub.setUUID(this.username);
@@ -387,12 +371,12 @@ public class Profile extends AppCompatActivity {
 						if (!jsonMsg.has(Constants.JSON_CALL_USER)) return;
 						connectPeer("", false);
 					} catch (Exception e) {
-						e.printStackTrace();
+
 					}
 				}
 			});
 		} catch (PubnubException e) {
-			e.printStackTrace();
+
 		}
 	}
 	@Override
@@ -424,7 +408,7 @@ public class Profile extends AppCompatActivity {
 			case 2:
 				if(resultCode == Activity.RESULT_OK){
 					final String name = data.getStringExtra("name");
-					String sendTo = data.getStringExtra("sendTo");
+					String sendTo = data.getStringExtra(SENDTO);
 					boolean isPreview = data.getBooleanExtra(Utils.REQ_PREVIEW, false);
 					RA(name, sendTo, isPreview,false);
 				}
@@ -454,7 +438,7 @@ public class Profile extends AppCompatActivity {
 				try {
 					boolean download = data.getBooleanExtra("download",false);
 					boolean returnGroups = data.getBooleanExtra("returnGroups",false);
-					if (download==true){
+					if (download){
 						String name = data.getStringExtra("name");
 						String owner = data.getStringExtra("owner");
 						Boolean preview = data.getBooleanExtra(Utils.REQ_PREVIEW, false);
@@ -479,7 +463,7 @@ public class Profile extends AppCompatActivity {
 							}
 						}
 						//si hay grupos que borrar:
-						deletegroups = (ArrayList<Groups>) data.getSerializableExtra("deletegroups");
+						ArrayList<Groups> deletegroups = (ArrayList<Groups>) data.getSerializableExtra("deletegroups");
 						if (!deletegroups.isEmpty()) {
 							//Para cada grupo, debemos ver los usuarios que tiene cada uno y establecer una conexión con ellos, y borrarlo
 							for (int i = 0; i < deletegroups.size(); i++) {
@@ -498,7 +482,7 @@ public class Profile extends AppCompatActivity {
 						}
 					}
 				}catch(Exception e) {
-					e.printStackTrace();
+
 				}
 				break;
 			default:
@@ -512,25 +496,23 @@ public class Profile extends AppCompatActivity {
 	}
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-		switch(requestCode){
-			case 1: {
-				if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-					Profile.this.runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							Toast.makeText(Profile.this, "Ahora puedes compartir archivos :)", Toast.LENGTH_SHORT).show();
-						}
-					});
-				}else{
-					Profile.this.runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							Toast.makeText(Profile.this, "No se puede acceder a los archivos", Toast.LENGTH_SHORT).show();
-						}
-					});
-				}
-				return;
+		if (requestCode == 1) {
+			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				Profile.this.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						Toast.makeText(Profile.this, "Ahora puedes compartir archivos :)", Toast.LENGTH_SHORT).show();
+					}
+				});
+			} else {
+				Profile.this.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						Toast.makeText(Profile.this, "No se puede acceder a los archivos", Toast.LENGTH_SHORT).show();
+					}
+				});
 			}
+			return;
 		}
 	}
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -539,7 +521,7 @@ public class Profile extends AppCompatActivity {
 		MenuItem myActionMenuItem = menu.findItem( R.id.action_search);
 		final MenuItem addFriendMenuItem = menu.findItem( R.id.add_friend);
 		final MenuItem blockMenuItem = menu.findItem( R.id.block_upload_mobile);
-		searchFriend = (SearchView) myActionMenuItem.getActionView();
+		SearchView searchFriend = (SearchView) myActionMenuItem.getActionView();
 		searchFriend.setQueryHint(getText(R.string.search_friend));
 		searchFriend.setOnSearchClickListener(new View.OnClickListener() {
 			@Override
@@ -635,7 +617,7 @@ public class Profile extends AppCompatActivity {
 				mdialog.setContentView(R.layout.dialog_newfriend);
 				mdialog.show();
 				name = mdialog.findViewById(R.id.name);
-				bf = mdialog.findViewById(R.id.button_friend);
+				Button bf = mdialog.findViewById(R.id.button_friend);
 
 				bf.setOnClickListener(new View.OnClickListener() {
 					@Override
@@ -650,13 +632,14 @@ public class Profile extends AppCompatActivity {
 							removeBlockedDialog.show();
 
 							TextView title = removeBlockedDialog.findViewById(R.id.previous_blocked_friend_title);
-							title.setText(fr + " está bloqueado y se desbloqueará si continúas.\n¿Continuar?");
+							String tmp=fr + " está bloqueado y se desbloqueará si continúas.\n¿Continuar?";
+							title.setText(tmp);
 
 							Button yes = removeBlockedDialog.findViewById(R.id.unlock_yes);
 							yes.setOnClickListener(new View.OnClickListener() {
 								@Override
 								public void onClick(View view) {
-									mDatabaseHelper.removeData(fr, mDatabaseHelper.BLOCKED_TABLE_NAME);
+									mDatabaseHelper.removeData(fr, DatabaseHelper.BLOCKED_TABLE_NAME);
 									loadBlockedUsersList();
 									publish(fr, "FR","",false);
 									Toast.makeText(getApplicationContext(), "Petición de amistad enviada", Toast.LENGTH_SHORT).show();
@@ -695,8 +678,8 @@ public class Profile extends AppCompatActivity {
 		}
 		return false;
 	}
-	public void addData(String newEntry){ //llamar cuando aceptemos la peticion de amistad y cuando nos la acepten
-		boolean insertData = mDatabaseHelper.addData(newEntry, mDatabaseHelper.FRIENDS_TABLE_NAME);
+	private void addData(String newEntry){ //llamar cuando aceptemos la peticion de amistad y cuando nos la acepten
+		boolean insertData = mDatabaseHelper.addData(newEntry, DatabaseHelper.FRIENDS_TABLE_NAME);
 		if(insertData){
 			populateListView();
 		}
@@ -712,7 +695,7 @@ public class Profile extends AppCompatActivity {
 		data.close();
 	}
 	private ArrayList<String> getArchivesList(){
-		ArrayList<String> al = new ArrayList<String>();
+		ArrayList<String> al = new ArrayList<>();
 		Cursor data = mArchivesDatabase.getData();
 		while(data.moveToNext()){
 			al.add(data.getString(1));
@@ -722,7 +705,7 @@ public class Profile extends AppCompatActivity {
 	}
 
 	private void connectPeer(String connectTo, boolean call)throws Exception{
-		if(this.pnRTCClient == null) {
+		if(pnRTCClient == null) {
 			PeerConnectionFactory.initializeAndroidGlobals(
 					getApplicationContext(),  // Context
 					true,  // Audio Enabled
@@ -731,18 +714,18 @@ public class Profile extends AppCompatActivity {
 					VideoRendererGui.getEGLContext()); // Render EGL Context
 
 			PeerConnectionFactory pcFactory = new PeerConnectionFactory();
-			this.pnRTCClient = new PnRTCClient(userPubNub.pubnub(Constants.PUB_KEY), userPubNub.pubnub(Constants.SUB_KEY), this.username);
+			pnRTCClient = new PnRTCClient(userPubNub.pubnub(Constants.PUB_KEY), userPubNub.pubnub(Constants.SUB_KEY), this.username);
 
 			MediaStream mediaStream = pcFactory.createLocalMediaStream(LOCAL_MEDIA_STREAM_ID);
 
-			this.pnRTCClient.attachRTCListener(new myRTCListener());
-			this.pnRTCClient.attachLocalMediaStream(mediaStream);
+			pnRTCClient.attachRTCListener(new myRTCListener());
+			pnRTCClient.attachLocalMediaStream(mediaStream);
 
-			this.pnRTCClient.listenOn(this.username);
+			pnRTCClient.listenOn(this.username);
 		}
 
 		if(call){
-			this.pnRTCClient.connect(connectTo);
+			pnRTCClient.connect(connectTo);
 		}
 	}
 
@@ -755,7 +738,7 @@ public class Profile extends AppCompatActivity {
 		});
 	}
 	private void cerrarConexion(String userTo){
-		this.pnRTCClient.closeConnection(userTo);
+		pnRTCClient.closeConnection(userTo);
 	}
 
 	private void RA(String name, String sendTo, boolean isPreview, final boolean group){ //Request Archive
@@ -763,7 +746,7 @@ public class Profile extends AppCompatActivity {
 			JSONObject msg = new JSONObject();
 			final String finalName = name;
 			msg.put("type", "RA");
-			msg.put("sendTo", this.username);
+			msg.put(SENDTO, this.username);
 			msg.put(Utils.NAME, name);
 			msg.put(Utils.REQ_PREVIEW, isPreview);
 			msg.put("group", group);
@@ -803,7 +786,7 @@ public class Profile extends AppCompatActivity {
 				});
 			}
 		}catch(Exception e){
-			e.printStackTrace();
+
 		}
 	}
 	/**
@@ -824,7 +807,7 @@ public class Profile extends AppCompatActivity {
 	private void handleSA(JSONObject jsonMsg){
 		//CIFRADO Paso4. Se recibe el mensaje la secretKey encriptada y con la info cifrada y se la pasa a dowloadService
 		//vamos a añadir en el mensaje la secretKey descifrada para que pueda descodificar el mensaje
-		Boolean download=false;
+		boolean download=false;
 		try {
 			Cryptography rsaTemp =new Cryptography();
 			String  pubkeyString = jsonMsg.getString("publicKey");
@@ -845,7 +828,7 @@ public class Profile extends AppCompatActivity {
 				Toast.makeText(this, "Error, la informacion recibida no es segura.", Toast.LENGTH_LONG).show();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+
 		}
 		if (download){
 			this.downloadService.handleMsg(jsonMsg);
@@ -856,7 +839,7 @@ public class Profile extends AppCompatActivity {
 		try{
 			// Primero se comprueba si se está conectado a Internet con datos móviles:
 			final ConnectivityManager connMgr = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-			boolean isUsingMobile = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnectedOrConnecting();
+			boolean isUsingMobile = Objects.requireNonNull(connMgr).getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnectedOrConnecting();
 			// En caso de que sí y se haya seleccionado que no se usen en la barra superior, se descarta la petición.
 			if (!(isUsingMobile && mobileDataBlocked)) {
 				boolean cancel_dl;
@@ -866,11 +849,11 @@ public class Profile extends AppCompatActivity {
 					cancel_dl = false;
 				}
 				if (!cancel_dl) {
-					final String user = jsonMsg.getString("sendTo");
+					final String user = jsonMsg.getString(SENDTO);
 					// Si el usuario no está bloqueado se procede, en otro caso se desecha la petición silenciosamente.
 					if (!listContains(user, al_blocked_users)) {
 						String archive = jsonMsg.getString(Utils.NAME);
-						String sendTo = jsonMsg.getString("sendTo");
+						String sendTo = jsonMsg.getString(SENDTO);
 						String folder;
 						try {
 							folder = jsonMsg.getString("selectedFolder");
@@ -880,7 +863,7 @@ public class Profile extends AppCompatActivity {
 
 						String path;
 						boolean group = jsonMsg.getBoolean("group");
-						if (group==true){
+						if (group){
 							path = archive;
 							archive= archive.substring(archive.lastIndexOf('/')+1);
 
@@ -901,7 +884,6 @@ public class Profile extends AppCompatActivity {
 						msg.put(Utils.NAME, archive);
 
 						File file;
-						final FileInputStream fis;
 						long previewSize = 0;
 						final boolean isPreview;
 						isPreview = jsonMsg.getBoolean(Utils.REQ_PREVIEW);
@@ -920,47 +902,49 @@ public class Profile extends AppCompatActivity {
 							msg.put(Utils.PREVIEW_SENT, false);
 						}
 
-						fis = new FileInputStream(file);
-						int fileLength = (int) file.length();
+						try(final FileInputStream fis = new FileInputStream(file)) {
 
-						msg.put(Utils.FILE_LENGTH, fileLength);
-						msg.put(Utils.NEW_DL, true);
+							int fileLength = (int) file.length();
 
-						//CIFRADO Paso2. Obtengo el string de la clave publica
-						// Genero SecretKey para cifrar en activeFileSender
-						// encripto la secreKey con la clave publica y guardo en mensaje
-						String pubkeyString = jsonMsg.getString("publicKey");
-						Log.i("paso2-reci:publickey",pubkeyString);
-						Cryptography rsaTemp = new Cryptography();
-						rsaTemp.setPublicKeyString(pubkeyString);
-						rsaTemp.generateKey();
-						String secretKey = rsaTemp.getSecretKeyString();
-						Log.i("paso2-reci:secretkey",secretKey);
-						String secretKeyCipher = rsaTemp.cipherRSA(secretKey);
-						Log.i("paso2-reci:secretkeyCif",secretKeyCipher);
-						msg.put("secretKey",secretKeyCipher);
-						String secretKeySign = rsaUser.signRSA(secretKeyCipher);
-						Log.i("paso2-reci:secretkeyFir",secretKeySign);
-						msg.put("signature",secretKeySign);
-						msg.put("publicKey",rsaUser.getPublicKeyString());
-						Log.i("paso2-reci:signature",secretKeySign);
-						Log.i("paso2-reci:publickey2",rsaUser.getPublicKeyString());
+							msg.put(Utils.FILE_LENGTH, fileLength);
+							msg.put(Utils.NEW_DL, true);
+
+							//CIFRADO Paso2. Obtengo el string de la clave publica
+							// Genero SecretKey para cifrar en activeFileSender
+							// encripto la secreKey con la clave publica y guardo en mensaje
+							String pubkeyString = jsonMsg.getString("publicKey");
+							Log.i("paso2-reci:publickey", pubkeyString);
+							Cryptography rsaTemp = new Cryptography();
+							rsaTemp.setPublicKeyString(pubkeyString);
+							rsaTemp.generateKey();
+							String secretKey = rsaTemp.getSecretKeyString();
+							Log.i("paso2-reci:secretkey", secretKey);
+							String secretKeyCipher = rsaTemp.cipherRSA(secretKey);
+							Log.i("paso2-reci:secretkeyCif", secretKeyCipher);
+							msg.put("secretKey", secretKeyCipher);
+							String secretKeySign = rsaUser.signRSA(secretKeyCipher);
+							Log.i("paso2-reci:secretkeyFir", secretKeySign);
+							msg.put("signature", secretKeySign);
+							msg.put("publicKey", rsaUser.getPublicKeyString());
+							Log.i("paso2-reci:signature", secretKeySign);
+							Log.i("paso2-reci:publickey2", rsaUser.getPublicKeyString());
 
 
-						// Si no se está enviando ningún archivo y no hay ningún hilo en cola se lanza el hilo de subida.
-						if (!sendingFile && sendersManager.isQueueEmpty()) {
-							sendingFile = true;
-							activeFileSender = new FileSender();
-							activeFileSender.setName("fileSender");
-							activeFileSender.setVariables(previewSize, msg, sendTo, file, fis, isPreview, secretKey);
-							activeFileSender.start();
-						}
-						// Si hay un hilo enviando un fichero y la cola no está llena se pone en cola.
-						else if (sendingFile && !sendersManager.queueFull()) {
-							FileSender fs = new FileSender();
-							fs.setName("fileSenderQueued");
-							fs.setVariables(previewSize, msg, sendTo, file, fis, isPreview, secretKey);
-							sendersManager.addSender(archive, fs);
+							// Si no se está enviando ningún archivo y no hay ningún hilo en cola se lanza el hilo de subida.
+							if (!sendingFile && sendersManager.isQueueEmpty()) {
+								sendingFile = true;
+								activeFileSender = new FileSender();
+								activeFileSender.setName("fileSender");
+								activeFileSender.setVariables(previewSize, msg, sendTo, file, fis, isPreview, secretKey);
+								activeFileSender.start();
+							}
+							// Si hay un hilo enviando un fichero y la cola no está llena se pone en cola.
+							else if (sendingFile && !sendersManager.queueFull()) {
+								FileSender fs = new FileSender();
+								fs.setName("fileSenderQueued");
+								fs.setVariables(previewSize, msg, sendTo, file, fis, isPreview, secretKey);
+								sendersManager.addSender(archive, fs);
+							}
 						}
 					}
 				} else {
@@ -973,12 +957,12 @@ public class Profile extends AppCompatActivity {
 						else
 							sendersManager.removeSender(uploadFileName);
 					} catch (JSONException e) {
-						e.printStackTrace();
+
 					}
 				}
 			}
 		}catch(Exception e){
-			e.printStackTrace();
+
 		}
 	}
 	/**
@@ -993,15 +977,13 @@ public class Profile extends AppCompatActivity {
 		switch (extension){
 			// Si es un pdf se crea uno nuevo con 3 páginas.
 			case "pdf":
-				try {
-					f = new File(path);
-					PDDocument pdf = PDDocument.load(f);
+				f = new File(path);
+				try (PDDocument pdf = PDDocument.load(f);PDDocument pd = new PDDocument();){
 					Splitter splitter = new Splitter();
 					List<PDDocument> pages = splitter.split(pdf);
 					Iterator<PDDocument> it = pages.listIterator();
 
 					// Se meten 3 páginas.
-					PDDocument pd = new PDDocument();
 					PDDocument aux;
 					byte i = 0;
 					while (it.hasNext() && i<3){
@@ -1015,7 +997,6 @@ public class Profile extends AppCompatActivity {
 					pd.save(f);
 					pd.close();
 				}catch (IOException e){
-					e.printStackTrace();
 					f = new File(path);
 				}
 				break;
@@ -1049,15 +1030,14 @@ public class Profile extends AppCompatActivity {
 		height = options.outHeight;
 		Bitmap bmp = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(path), width, height);
 		File f = new File(path+"_preview");
-		try{
-			FileOutputStream fos = new FileOutputStream(f);
+		try(FileOutputStream fos = new FileOutputStream(f);){
 			if (ext.equalsIgnoreCase("png"))
 				bmp.compress(Bitmap.CompressFormat.PNG, 40, fos);
 			else if (ext.equalsIgnoreCase("jpg") || ext.equalsIgnoreCase("jpeg"))
 				bmp.compress(Bitmap.CompressFormat.JPEG, 40, fos);
 			fos.close();
 		} catch (Exception e){
-			e.printStackTrace();
+			//noinspection ResultOfMethodCallIgnored
 			f.delete();
 		}
 		return f;
@@ -1075,10 +1055,11 @@ public class Profile extends AppCompatActivity {
 	private int setPreviewSize(String ext){
 		int maxSize;
 		switch (ext){
-			case "txt": maxSize = 16*1024; break;
+			case "txt":
+			case "html":
+			case "css":
+				maxSize = 16*1024; break;
 			case "mp3": maxSize = 1024*1024; break;
-			case "html": maxSize = 16*1024; break;
-			case "css": maxSize = 16*1024; break;
 			default: maxSize = 0;
 		}
 		return maxSize;
@@ -1088,16 +1069,16 @@ public class Profile extends AppCompatActivity {
 		try{
 			JSONObject msg = new JSONObject();
 			msg.put("type", "FR");
-			msg.put("sendTo", this.username);
+			msg.put(SENDTO, this.username);
 
-			this.pnRTCClient.transmit(sendTo, msg);
+			pnRTCClient.transmit(sendTo, msg);
 		}catch(Exception e){
-			e.printStackTrace();
+
 		}
 	}
 	private void handleFR(JSONObject jsonMsg){
 		try{
-			final String userFR = jsonMsg.getString("sendTo");
+			final String userFR = jsonMsg.getString(SENDTO);
 			// Si el usuario está bloqueado se desecha la petición silenciosamente.
 			if (!listContains(userFR, al_blocked_users)){
 				ArrayList<String> friendsStrings = Utils.getFriendsArrayListAsStrings(al_friends);
@@ -1106,8 +1087,9 @@ public class Profile extends AppCompatActivity {
 					mdialog = new Dialog(Profile.this);
 					mdialog.setContentView(R.layout.dialog_acceptfriend);
 					mdialog.show();
-					TextView f_name = (TextView) mdialog.findViewById(R.id.accept_friend_tv);
-					f_name.setText("¿Quieres aceptar a " + userFR + " como amigo?");
+					TextView f_name = mdialog.findViewById(R.id.accept_friend_tv);
+					String tmp="¿Quieres aceptar a " + userFR + " como amigo?";
+					f_name.setText(tmp);
 
 					Button yes = mdialog.findViewById(R.id.accept_friend_yes);
 					Button no = mdialog.findViewById(R.id.accept_friend_no);
@@ -1139,7 +1121,7 @@ public class Profile extends AppCompatActivity {
 				}
 			}
 		}catch(Exception e){
-			e.printStackTrace();
+
 		}
 	}
 
@@ -1149,9 +1131,9 @@ public class Profile extends AppCompatActivity {
 			msg.put("type", "FA");
 			msg.put("addme", this.username);
 
-			this.pnRTCClient.transmit(sendTo, msg);
+			pnRTCClient.transmit(sendTo, msg);
 		}catch(Exception e){
-			e.printStackTrace();
+
 		}
 	}
 	private void handleFA(JSONObject jsonMsg){
@@ -1160,7 +1142,7 @@ public class Profile extends AppCompatActivity {
 			addData(addme);
 			cerrarConexion(addme);
 		}catch(Exception e){
-			e.printStackTrace();
+
 		}
 	}
 
@@ -1168,10 +1150,10 @@ public class Profile extends AppCompatActivity {
 		try{
 			JSONObject msg = new JSONObject();
 			msg.put("type", "VAR"); //tipo de mensaje
-			msg.put("sendTo", this.username); //usuario para devolver mensaje con datos
-			this.pnRTCClient.transmit(sendTo, msg);
+			msg.put(SENDTO, this.username); //usuario para devolver mensaje con datos
+			pnRTCClient.transmit(sendTo, msg);
 		}catch(Exception e){
-			e.printStackTrace();
+
 		}
 	}
 	/**
@@ -1182,10 +1164,10 @@ public class Profile extends AppCompatActivity {
 		try{
 			JSONObject msg = new JSONObject();
 			msg.put("type", "VSF");
-			msg.put("sendTo", this.username);
-			this.pnRTCClient.transmit(sendTo, msg);
+			msg.put(SENDTO, this.username);
+			pnRTCClient.transmit(sendTo, msg);
 		}catch(Exception e){
-			e.printStackTrace();
+
 		}
 	}
 
@@ -1201,23 +1183,23 @@ public class Profile extends AppCompatActivity {
 				Intent intent = new Intent(Profile.this, Recursos.class);
 				intent.putExtra("lista", al);
 				intent.putExtra("listener", true);
-				intent.putExtra("sendTo", jsonMsg.getString("sendTo"));
+				intent.putExtra(SENDTO, jsonMsg.getString(SENDTO));
 				startActivityForResult(intent, 2); //para volver a esta activity, llamar finish() desde la otra.
 			}
 			else
 				Toast.makeText(this, "No puedes ver los archivos", Toast.LENGTH_LONG).show();
 
 		}catch(Exception e){
-			e.printStackTrace();
+
 		}
 	}
 
 	private void VAL(JSONObject jsonMsg){
 		try{
-			final String userFR = jsonMsg.getString("sendTo");
+			final String userFR = jsonMsg.getString(SENDTO);
 			JSONObject msg = new JSONObject();
 			msg.put("type", "VAL");
-			msg.put("sendTo", this.username);
+			msg.put(SENDTO, this.username);
 			// Si el usuario no está bloqueado...
 			if (!listContains(userFR, al_blocked_users)) {
 				ArrayList<String> al = getArchivesList();
@@ -1232,9 +1214,9 @@ public class Profile extends AppCompatActivity {
 			else{
 				msg.put("blocked", true);
 			}
-			this.pnRTCClient.transmit(jsonMsg.getString("sendTo"), msg);
+			pnRTCClient.transmit(jsonMsg.getString(SENDTO), msg);
 		}catch(Exception e){
-			e.printStackTrace();
+
 		}
 	}
 	/**
@@ -1243,7 +1225,7 @@ public class Profile extends AppCompatActivity {
 	 */
 	private void handleVSF(JSONObject jsonMsg){
 		try{
-			final String userFR = jsonMsg.getString("sendTo");
+			final String userFR = jsonMsg.getString(SENDTO);
 			JSONObject msg = new JSONObject();
 			// Si el usuario no está bloqueado...
 			if (!listContains(userFR, al_blocked_users)) {
@@ -1255,7 +1237,7 @@ public class Profile extends AppCompatActivity {
 					msg.put(Utils.FOLDERSHARING_SPECIAL_CHARS + "SFallowed", true);
 					msg.put(Utils.FOLDERSHARING_SPECIAL_CHARS + "blocked", false);
 					msg.put(Utils.FOLDERSHARING_SPECIAL_CHARS + "foldersCount", sf.size());
-					msg.put(Utils.FOLDERSHARING_SPECIAL_CHARS + "sendTo", this.username);
+					msg.put(Utils.FOLDERSHARING_SPECIAL_CHARS + SENDTO, this.username);
 				}
 				//Si no tiene acceso a ninguna carpeta compartida también se le hace saber:
 				else {
@@ -1267,9 +1249,9 @@ public class Profile extends AppCompatActivity {
 			else{
 				msg.put(Utils.FOLDERSHARING_SPECIAL_CHARS + "blocked", true);
 			}
-			this.pnRTCClient.transmit(jsonMsg.getString("sendTo"), msg);
+			pnRTCClient.transmit(jsonMsg.getString(SENDTO), msg);
 		}catch(Exception e){
-			e.printStackTrace();
+
 		}
 	}
 	/**
@@ -1284,7 +1266,7 @@ public class Profile extends AppCompatActivity {
 				boolean allowed = json.getBoolean(Utils.FOLDERSHARING_SPECIAL_CHARS + "SFallowed");
 				if (allowed) {
 					int size = json.getInt(Utils.FOLDERSHARING_SPECIAL_CHARS + "foldersCount");
-					final String sendTo = json.getString(Utils.FOLDERSHARING_SPECIAL_CHARS + "sendTo");
+					final String sendTo = json.getString(Utils.FOLDERSHARING_SPECIAL_CHARS + SENDTO);
 					final HashMap<String, ArrayList<String>> map = new HashMap<>(size);
 
 					Iterator<String> keysIt = json.keys();
@@ -1306,7 +1288,8 @@ public class Profile extends AppCompatActivity {
 							final Dialog dialog = new Dialog(Profile.this);
 							dialog.setContentView(R.layout.dialog_see_files);
 							TextView title = dialog.findViewById(R.id.folder_name);
-							title.setText("Carpetas disponibles");
+							String tmp="Carpetas disponibles";
+							title.setText(tmp);
 							final ArrayList<String> foldersArray = new ArrayList<>(map.keySet());
 							AEArrayAdapter adapter = new AEArrayAdapter(Profile.this, android.R.layout.simple_list_item_1, foldersArray);
 							ListView folders_list = dialog.findViewById(R.id.files_list);
@@ -1319,7 +1302,7 @@ public class Profile extends AppCompatActivity {
 									intent.putExtra("isFS", true);
 									intent.putStringArrayListExtra("lista", map.get(selectedFolder));
 									intent.putExtra("listener", true);
-									intent.putExtra("sendTo", sendTo);
+									intent.putExtra(SENDTO, sendTo);
 									startActivityForResult(intent, 2);
 								}
 							});
@@ -1338,7 +1321,7 @@ public class Profile extends AppCompatActivity {
 			}
 		}
 		catch (JSONException e){
-			e.printStackTrace();
+
 		}
 	}
 	/**
@@ -1382,7 +1365,7 @@ public class Profile extends AppCompatActivity {
 			try {
 				prepareSenderClient(sendTo2);
 			} catch (Exception e) {
-				e.printStackTrace();
+
 			}
 			try {
 
@@ -1415,8 +1398,8 @@ public class Profile extends AppCompatActivity {
 							finalbFile = new byte[]{0};
 						}
 						//CIFRADO Paso3. Uso la secretKey para cifrar el string con la parte del fichero enviado
-						Log.i("paso3-reci:nocif",rsaTemp.bytesToString(finalbFile));
-						Log.i("paso3-reci:nocifsize", String.valueOf(rsaTemp.bytesToString(finalbFile).length()));
+						Log.i("paso3-reci:nocif", Cryptography.bytesToString(finalbFile));
+						Log.i("paso3-reci:nocifsize", String.valueOf(Cryptography.bytesToString(finalbFile).length()));
 						s = rsaTemp.cipherSimetric(finalbFile);
 						Log.i("paso3-reci:cif",s);
 						Log.i("paso3-reci:cifsize", String.valueOf(s.length()));
@@ -1425,8 +1408,8 @@ public class Profile extends AppCompatActivity {
 					}
 					else {
 						//CIFRADO Paso3. Uso la secretKey para cifrar el string con la parte del fichero enviado
-						Log.i("paso3-reci:nocifrado",rsaTemp.bytesToString(bFile));
-						Log.i("paso3-reci:nocifsize", String.valueOf(rsaTemp.bytesToString(bFile).length()));
+						Log.i("paso3-reci:nocifrado", Cryptography.bytesToString(bFile));
+						Log.i("paso3-reci:nocifsize", String.valueOf(Cryptography.bytesToString(bFile).length()));
 
 						s = rsaTemp.cipherSimetric(bFile);
 						Log.i("paso3-reci:cifrado",s);
@@ -1452,8 +1435,10 @@ public class Profile extends AppCompatActivity {
 					count++;
 				}
 				// Si ha sido necesario crear un archivo nuevo hay que borrarlo.
-				if (file2.getName().contains("_preview"))
+				if (file2.getName().contains("_preview")) {
+					//noinspection ResultOfMethodCallIgnored
 					file2.delete();
+				}
 
 				fis.close();
 				senderClient.closeConnection(sendTo2);
@@ -1465,7 +1450,7 @@ public class Profile extends AppCompatActivity {
 				// Se avisa al manager de que se ha terminado la subida y puede lanzar la siguiente en la cola, si existe:
 				sendersManager.notifyFinishedUpload();
 			} catch (Exception e){
-				e.printStackTrace();
+
 			}
 		}
 		/**
@@ -1494,7 +1479,7 @@ public class Profile extends AppCompatActivity {
 		 * @param fiss Canal de transmisión de los datos del fichero para su lectura.
 		 * @param prev Determina si es un fichero de previsualización o no.
 		 */
-		public void setVariables(long p, JSONObject j, String s, File f, FileInputStream fiss, boolean prev, String pk){
+		void setVariables(long p, JSONObject j, String s, File f, FileInputStream fiss, boolean prev, String pk){
 			previewLength = p;
 			msg = j;
 			sendTo2 = s;
@@ -1507,19 +1492,19 @@ public class Profile extends AppCompatActivity {
 		 * Devuelve el nombre del fichero que se está descargando.
 		 * @return nombre del fichero.
 		 */
-		public String getFileName(){
+		String getFileName(){
 			return file2.getName();
 		}
 		/**
 		 * Detiene el envío actual e interrumpe el hilo.
 		 */
-		public void stopUpload(){
+		void stopUpload(){
 			try{
 				fis.close();
 				senderClient.closeConnection(sendTo2);
 				this.interrupt();
 			} catch (IOException e){
-				e.printStackTrace();
+
 			}
 		}
 	}
@@ -1581,7 +1566,6 @@ public class Profile extends AppCompatActivity {
 					if (type.equals("SF")){
 						handleSF(jsonMsg);
 					}
-					else e.printStackTrace();
 				}
 				catch (JSONException e1) {}
 			}
@@ -1629,7 +1613,7 @@ public class Profile extends AppCompatActivity {
 		else
 			foldersAccess = new HashMap<>();
 		String lastFolder = null;
-		ArrayList<String> al_friends = null;
+		ArrayList<String> al_friends = new ArrayList<>();
 
 		while (c.moveToNext()){
 			String folder = c.getString(0);
@@ -1644,7 +1628,7 @@ public class Profile extends AppCompatActivity {
 				al_friends.add(friend);
 				lastFolder = folder;
 			}
-			catch (CursorIndexOutOfBoundsException e){ e.printStackTrace();}
+			catch (CursorIndexOutOfBoundsException e){}
 		}
 		c.close();
 	}
@@ -1666,8 +1650,8 @@ public class Profile extends AppCompatActivity {
 		if (friends == null){return new ArrayList<>();}
 		ArrayList<Friends> resultado= new ArrayList<>();
 		String[] friendsSeparate = friends.split(",");
-		for (int i=0; i<friendsSeparate.length; i++){
-			resultado.add(new Friends(friendsSeparate[i],R.drawable.astronaura));
+		for (String s : friendsSeparate) {
+			resultado.add(new Friends(s, R.drawable.astronaura));
 		}
 		return resultado;
 	}
@@ -1678,7 +1662,7 @@ public class Profile extends AppCompatActivity {
 			rsaUser.genKeyPair();
 			userPubNub = new Cryptography();
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+
 		}
 	}
 	//pasar un String con los archivos a ArrayList
@@ -1688,18 +1672,8 @@ public class Profile extends AppCompatActivity {
 		}
 		ArrayList resultado= new ArrayList();
 		String[] filesSeparate = files.split(",");
-		for (int i=0; i<filesSeparate.length; i++){
-			resultado.add(filesSeparate[i]);
-		}
-		return resultado;
-	}
-	//añadir nuevos grupos a la lista de grupos en caso de que alguno no este ya
-	private ArrayList<Groups> addnewgroups(ArrayList<Groups> newgroups){
-		ArrayList<Groups> resultado=new ArrayList<>();
-		for(Groups g: newgroups){
-			if( !listgroups.contains(g)){
-				resultado.add(g);
-			}
+		for (String s : filesSeparate) {
+			resultado.add(s);
 		}
 		return resultado;
 	}
@@ -1711,50 +1685,49 @@ public class Profile extends AppCompatActivity {
 					g=newgroups.get(i);
 				}
 			}
-			String friend = namefriend;
 			JSONObject msg = new JSONObject();
 			msg.put("type", "NG");
-			msg.put("nameGroup", nameGroup);
+			msg.put(NAMEGROUP, nameGroup);
 			msg.put("imgGroup", g.getImgGroup());
-			msg.put("listFriends",arrayListFriendsToString(g.listFriends));
-			msg.put("listFiles", Utils.joinStrings(",",g.listFiles));
-			msg.put("listOwners", arrayListFriendsToString(g.listOwners));
+			msg.put("listFriends",arrayListFriendsToString(g.getListFriends()));
+			msg.put(LISTFILES, Utils.joinStrings(",",g.getListFiles()));
+			msg.put(LISTOWNERS, arrayListFriendsToString(g.getListOwners()));
 			msg.put("admin", g.getAdministrador());
 
-			this.pnRTCClient.transmit(friend, msg);
+			pnRTCClient.transmit(namefriend, msg);
 		}catch(Exception e){
-			e.printStackTrace();
+
 		}
 	}
 	private void handleNG(JSONObject grupojson){
 		try{
-			String nameGroup =(String)grupojson.get("nameGroup");
+			String nameGroup =(String)grupojson.get(NAMEGROUP);
 			ArrayList<Friends> listFriends =stringtoArrayListFriend(grupojson.getString("listFriends"));
 			int img =grupojson.getInt("imgGroup");
 			ArrayList listFiles = new ArrayList();
-			if (!grupojson.getString("listFiles").equals("")){
-				listFiles = new ArrayList(Arrays.asList(grupojson.getString("listFiles").split(",")));
+			if (!grupojson.getString(LISTFILES).equals("")){
+				listFiles = new ArrayList(Arrays.asList(grupojson.getString(LISTFILES).split(",")));
 			}
 			ArrayList<Friends> listOwners =new ArrayList<>();
-			if(!grupojson.getString("listOwners").equals("")){
-				listOwners = stringtoArrayListFriend(grupojson.getString("listOwners"));
+			if(!grupojson.getString(LISTOWNERS).equals("")){
+				listOwners = stringtoArrayListFriend(grupojson.getString(LISTOWNERS));
 			}
 			String admin =grupojson.getString("admin");
 			Groups groupnew;
-			if(grupojson.getString("listFiles").equals("") && grupojson.getString("listOwners").equals("")){
+			if(grupojson.getString(LISTFILES).equals("") && grupojson.getString(LISTOWNERS).equals("")){
 				 groupnew = new Groups(nameGroup, img, listFriends, admin);
 			}else {
 				 groupnew = new Groups(nameGroup, img, listFriends, listFiles, listOwners, admin);
 			}
 
 			if (mDatabaseHelper.existGroup(groupnew.nameGroup)){
-				boolean remove = mDatabaseHelper.deleteGroup(groupnew.nameGroup,mDatabaseHelper.GROUPS_TABLE_NAME);
+				mDatabaseHelper.deleteGroup(groupnew.nameGroup, DatabaseHelper.GROUPS_TABLE_NAME);
 			}
 			if (listFiles.isEmpty()){
-				boolean inserted = mDatabaseHelper.addGroup(groupnew.getNameGroup(), arrayListFriendsToString(groupnew.getListFriends()), groupnew.getAdministrador());
+				mDatabaseHelper.addGroup(groupnew.getNameGroup(), arrayListFriendsToString(groupnew.getListFriends()), groupnew.getAdministrador());
 				Toast.makeText(getApplicationContext(), "Has sido añadido al grupo " + nameGroup, Toast.LENGTH_SHORT).show();
 			}else{
-				boolean inserted = mDatabaseHelper.addGroupComplete(groupnew.getNameGroup(), arrayListFriendsToString(groupnew.getListFriends()),Utils.joinStrings(",",groupnew.getListFiles()),arrayListFriendsToString(groupnew.getListOwners()), groupnew.getAdministrador());
+				mDatabaseHelper.addGroupComplete(groupnew.getNameGroup(), arrayListFriendsToString(groupnew.getListFriends()),Utils.joinStrings(",",groupnew.getListFiles()),arrayListFriendsToString(groupnew.getListOwners()), groupnew.getAdministrador());
 				Toast.makeText(getApplicationContext(), "Has sido añadido al grupo " + nameGroup, Toast.LENGTH_SHORT).show();
 			}
 			//Intent intent = new Intent(Profile.this, listGroupsActivity.class);
@@ -1762,31 +1735,31 @@ public class Profile extends AppCompatActivity {
 			//startActivityForResult(intent, 6);
 
 		}catch (Exception e){
-			e.printStackTrace();
+
 		}
 	}
 	private void DG(String namefriend, String nameGroup){
 		try{
 			JSONObject msg = new JSONObject();
 			msg.put("type", "DG");
-			msg.put("nameGroup", nameGroup);
-			this.pnRTCClient.transmit(namefriend, msg);
+			msg.put(NAMEGROUP, nameGroup);
+			pnRTCClient.transmit(namefriend, msg);
 
 		}catch(Exception e){
-			e.printStackTrace();
+
 		}
 	}
 	private void handleDG(JSONObject grupojson){
 		try{
-			String nameGroup =(String)grupojson.get("nameGroup");
+			String nameGroup =(String)grupojson.get(NAMEGROUP);
 			//Groups groupnew = new Groups(nameGroup,img, listFriends,listFiles,listOwners,admin);
 
 			if (mDatabaseHelper.existGroup(nameGroup)){
-				boolean remove = mDatabaseHelper.deleteGroup(nameGroup,mDatabaseHelper.GROUPS_TABLE_NAME);
+				mDatabaseHelper.deleteGroup(nameGroup, DatabaseHelper.GROUPS_TABLE_NAME);
 				Toast.makeText(getApplicationContext(), "Has sido borrado del grupo " + nameGroup, Toast.LENGTH_SHORT).show();
 			}
 		}catch (Exception e){
-			e.printStackTrace();
+
 		}
 	}
 	//pasar de un array lists de amigos a un string
